@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+027. word2vec.<br/><br/>
+@Chapter<br/>
+머신러닝, 딥러닝 실전 개발 입문 27강 - word2vec<br/>
+<br/>
+@<br/>
+Word2Vec : 단어들을 2차원 평면위에 표현할수 있도록 수치화 해주는 library 이다<br/>
+<br/>
+@<br/>
+아빠-남자+여자 : 아빠라는 단어에서 남자라는 속성을 뺀다음 여자속성을 더한다<br/>
+그러면 엄마 가 나온다<br/>
+<br/>
+@<br/>
+Word2Vec 을 사용할 때 gensim library 를 사용한다<br/>
+<br/>
+@<br/>
+from gensim.models import word2vec<br/>
+<br/>
+data = word2vec.LineSentence("")<br/>
+model = word2vec.Word2Vec(data, size=200, window=10, hs=1, min_count=2, sg=1)<br/>
+# I save created model<br/>
+model.save("filenameyouwant")<br/>
+<br/>
+@<br/>
+# I load text file<br/>
+fp = codecs.open("text.txt", "r", encoding="utf-16")<br/>
+# I use BeautifulSoup for html parsing<br/>
+soup = BeautifulSoup(fp, "html-parser")<br/>
+# I select text body part<br/>
+body = soup.select_one("text body")<br/>
+# I bring text from text body<br/>
+text = body.getText()<br/>
+<br/>
+@<br/>
+# And then, I use Twitter morphological analyzer to separate one sentence by one sentence based on \r\n<br/>
+twitter = Twitter()<br/>
+lines = text.split("\r\n")<br/>
+results = []<br/>
+# And then I process morphological analysis by pos()<br/>
+for line in lines:<br/>
+    r=[]<br/>
+    malist = twitter.pos(line, norm=True, stem=True)<br/>
+    # created malist in this way has "word(analyzed morpheme)" and "pumsa(part of speech)"<br/>
+    # word, pumsa is tuple so you can wrap them by parenthesis like this (word, pumsa)<br/>
+    for word, pumsa in malist:<br/>
+        # "text = body.getText()" has a lot of puntuations, so I want to exclude them all<br/>
+        # For that, I want to extract word only if its pumsa is not Josa, Eomi, Puntuations, and then <br/>I will put them into a list of "r"<br/>
+        if not pumsa in ["Josa, Eomi", "Punctuation"]:<br/>
+            r.append(word)<br/>
+    # I want to add processed words into results        <br/>
+    # I want insert a white space between each "r"<br/>
+    # And in case that something wrong happens, I apply strip on both ends<br/>
+    results.append((" ".join(r)).strip())<br/>
+<br/>
+# And then, I make the final result by r->append->results->join->results,...,results    <br/>
+output = (" ".join(results)).strip()<br/>
+<br/>
+# I want to save output as file<br/>
+# w: write mode<br/>
+with open("toji.wakati", "w", encoding=utf-8) as fp:<br/>
+    fp.write(output)<br/>
+<br/>
+<br/>
+@<br/>
+# I input created and processed text file "toji.wakati" into LineSentence()<br/>
+data = word2vec.LineSentence("toji.wakati")<br/>
+model = word2vec.Word2Vec(data, size=200, window=10, hs=1, min_count=2, sg=1)<br/>
+# I save created model with the name "toji.model"<br/>
+model.save("toji.model")<br/>
+<br/>
+@<br/>
+# Now, you will have 2 files, toji.wakati and toji.model<br/>
+<br/>
+@<br/>
+# I want to use "toji.model"<br/>
+from gensim.models import word2vec<br/>
+model = word2vec.Word2Vec.load("toji.model")<br/>
+# Now, I have loaded Word2Vec model, and I can do various task with it<br/>
+# I can find and see similar meaning words to "땅"<br/>
+model.most_similar(positive=["땅"])<br/>
+<br/>
+@<br/>
+# I use Wikipedia as a dictionary<br/>
+# Step<br/>
+# 1. I grab all data from Wikipedia<br/>
+# 1. I make each wakati file for each data<br/>
+# 1. I make Word2Vec model based on each wakati file<br/>
+# 1. I test those models<br/>
+<br/>
+# Wikipedia US 10GB<br/>
+# Wikipedia JN 9GB<br/>
+# Wikipedia KR 2.3GB<br/>
+<br/>
+@<br/>
+# I load word2vec model file<br/>
+model = word2vec.Word2Vec.load("wiki2.model")<br/>
+model.most_similar(positive="파이썬")<br/>
+model.most_similar(positive=["파이썬", "Python"])<br/>
+# I output data only with 0 to 3<br/>
+model.most_similar(positive=["왕자", "여성"], negative=["남성"])[0:3]<br/>
+<br/>
+@<br/>
+model["고양이"]<br/>
+# array([22,22,33,.....])<br/>   </BODY>
+</HTML>
