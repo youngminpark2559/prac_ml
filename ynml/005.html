@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005. Applying BeautifulSoup<br/>
+<xmp>
+@
+# Let's review what we learnt previous time a little bit
+
+@
+# We can web data by using following code and url string
+import urllib.request
+url=""
+response = urllib.request.urlopen(url)
+
+@
+# We can use BeautifulSoup
+from bs4 import BeautifulSoup
+# response is what we want to anlyze and parse
+# html.parser is the kind of parser
+soup  = BeautifulSoup(response, "html.parser")
+soup.select()
+# soup.select() returns array, so we deal it as following
+for result in results:
+    print(result.sting)
+soup.select_one()
+
+@
+# On web page, right click on US currency category to inspect element
+# And you can see the following
+# I will bring following <span class="value"> element under the <div class="head_info point_up">
+<div class="head_info point_up">
+    <span class="value">1,142.70</spna>
+
+
+@
+# First, I make url string
+url = "http://info.finance.naver.com/marketindex"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("span.value")
+for result in results
+    print(result.string)
+
+# And, with that, I bring many currencies what I don't want to take
+# I want to bring only "dollor and won exchange currency"
+# So, I need to configure more in detail in selector
+url = "http://info.finance.naver.com/marketindex"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("span.value")
+print("dollor-won currency", results[0].string)
+print("yien-won currency", results[1].string)
+print("is euro-won currency", results[2].string)
+
+@
+# After done this, you can use chrome browser to extract these data automatically, for example, one time per 6 hours, and so on
+
+@
+# Now, we will scrap new articles
+url = "http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("strong")
+for result in results:
+    print(result.string)
+
+# But, you unintentionally scrap other useless data
+# You should fix it by using (#section_body strong")
+url = "http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("#section_body strong")
+for result in results:
+    print(result.string)
+
+# I can scrap also by using ("#section_body a"), string["title"]), string["href"])
+url = "http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("#section_body a")
+for result in results:
+    print("title : ", result.string["title"])
+    print("href : ", result.string["href"])
+    print("")
+
+# I can make hyperlink
+url = "http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105"
+response = urllib.request.urlopen(url)
+
+soup = BeautifulSoup(response, "html-parser")
+results = soup.select("#section_body a")
+for result in results:
+    # I scrap the title and link of article
+    print("title : ", result.string["title"])
+    url_article = result.string["href"]
+    # I scrap web data
+    response = urllib.request.urlopen(url_article)
+    # I parse binary to html
+    soup_article = BeautifulSoup(response, "html-parser")
+    
+    # I scrap the contents of article
+    content = soup_article.select_one("#articleBodyContents")
+    print(content.contents)
+    
+    # Note that when you request to often, you can be ip-banned, as much as 200 requests per 1 second
+    # In case of that this reason, you use time module
+    import time
+    time.sleep(1)
+
+    # I can process some
+    output = ""
+    for item in content.contents:
+        # element which is located in content.contents is an instance of tag class
+        # So, I need to convert it to string to add other item
+        output += str(item)
+    print(output)    
+
+
+    # I can process meaningless tag information in contents
+    output = ""
+    for item in content.contents:
+        # First, I apply strip()
+        stripped = str(item).strip()
+        # If stripped string is empty string, you apply directly "continue" to go back
+        if stripped = "":
+            continue
+        # If stripped[0] is not starting with "<", "/", I scrap them
+        if stripped[0] not in ["<", "/"]:
+            # strip() functions removing whitespace both ends of contents
+            output += str(item).strip()
+    # In final output, some string should be replaced with empty character
+    print(output.replace("본문 내용TV플레이어", ""))
+    time.sleep(30)
+    print("")
+</xmp>
+   </BODY>
+</HTML>
