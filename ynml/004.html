@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+004. Basic of BeautifulSoup<br/><br/>
+@<br/>
+# BeautifulSoup is libray having a lot of functionalities for analyzing and parsing html, xml<br/>
+# Let's suppose we have following html markup<br/>
+html="""<br/>
+<html><br/>
+    <body><br/>
+        <div id="meigen"><br/>
+            <h1>Wikibooks</h1><br/>
+            <ul class="items"><br/>
+                <li>Unity</li><br/>
+                <li>Swift</li><br/>
+                <li>Website</li><br/>
+            </ul><br/>
+        </div><br/>
+    </body><br/>
+</html><br/>
+"""<br/>
+<br/>
+@<br/>
+# Why we should extract parts from html tags by using BeautifulSoup?<br/>
+# It's because all web pages are built by html<br/>
+<br/>
+@<br/>
+from bs4 import BeautifulSoup<br/>
+<br/>
+@<br/>
+# I bring BeautifulSoup instance<br/>
+# At that time, I pass "html" and "the kind of parser"<br/>
+soup = BeautifulSoup(html, "html-parser")<br/>
+# Now, I can utilize various methods which are given by soup instance<br/>
+# The most used methods are "select()" and "select_one()" which are used along with CSS selectors<br/>
+<br/>
+@<br/>
+# I select a specific tag with a specific tag name<br/>
+# If I want to select <ul></ul>, I just need to input "ul"<br/>
+# This is a tag selector : "ul", "div", "li", ...<br/>
+<br/>
+@<br/>
+# Id selector : #meigen<br/>
+<br/>
+@<br/>
+# class selector : .items<br/>
+# If it has multiple classes, <ul class = "items art it book"><br/>
+# .item.it<br/>
+<br/>
+@<br/>
+# "ul.book.items"<br/>
+<br/>
+@<br/>
+# tag + class selector is most used<br/>
+# "ul.book"<br/>
+<br/>
+@<br/>
+# descendant selector : all elements below a specific tag<br/>
+# child selector : elements one step below a specific tag<br/>
+<br/>
+# descendant of <html> is<br/>
+# <body><br/>
+#     <div id="meigen"><br/>
+#         <h1>Wikibooks</h1><br/>
+#         <ul class="items"><br/>
+#             <li>Unity</li><br/>
+#             <li>Swift</li><br/>
+#             <li>Website</li><br/>
+#         </ul><br/>
+#     </div><br/>
+# </body><br/>
+<br/>
+# child of <html> : <body><br/>
+<br/>
+@<br/>
+# descendant selector<br/>
+# "html li" means below html, select its child li<br/>
+<br/>
+# "#meigen li" : below #meigen, select its child li<br/>
+<br/>
+@<br/>
+child selector<br/>
+"ul.items > li" : select li below "ul.items"<br/>
+<br/>
+@<br/>
+# in web page, you got a lot of <ul><br/>
+# At that situation, when you want to select <li> in <ul>, you can do as following<br/>
+<br/>
+# There are 3 <li> in <ul><br/>
+# So, you should decide whether you use select_one() or select()<br/>
+# In this case, you need to select multiple li, so you should use select()<br/>
+<br/>
+# You can write code like this<br/>
+soup = BeautifulSoup(html, "html-parser")<br/>
+list_items = soup.select("li")<br/>
+# or<br/>
+list_items = soup.select("ul.items li")<br/>
+# or more precisely<br/>
+list_items = soup.select("ul.items > li")<br/>
+<br/>
+@<br/>
+# When you want to select <h1>, it's only one in entire tags, you can use select_one()<br/>
+soup = BeautifulSoup(html, "html-parser")<br/>
+header = soup.select_one("li")<br/>
+# or<br/>
+header = soup.select("div > h1")<br/>
+# or more precisely<br/>
+header = soup.select("body > div > h1")<br/>
+<br/>
+@<br/>
+# select_one() returns element<br/>
+# select() returns array of element<br/>
+<br/>
+# So, when you use returned data, you can use as following<br/>
+# header.string is used when you use string<br/>
+# header.attrs is used when you use attributes inside of it<br/>
+# Since it's dictionary type, when you extract title attribute, you can use header.attrs["title"]<br/>
+# for li in list_items:<br/>
+#     li.string<br/>
+
+   </BODY>
+</HTML>
