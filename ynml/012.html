@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+012. Basic of Excel<br/>
+<xmp>
+@
+# 자치단체 행정구역 및 인구현황
+# www.index.go.kr/potal/main/EachDtlPageDetail.do?idx_cd=1041
+
+@
+# Save as sam name and Excel 통합문서 format
+
+@
+# Excel is book
+# and there are a lot of sheets
+# spreadsheet is composed of rows and columns
+
+@
+# You first install openpyxl module which can be used to read excel file in python
+
+@
+import openpyxl
+
+# First, you need to open book
+book = openpyxl.load_workbook("stats_104102.xlsx")
+
+# For a referernce, you can use various methods which start with get
+# Check them out by typing book.get
+
+# For example, you can bring the name of sheet by book.get_sheet_names()
+# You can bring a specific sheet by explicitly informing its name
+# book.get_sheet_by_name('stats_104102')
+
+# And you can bring sheets by another way as following
+sheet = book.worksheets[0]
+for row in sheet.rows:
+    for data in row:
+        # I delimit end part by white space
+        print(data.value, end=" ")
+    print("", end="\n")
+
+
+@
+# I will try to write data by python onto excel
+import openpyxl
+
+# First, I make Workbook instance
+workbook = openpyxl.Workbook()
+# I bring the active ones in the workbook
+sheet = workbook.active
+# I write data onto excel file
+sheet["A1"] = "test file"
+sheet["B1"] = "hello"
+sheet.merge_cells("A1:C1")
+sheet["A1"].font = openpyxl.styles.Font(size=20, color="FF0000")
+# And, finally, I save written excel instance as real excel file
+workbook.save("newFile.xlsx")
+
+</xmp>
+   </BODY>
+</HTML>
