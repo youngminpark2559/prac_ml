@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+018. Natural language processing 1<br/>
+<xmp>
+@
+from sklearn import svm, metrics
+import glob, os.path, re, json
+
+# I bring all files in the declared directory
+# I can specify extension name like .txt
+files = glob.glob("d://chromedown//train//*.txt")
+train_data = []
+train_label = []
+for file_name in files:
+    # I display only file names excluding path of file
+    basename =  os.path.basename(file_name)
+    # First, I split sequence of characters by "-"
+    # And I select the first element of them
+    lang = basename.split("-")[0]
+    # I open stream of file
+    file = open(file_name, "r", encoding="utf-8")
+    # I load contents of file
+    text = file.read()
+    # I convert all texts into lowercase
+    text = text.lower()
+    # I close stream of file
+    # If you use "with open()", you don't need to use close() conveniently
+    file.close()
+
+    # I find the frequency of showing of each alphabet character
+    code_a = ord("a")
+    code_z = ord("z")
+    count = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    # This makes same result with above code
+    # count = [0 for n in range(0,26)]
+    for character in text:
+        code_current = ord(character)
+        if code_a <= code_current <= code_z:
+            # "a"97 - "a"97 = 0
+            # "b"98 - "a"97 = 1
+            count[code_current-code_a]+=1
+        # I normalize numbers to have number from 0 to 1
+        total = sum(count)
+        count = map(lambda n: n/total, count)
+
+        train_label.append(lang)
+        train_data.append(count)
+
+        # lambda n: 10
+        # equals to
+        # def test(n):
+        #     return 10        
+
+
+files = glob.glob("d://chromedown//test//*.txt")
+test_data = []
+test_label = []
+for file_name in files:
+    # I display only file names excluding path of file
+    basename =  os.path.basename(file_name)
+    # First, I split sequence of characters by "-"
+    # And I select the first element of them
+    lang = basename.split("-")[0]
+    # I open stream of file
+    file = open(file_name, "r", encoding="utf-8")
+    # I load contents of file
+    text = file.read()
+    # I convert all texts into lowercase
+    text = text.lower()
+    # I close stream of file
+    # If you use "with open()", you don't need to use close() conveniently
+    file.close()
+
+    # I find the frequency of showing of each alphabet character
+    code_a = ord("a")
+    code_z = ord("z")
+    count = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    # This makes same result with above code
+    # count = [0 for n in range(0,26)]
+    for character in text:
+        code_current = ord(character)
+        if code_a <= code_current <= code_z:
+            # "a"97 - "a"97 = 0
+            # "b"98 - "a"97 = 1
+            count[code_current-code_a]+=1
+        # I normalize numbers to have number from 0 to 1
+        total = sum(count)
+        count = map(lambda n: n/total, count)
+
+        test_label.append(lang)
+        test_data.append(count)
+
+
+# For learning
+clf = svm.SVC()
+clf.fit(train_data, train_label)
+# For predicting
+predict = clf.predict(test_data)
+# For evaluating
+score = metrics.accuracy_score(test_label, predict)
+print("Accuracy:", score)
+# For good visual report
+report = metrics.classification_report(test_label, predict)
+print("---report---")
+print(report)
+
+</xmp>
+   </BODY>
+</HTML>
