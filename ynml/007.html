@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+007. Installing PhantomJS and Selenium<br/>
+<xmp>
+@
+# We will learn how to scrap web data by using "web browser"
+
+@
+# What we've learned for scraping is imitating request and sending imitated request
+# And we bring source code and analyze, parse, process, extract web data
+
+@
+# But there is a case that we can't extract data even by imitating request like facebook site
+
+@
+# On facebook post, press ctrl shift i to inspect page
+# You can see various tags in here
+# However, you actually can't those tags in real html code after pressing F12
+# The reason for this is that facebook page doesn't show the code for the content
+# It first shows skin page by html code and then after that, facebook page shows contents by using JavaScript
+# Therefore, after running JavaScript, we can scrap the contents
+
+@
+selenium is a sort of python module which can access to PhantomJS, firefox, chrome 
+pip3 install selenium
+
+@
+apt-get install -y wget libfontconfig
+
+@
+I get PhantomJS
+wget https://bitbucket.org/ariya/PhantomJS/downloads/PhantomJS-2.1.1-linux-x86_64.tar.bz2
+
+uncompress file
+tar jxvf PhantomJS-2.1.1-linux-x86_64.tar.bz2
+
+I copy file into usr/local/bin
+cp PhantomJS/usr/local/bin
+
+@
+install nanum korean font
+apt-get install -y fonts-nanum*
+</xmp>
+   </BODY>
+</HTML>
