@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+019. Natural language processing 2<br/>
+<xmp>
+@
+# I draw graph
+
+@
+from sklearn import svm, metrics
+import glob, os.path, re, json
+import matplotlib.pyplot as plt
+import pandas as pd
+
+files = glob.glob("d://chromedown//train//*.txt")
+train_data = []
+train_label = []
+for file_name in files:
+    basename =  os.path.basename(file_name)
+    lang = basename.split("-")[0]
+    file = open(file_name, "r", encoding="utf-8")
+    text = file.read()
+    text = text.lower()
+    file.close()
+
+    code_a = ord("a")
+    code_z = ord("z")
+    count = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    for character in text:
+        code_current = ord(character)
+        if code_a <= code_current <= code_z:
+            count[code_current-code_a]+=1
+        total = sum(count)
+        count = map(lambda n: n/total, count)
+
+        train_label.append(lang)
+        train_data.append(count)
+
+# I make a dictionary to prepare drawing graph
+graph_dict = {}
+for i in range(0, len(train_label))
+    label = train_label[i]
+    data = train_data[i]
+    # If there is no label key in graph_dict,
+    # I input data into label key of graph_dict
+    if not (label in graph_dict):
+        graph_dict[label] = data
+
+# I create a list containing from a to z
+# [['a', 'b',..., 'z']]
+asclist = [[chr(n) for n in range(97, 97+26)]]
+print(asclist)
+
+# 1 argument : graph_dict for the first graph
+# 2 argument : asclist on the "index" key
+df = pd.DataFrame(graph_dict, index=asclist)
+
+# I actually draw a graph by using above dataframe which I created
+# I use style as ggplot
+plt.style.use('ggplot')
+# I use bar graph
+df.plot(kind="bar", subplots=True, ylim=(0,0.15))
+# I save graph as png file
+plt.savefig("lang-plot.png")
+
+@
+# a is used in English a little bit compared to other languages
+# e is used a lot in French, so if data uses much of e, it can decide data is French
+
+</xmp>
+   </BODY>
+</HTML>
