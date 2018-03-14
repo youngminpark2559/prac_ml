@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+015. Basic flow of scikit-learn<br/>
+<xmp>
+@
+# iris.csv data
+# github.com/pandas-dev/pandas/blob/master/pandas/tests/data/iris.csv
+# It's 150 data
+# click "raw" to download as csv file
+
+@
+# We need a way to convert label data which is written in characters
+# Let's just try to convert each to 0, 1, 2 by using "replace functionality"
+
+@
+# We will use pandas to deal with iris.csv file
+
+import pandas as pd
+from sklearn import svm, metrics
+from sklearn.model_selection import train_test_split
+
+# I load iris.csv data file
+csv = pd.read_csv("D://chromdown//iris.csv")
+
+# I extract all data, which I need, based on column name
+data = csv[["SepalLength","SepalWidth","PetalLength","PetalWidth"]]
+label = csv["Name"]
+
+print(data)
+print(label)
+
+# We've extracted all data which we need
+# And now, all what we need to do is using learning methods
+
+clf = svm.SVC()
+# For learning
+clf.fit(data, label)
+
+# For predicting
+results = clf.predict([[5.1, 3.0, 1.3, 0.2]])
+print(results)
+# output : 0 (which means it's Iris-setosa)
+
+@
+# application : 
+# 1. User inputs data, and this application predicts the kind of flower
+# 1. User takes a photo of flower
+# And application measures its length of parts
+# And application inputs measured data into application
+# application predicts the kind of that flower
+
+@
+# But we don't have precise way to evaluate this expecting model
+# We can't evaluate our expecting model by unknown data
+# So, the methodology how to evaluate the accuracy of the expecting model is to use part of train data
+# We devide train data into 3 parts, train data/validation data/test data
+
+@
+# I make train data and test data
+from sklearn.model_selection import train_test_split
+
+# train_test_split(entiredata, label) returns tuple(multiple data)
+train_data, test_data, train_label, test_label = train_test_split(data, label)
+
+clf = svm.SVC()
+# For learning
+clf.fit(train_data, train_label)
+# For predicting
+results = clf.predict(test_data)
+
+score = metrics.accuracy_score(results, test_label)
+print("accuracy : ", score)
+
+</xmp>
+   </BODY>
+</HTML>
