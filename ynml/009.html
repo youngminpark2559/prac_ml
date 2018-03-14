@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+009. Basic of XML and parsing<br/>
+<xmp>
+@
+# Various kind of data type of web data
+
+@
+# When people use html, they think html can express not only web page but also data structure
+# For that kind of purpose, people made new standard for data structure based on html
+
+@
+# XML has opening tag(<tag>) and closing tag(</tag>)
+# We call <tag>xx</tag> or <tag/> element
+
+@
+# We call "xxx" between element contents
+# We call "xxx" text if it's composed of only characters
+
+@
+# "xxx" can be other tags inside of tag, so in this case, we call it contents
+
+@
+# contents : everything between element(tag)
+#     text
+
+@
+# attribute is written inside of angular bracket
+# <tag attribute1="value-of-attribute-regardless-of-number-or-string" attribute2="value-of-attribute-regardless-of-number-or-string">contents</tag>
+# <tag attribute1="value-of-attribute-regardless-of-number-or-string" attribute2="value-of-attribute-regardless-of-number-or-string" />
+
+@
+# Rule is that root tag which is located in the most top under <?xml version...> is only one
+
+@
+<wf>
+<![CDATA[xxxxxxxxx]]>
+</wf>
+
+# When you see xml, you can encounter CDATA
+# If you bring wf tag, you can bring text of xxxxx
+# CDATA is playing a role of protecting very long text, as a special tag
+
+@
+from bs4 import BeautifulSoup
+import urllib.request
+
+url = "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=108"
+request = urllib.request.urlopen(url)
+xml = request.read()
+
+# I will use BeautifulSoup to encode and decode xml
+# There is xml.parser but it's almost no different with html.parser so I'll just use it for xml
+soup = BeautifulSoup(xml, "html.parser")
+
+# I bring the first element for seoul weather from location data
+seoul = soup.find_all("location")[0]
+datas = seoul.find_all("data")
+
+for item in datas:
+    print(item.find("wf").text)
+    
+</xmp>
+   </BODY>
+</HTML>
