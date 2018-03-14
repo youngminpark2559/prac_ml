@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+016. Arguments of fit() of scikit-learn<br/>
+<xmp>
+@
+# We will how and what arguments we should input into clf.fit()
+
+@
+# We will try MNIST
+# We will convert numbers written as image into csv file
+# And We will input this csv file data into fit() to make the expecting model learn
+
+@
+# Converting is actually nearer to processing file rather than machine learning
+
+@
+# We will process downloading MNIST data and converting them into csv file
+
+import urllib.request as req
+import gzip, os, os.path
+
+savepath = "D://chromedown//mnist"
+baseurl = "http://yann.lecun.com/exdb/mnist"
+files = 
+[
+    "train-images-idx3-ubyte.gz",
+    "train-labels-idx1-ubyte.gz",
+    "t10k-images-idx3-ubyte.gz",
+    "t10k-labels-idx1-ubyte.gz"
+]
+
+# Now, we're going to download data
+# First, I need to check if the folder exists or not
+# If it doesn't exist, I make folder
+if not os.path.exists(savepath): os.mkdir(savepath)
+for f in files:
+    url = baseurl + "/" f
+    loc = savepath + "/" f
+    print("download : ", url)
+    # I need to check if the folder exists or not
+    # If it doesn't exist, I make folder
+    if not os.path.exists(loc):
+        req.urlretrieve(url, loc)
+
+# I need to unzip GZip file
+for f in files:
+    gz_file = savepath + "/" + f
+    raw_file = savepath + "/" + f.replace(".gz", "")
+    print("gzip : ", f)
+    with gzip.open(gz_file, "rb") as fp:
+        body = fp.read()
+        with open(raw_file, "wb") as w:
+            w.write(body)
+print("ok")
+
+@
+# Run this python file
+# You can see the mnist folder created
+# You need to explore that folder
+
+
+@
+I need to convert mnist to csv
+import struct
+def to_csv(name, maxdata):
+    # I open label file and image file
+    lbl_f = open("D://chromedown//mnist//"+name+"-labels-idx1-ubyte", "rb")
+    img_f = open("D://chromedown//mnist//"+name+"-images-idx3-ubyte", "rb")
+    csv_f = open("D://chromedown//mnist//"+name+".csv", "w", encoding="utf-8")
+    # I read header information 
+    mag, lbl_count = struct.unpack(">II", lbl_f.read(8))
+    mag, img_count = struct.unpack(">II", img_f.read(8))
+    rows, cols = struct.unpack(">II", img_f.read(8))
+    pixels = rows * cols
+    # I read image data and save them as csv file
+    res = []
+    for idx in range(lbl_count):
+        if idx > maxdata: break
+        label = struct.unpack("B", lbl_f.read(1))[0]
+        bdata = img_f.read(pixels)
+        sdata = list(map(lambda n: str(n), bdata))
+        csv_f.write(str(label)+",")
+        csv_f.write(",".join(sdata)+"\r\n")
+        # I need to check if they are saved well by testing converted csv file
+        if idx < 10:
+            s = "P2 28 28 255\n"
+            s += " ".join(sdata)
+            iname = "./mnist/{0}-{1}-{2}.pgm".format(name,idx,label)
+            with open(iname, "w", encoding="utf-8") as f:
+                f.write(s)
+    csv_f.close()
+    lbl_f.close()
+    img_f.close()
+# I display output result
+to_csv("train", 1000)
+to_csv("t10k", 500)
+
+# run this python file
+
+# The created files are (train csv + train0-5.pgm + ...) and (t10k csv + t10k0-5.pgm + ...)
+
+@
+# Open the train csv
+# The data in the first column represents label
+# The data in the columns excluded the first column, represents image of number represented by characters together
+# One image of number is representd 28 columns of number
+# There are 28 images of number
+# So, we have 28*28=784 number data
+
+@
+# we will input one data
+# I copy one entire row excluded the first data from right representing label
+
+input = "0 0 0 1 0 0...0"
+# I want to split string by white space
+input = input.split(" ")
+
+# I use range(len(input)) (in this case, it's 0 to 28) as data source for interation
+for i in range(len(input))
+    # input[0] will take 3 columns and append white space at the end of number
+    # For example, if input[0] is 0, it will be 0vvv (v is white space)
+    # For example, if input[44] is 212, it will be 212v (v is white space)
+    print("{:3}".format(input[i]), end=" ")
+    # if the remainder of dividing i by 28 is 0 (which means if i is 28 so at the end of one row), you make new line to make 28 by 28 matrix
+    if i % 28 == 0:
+        print()
+
+
+@
+# Now, what we need to do is using learning methods by inputing vectorized image data and its label
+f = svm.SVC()
+# For learning
+f.fit
+(
+    [
+        [0 0 0 0 0 0...],
+        [0 0 0 0 3 0...],
+        [0 2 0 0 0 0...],
+    ],
+    [
+        4,
+        5,
+        6
+    ]
+)
+
+
+@
+# We want to use pandas to load csv
+from sklearn import model_selection, svm, metrics
+import pandas
+
+# These files have no header so it's none
+train_csv = pandas.read_csv("D://chromedown//train.csv", header=None)
+tk_csv = pandas.read_csv("D://chromedown//t10k.csv", header=None)
+
+# I extract each data
+# iloc()
+# 1 argument : range of entire row you want to extract
+# 2 argument : range of rows you want to extract (in this example, we should exclude label row)
+# We need to convert number from 0 to 255 into number from 0 to 1
+# We will define a test(l) to convert number ranged from 0 to 1
+def test(l):
+    output = []
+    for i in l:
+        output.append(float(i)/256)
+    return output        
+
+train_csv_data = list(map(test, train_csv.iloc[:, 1:].values))
+tk_csv_data = list(map(test, tk_csv.iloc[:, 1:].values))
+train_csv_label = train_csv[0].values
+tk_csv_data = tk_csv[0].values
+
+clf = svm.SVC()
+# For learning
+clf.fit(train_csv_data, train_csv_label)
+# For predicting
+predict = clf.predict(tk_csv_data)
+score = metrics.accuracy_score(tk_csv_label, predict)
+pritn("accuracy : ", score)
+
+</xmp>
+   </BODY>
+</HTML>
