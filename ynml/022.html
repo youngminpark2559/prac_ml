@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+022. Dealing with mushroom data, converting character data into number, one-hot-encoding<br/>
+<xmp>
+@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
+
+# You load mushroon.csv file
+mr = pd.read_csv("D://chromedown//mushroom.csv", header=None)
+
+# You make data holders as list
+label = []
+data = []
+attr_list = []
+
+# I make data source by mr.iterrows()
+for row_index, row in mr.iterrows()
+    # I make list data from the first column of each row by appending them into "babel list"
+    label.append(row.ix[0])
+    # I make placeholder for row_data which is excluded of the first column
+    row_data = []
+    # I make data source by row.ix[1:]
+    for v in row.ix[1:]
+        # I convert each v into number and append it into "row_data list"
+        # If you input A into ord('A'), it returns ascii code 65 
+        # If you input Z into ord('X'), it returns ascii code 90
+        # If you input a into ord('a'), it returns ascii code 97 
+        # If you input z into ord('z'), it returns ascii code 122
+        # You can ord() to convert alphabetical character into numerical number to use it as number 
+        row_data.append(ord(v))
+    # I append each row_data into "data list"
+    data.append(row_data)
+
+# I display data from 0 to 5 for test
+print(label[0:5])
+# output:
+# ['p','e','e','p','e']
+print("---")
+print(data[0:5])
+# output:
+# Numbers are converted into ascii code number from characters
+# [
+    # [2,3,4,5...],
+    # [2,3,4,5...],
+    # [2,3,4,5...],
+    # [2,3,4,5...],
+    # [2,3,4,5...]
+# ]
+
+# I make train data and test data from entire data set by train_test_split()
+data_train, data_test, label_train, label_test train_test_split(data, label)
+
+# For learning
+clf = RandomForestClassifier()
+clf.fit(data_train, label_train)
+
+# For predicting
+predict = clf.predict(data_test)
+
+# For evaluating
+ac_score = metrics.accuracy_score(label_test, predict)
+cl_report = metrics.classification_report(label_test, predict)
+print("accuracy:", ac_score)
+print("report:\n", cl_report)
+
+
+@
+# There is a precaution when you convert data into number
+# You should consider data(feature) is fitted to classification which has nothing to do with high and low of feature or continuity
+
+# Example of data which is fitted to classification is color
+# Feature of color has nothing to do with high and low to each other
+# For example, we can assign number to each color like
+# red=1, blue=2, green=3, white=4
+# However, each number has nothing to do with other number
+# It doesn't make sense that if we multiply 2 by 3, it should be blue*green
+# So, in this case, we'd better use one hot encoding as a list like the following
+# red = [1, 0, 0, 0]
+# blue = [0, 1, 0, 0]
+# green = [0, 0, 1, 0] 
+# white = [0, 0, 0, 1] 
+
+@
+# I convert mushroom data into one hot encoding
+label = []
+data = []
+attr_list = []
+
+for row_index, row in mr.iterrows()
+    label.append(row.ix[0])
+    exdata = []
+    # I bring row from 1 column to last column
+    for col, v in enumerate(row.ix[1:]):
+        # If row_index means header
+        if row_index == 0:
+            # I make attr dictionary
+            attr = {"dic":{}, "cnt":0}
+            # And then I append attr dictionary into attr_list
+            attr_list.append(attr)
+        # If row_index doesn't mean header
+        else:    
+
+            attr = attr_list[col]
+        # I express properties of mushroon as feature symbols in "list d"
+        # Finally, it will seem like the following
+        # feature d will become 1,0,0,0,0,0,0,0,0,0,0,0
+        # feautre x will become 0,0,0,0,0,0,0,0,0,0,0,0
+        # So, entire feature of entire mushroom datawill become
+        # [
+        # [0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0],
+        # [0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0,
+        # 0,0,0,0,0,0,0,0,0,0,0,0],
+        # ...
+        # ]
+        d = [0,0,0,0,0,0,0,0,0,0,0,0]
+        if v in attr["dic"]
+            idx = attr["dic"][v]
+        else:
+            idx = attr["cnt"]
+            attr["dic"][v] = idx
+            attr["cnt"] += 1
+        d[idx] = 1
+        exdata += d
+    data.append(exdata)
+
+@
+# Let's talk about cross validation
+# Suppose we have 3 set of data
+# In this case, we make it learn with part of data and we make it evaluate the performance with others
+# But someone can claim that "you can get good result with specific test data so I can't trust it"
+# To resolve this issue, we can use cross validation methodology
+
+# So, we validate our model "k" times
+
+# 3 set of data => 0,1,2
+
+# 3 cross validation
+# For learning
+fit(0,1)
+# For predicting
+predict(2)
+# accuracy : 0.85
+
+# For learning
+fit(0,2)
+# For predicting
+predict(1)
+# accuracy : 0.80
+
+# For learning
+fit(1,2)
+# For predicting
+predict(0)
+# accuracy : 0.75
+
+# mean of accuracy : 0.80
+
+</xmp>
+   </BODY>
+</HTML>
