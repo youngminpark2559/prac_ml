@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+028. Classifying text by Bayes classifier<br/>
+<xmp>
+@
+from bayes import BayesianFilter
+bf = BayesianFilter()
+
+# For learning text
+br.fit("파격 세일 - 오늘까지만 30% 할인","광고")
+br.fit("쿠폰 선물 & 무료 배송","광고")
+br.fit("백화점 세일","광고")
+br.fit("봄과 함께 찾아온 따뜻한 신제품 소식","광고")
+br.fit("인기 제품 기간 한정 세일","광고")
+br.fit("오늘 일정 확인","중요")
+br.fit("프로젝트 진행 상황 보고","중요")
+br.fit("계약 잘 부탁드립니다","중요")
+br.fit("회의 일정이 등록되었습니다","중요")
+br.fit("오늘 일정이 없습니다","중요")
+
+# For predicting
+pre, scorelist = bf.predict("제고 정리 할인, 무료 배송")
+print("결과: ", pre)
+print(scorelist)
+output:
+결과: 광고
+[('광고', -19.384), ('중요', -20.3948)]
+
+
+@
+# Analyzing BayesianFilter()
+
+# We call generator method to use BayesianFilter
+bf = BayesianFilter()
+
+import math, sys
+from konlpy.tag import Twitter
+class BayesianFilter:
+    """ This is BayesianFilter class """
+    # This is generator
+    # When you call this method, this methods generate some spaces
+    def __init__(self):
+        self.words = set() # This space is for recording shown words
+        self.word_dict = {} # This space is for recording frequency of appearance per every category
+        self.category_dict = {} # This space is for recording frequency of appearance of category
+    
+    # This splits text for morphological analysis
+    def split(self, text):
+        results = []
+        twitter = Twitter()
+        malist = twitter.pos(text, norm=True, stem=True)
+        for word in malist:
+            if not word[1] in ["Josa", "Eomi", "Punctuation"]:
+                results.append(word[0])
+        return results
+
+    # This increment_word method calculates how many words in specific category exist in word_dict dictionary
+    def inc_word(self, word, category):
+        # If word_dict dictionary doesn't have category
+        if not category in self.word_dict:
+            # This create dictionary which has key of category
+            # word_dic = {"광고":{}}
+            self.word_dict[category] = {}
+        # If there is no word in key of 광고    
+        if not word in self.word_dict[category]:
+            # This makes word and initialize its contents as 0
+            # word_dic = {"광고":{"할인":0}}
+            self.word_dict[category][word] = 0
+        # If there is a word in key of 광고, increment its contents by 1
+        # word_dic = {"광고":{"할인":1}}
+        self.word_dict[category][word] += 1
+        self.words.add(word)
+    
+    # word = ["할인"]
+    # word_dict = 
+    # {
+    #     "광고":
+    #       {
+    #           "할인":1
+    #       }
+    # }
+    # category_dict = {}
+
+    # This method calculates how many categories exist in category_dict dictionary    
+    def inc_category(self, category):
+        # If there is no category in category_dict
+        if not category in self.category_dict:
+            # this creates category and initialize its value as 0
+            category_dict = {"광고":0}
+            self.category_dict[category] = 0
+        # category_dict = {"광고":1}
+        self.category_dict[category] += 1
+    
+    # This is method for learning
+    def fit(self, text, category):
+        """ For learning text """
+        word_list = self.split(text)
+        for word in word_list:
+            # increment_word
+            self.inc_word(word, category)
+        self.inc_category(category)
+    
+    # This records score for each list of word
+    def score(self, words, category):
+        score = math.log(self.category_prob(category))
+        for word in words:
+            score += math.log(self.word_prob(word, category))
+        return score
+    
+    # This method predics
+    def predict(self, text):
+        best_category = None
+        max_score = -sys.maxsize 
+        words = self.split(text)
+        score_list = []
+        for category in self.category_dict.keys():
+            score = self.score(words, category)
+            score_list.append((category, score))
+            if score > max_score:
+                max_score = score
+                best_category = category
+        return best_category, score_list
+    
+    bf.predict("재고 정리 할인, 무료 배송")
+    best_category = None
+    I input smallest value in the system to find to find max value from smallest value
+    max_score = -92222222234444
+    words = self.split(text)
+    score_list = []
+
+    # This method calculates how many times words appear in specific category
+    def get_word_count(self, word, category):
+        if word in self.word_dict[category]:
+            return self.word_dict[category][word]
+        else:
+            return 0
+    
+    # This method calculates probability of occurring specific category
+    def category_prob(self, category):
+        # This sums all values in category_dict dictionary
+        # category_dict = {"광고":5, "중요":5}
+        # sum_categories = 10
+        # category_v = 5 if category is 광고 
+        sum_categories = sum(self.category_dict.values())
+        category_v = self.category_dict[category]
+        return category_v / sum_categories
+        
+
+    word_dic = 
+    {
+        '광고':
+        {
+            '파격':1, '세일':2,  '한정':2, ...  '기간':1
+        },
+        '중요':
+        {
+            '오늘':1, '일정':2,  '등록':2, ...  '회의':1
+        }
+    }        
+    # This method calculates probability of occurring specific word in specific category
+    def word_prob(self, word, category):
+        # If category is 광고 and word is 세일, this returns 2
+        # +1 is required to use log function later because if we give 0 to log function, problem happens
+        n = self.get_word_count(word, category) + 1
+        d = sum(self.word_dict[category].values()) + len(self.words)
+        return n / d
+
+</xmp>
+   </BODY>
+</HTML>
