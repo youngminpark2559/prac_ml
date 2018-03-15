@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+026. Analyzing frequency of shown words in text<br/>
+<xmp>
+@
+import codecs
+from bs4 import BeautifulSoup
+from konlpy.tag import Twitter
+
+# I open file stream
+file = codecs.open("2BEXXX01.txt", "r", encoding=utf-16)
+# I analyze above file with html.parser of BeautifulSoup
+soup = BeautifulSoup(file, "html.parser")
+# I bring body tag which is text tag's child
+body = soup.select_one("text > body")
+# I extract internal text
+text = body.getText()
+# I check if I extracted text successfully
+print(text)
+
+# Now, I will analyze frequency of all shown words
+twitter = Twitter()
+# I make word_dic dictionary to store frequency numbers
+word_dic = {}
+# I split extracted text by \r and \n as collection of one line
+lines = text.split("\r\n")
+# I analyze one line by one line by iteration
+for line in lines:
+    malist = twitter.pos(line)
+    # # I want to check how it's going
+    # print(malist)
+    # # But there will be tons of lines so I use break not to iterate entire lines
+    # break
+    # # And we can see well analyzed data in tuple data type
+    
+    for taeso, pumsa in malist:
+        # If pumsa is Noun in one data of malist
+        if pumsa == "Noun":
+            # And if taeso doesn't exist in word_dic dictionary
+            if not (taeso in word_dic)
+                # I assign 0 into value of taeso key in word_dic dictionary
+                word_dic[taeso] = 0
+            # And if taeso already exists in word_dic dictionary
+            # I increase by 1 for value of taeso key in word_dic dictionary
+            word_dic[taeso] += 1
+
+# I display frequency number for entire word
+print(word_dic)
+# output:
+# {'천년':1, '영화':1, ...}
+
+# I display frequency number in the order of highest frequency from the first to 50th
+for word, count in keys[:50]
+    print("{0}({1}) ".format(word, count), end="")
+print()
+# output:
+# 것(319) 그(199) 치수(192) ...
+
+@
+# You can use this technique to classify genre of book based on frequency of shown words in text
+
+</xmp>
+   </BODY>
+</HTML>
