@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+030. Creating sentence with markov chain<br/>
+<xmp>
+@
+# If I apply markov chain simply to create a sentence, I can get odd sentence like "Apple eats human"
+# So, we should know what words are probabilistically followed by other word around it with markov chain model
+# And this is called LSTM
+
+@
+# First, let's just use markov chain to create a sentence
+
+import codecs
+from bs4 import BeautifulSoup
+from konlpy.tag import Twitter
+import urllib.request
+import os, re, json, random
+
+# I create dictionary by using markov model
+# words(개,도,닷새,가,되면,주인,을,안다,.) is morphologically analyzed text
+def make_dic(words):
+    # I create a list, tmp = ["@"]
+    tmp = ["@"]
+    # I create a dictionary
+    # dic = 
+    # {
+
+    # }
+    dic = {}
+
+    # Let's process following words
+    # 개|도|닷새|가|되면|주인|을|안다|.
+    # 기르던|개|에게|다리|가|물렸다|.
+    tmp=["@","개","도"]
+    By set_word3(),
+    w1="@"
+    w2="개"
+    w3="도"
+
+    And then, we will make,
+    dic = 
+    {
+        "@":
+        {
+            "개":
+            {
+                "도":1
+            }
+        },
+        "개":
+        {
+            "도":
+            {
+                "댓새":1
+            }
+        },
+        "도":
+        {
+            "닷새":
+            {
+                "가":1
+            }
+        },
+        "닷새":
+        {
+            "가":
+            {
+                "되면":1
+            }
+        },
+        "가":
+        {
+            "되면":
+            {
+                "주인":1
+            }
+        },
+        "되면":
+        {
+            "주인":
+            {
+                "을":1
+            }
+        },
+        "주인":
+        {
+            "을":
+            {
+                "안다":1
+            }
+        },
+        "을":
+        {
+            "안다":
+            {
+                ".":1
+            }
+        },
+    }
+    tmp=["@"]
+    # @ means we will newly create sentence
+    # @ means the most front word in sentence
+    for word in words:
+        tmp.append(word)
+        # If length of tmp is less than 3, we go back to if condition
+        if len(tmp) < 3:
+            continue
+        if len(tmp) > 3:
+            tmp = tmp[1:]
+        set_word3(dic, tmp)
+        if word == ".":
+            tmp = ["@"]
+            continue
+    return dic
+
+# I add text data(words) in dic dictionary
+def set_word3(dic, s3):
+    w1, w2, w3 = s3
+    if not w1 in dic: dic[w1] = {}
+    if not w2 in dic[w1]: dic[w1][w2] = {}
+    if not w3 in dic[w1][w2]: dic[w1][w2][w3] = 0
+    dic[w1][w2][w3] += 1
+
+# This create sentence
+def make_sentence(dic):
+    ret = []
+    if not "@" in dic: return "no dic" 
+    top = dic["@"]
+    w1 = word_choice(top)
+    w2 = word_choice(top[w1])
+    ret.append(w1)
+    ret.append(w2)
+    while True:
+        w3 = word_choice(dic[w1][w2])
+        ret.append(w3)
+        if w3 == ".": break
+        w1, w2 = w2, w3
+    ret = "".join(ret)
+    # This is for white space
+    params = urllib.parse.urlencode({
+        "_callback": "",
+        "q": ret
+    })
+    # I use web spelling checker
+    data = urllib.request.urlopen("https://m.search.naver.com/p/csearch/dcontent/spellchecker.nhn?" + params)
+    data = data.read().decode("utf-8")[1:-2]
+    data = json.loads(data)
+    data = data["message"]["result"]["html"]
+    data = soup = BeautifulSoup(data, "html.parser").getText()
+    # 리턴
+    return data
+    def word_choice(sel):
+    keys = sel.keys()
+    return random.choice(list(keys))
+
+# I will make toji_file as name of toji.txt
+toji_file = "toji.txt"
+# I will make dict_file as name of markov-toji.json
+dict_file = "markov-toji.json"
+
+# If there is no dict_file, I will create a dict_file
+# dic = make_dic(words)
+# json.dump(dic, open(dict_file,"w", encoding="utf-8"))
+# If there is already dict_file, I will load passed dict_file and convert it into json file
+# dic = json.load(open(dict_file,"r"))
+if not os.path.exists(dict_file):
+    # I load toji text file(BEXX0003.txt)
+    fp = codecs.open("BEXX0003.txt", "r", encoding="utf-16")
+    soup = BeautifulSoup(fp, "html.parser")
+    body = soup.select_one("body > text")
+    text = body.getText()
+    # Old version twitter morphological analyzer of KoNLPy consider "…" as nount not punctuation
+    # So, I use replace to remove it
+    text = text.replace("…", "")
+
+    # I process morphological analysis
+    twitter = Twitter()
+    malist = twitter.pos(text, norm=True)
+    words = []
+    for word in malist:
+        # I exclude all puntuations except for period
+        if not word[1] in ["Punctuation"]:
+            words.append(word[0])
+        # I add processed text into words
+        if word[0] == ".":
+            words.append(word[0])
+    
+    # I create a dictionary by using make_dic() and process text
+    dic = make_dic(words)
+    # I create dict_file with "dic"
+    json.dump(dic, open(dict_file, "w", encoding="utf-8"))
+else:
+    dic = json.load(open(dict_file,"r"))
+# After you got a dict_file, I call make_sentence() to make sentence
+for i in range(3):
+    s = make_sentence(dic)
+    print(s)
+    print("---")
+
+
+@
+# Markov chain randomly chooses next word based on two words in front of current word
+# So it can make odd sentence
+
+</xmp>
+   </BODY>
+</HTML>
