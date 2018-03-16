@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+032. Converting image into vector by hash function<br/>
+<xmp>
+033. Converting colored image to vector, Using CNN model
+
+@
+# I want to convert image to vector but with color data 
+from PIL import Image
+import numpy as np
+
+with open("tower.jpg", "rb") as file:
+    img = Image.open(file)
+    img = img.convert("RGB")
+    I reduce image size by reshaping
+    img = img.resize((64,64))
+    data = np.array(img)
+
+@
+from PIL import Image
+import os, glob
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+# This is folder I want to load
+caltech_dir = "./image/101_ObjectCategories"
+# This is categories which I want to use
+categories = ["chair","camera","butterfly","elephant","flamingo"]
+# I define nb_classes as len(categories)
+nb_classes = len(categories)
+# I define size of image as 64*64
+image_w = 64 
+image_h = 64
+# Since I use RGB information,
+# I should multiply 3 to calculate entire number of element of image vector
+pixels = image_w * image_h * 3
+
+# I load image data
+X = []
+Y = []
+for idx, cat in enumerate(categories):
+    # I make list for label data
+    label = [0 for i in range(nb_classes)]
+    label[idx] = 1
+    # I define image folder
+    image_dir = caltech_dir + "/" + cat
+    # glob can load every file in specified folder
+    files = glob.glob(image_dir+"/*.jpg")
+    for i, f in enumerate(files):
+        img = Image.open(f)
+        img = img.convert("RGB")
+        img = img.resize((image_w, image_h))
+        data = np.asarray(img)
+        X.append(data)
+        Y.append(label)
+        if i % 10 == 0:
+            print(i, "\n", data)
+X = np.array(X)
+Y = np.array(Y)
+
+# I separate training dataset and test dataset
+X_train, X_test, y_train, y_test = train_test_split(X, Y)
+xy = (X_train, X_test, y_train, y_test)
+np.save("./image/5obj.npy", xy)
+print("ok,", len(Y))
+
+@
+Classifying image by CNN
+
+from keras.models import Sequential
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.layers import Activation, Dropout, Flatten, Dense
+import h5py
+from PIL import Image
+import numpy as np
+import os
+
+# I define categories
+categories = ["chair","camera","butterfly","elephant","flamingo"]
+# I define nb_classes as len(categories)
+nb_classes = len(categories)
+
+# Since we created image data sized 64*64, we disgnate 64, 64
+image_w = 64 
+image_h = 64
+
+# We load 5obj.npy file which we created just ago
+X_train, X_test, y_train, y_test = np.load("./image/5obj.npy")
+
+# We normalize data
+# because input data should have value ranged from 0 to 1
+X_train = X_train.astype("float") / 256
+X_test  = X_test.astype("float")  / 256
+print('X_train shape:', X_train.shape)
+
+# We implement CNN model
+# The following scheme is ordinal one which can be applied to in almost cases
+model = Sequential()
+model.add(Convolution2D(32, 3, 3, 
+    border_mode='same',
+    input_shape=X_train.shape[1:]))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Convolution2D(64, 3, 3, border_mode='same'))
+model.add(Activation('relu'))
+model.add(Convolution2D(64, 3, 3))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Flatten())
+model.add(Dense(512))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(nb_classes))
+model.add(Activation('softmax'))
+
+model.compile(loss='binary_crossentropy',
+    optimizer='rmsprop',
+    metrics=['accuracy'])
+
+# For learning
+hdf5_file = "./image/5obj-model.hdf5"
+if os.path.exists(hdf5_file):
+    model.load_weights(hdf5_file)
+else:
+    model.fit(X_train, y_train, batch_size=32, nb_epoch=50)
+    model.save_weights(hdf5_file)
+
+# For evaluating
+pre = model.predict(X_test)
+for i,v in enumerate(pre):
+    pre_ans = v.argmax()
+    ans = y_test[i].argmax()
+    dat = X_test[i]
+    if ans == pre_ans: continue
+    print("[NG]", categories[pre_ans], "!=", categories[ans])
+    print(v)
+    fname = "image/error/" + str(i) + "-" + categories[pre_ans] + \
+        "-ne-" + categories[ans] + ".png"
+    dat *= 256
+    img = Image.fromarray(np.uint8(dat))
+    img.save(fname)
+score = model.evaluate(X_test, y_test)
+print('loss=', score[0])
+print('accuracy=', score[1])
+
+@
+# People who make models like CNN, RNN are not ordinal developers but researchers in constitute
+# Researchers should know every aspect of model in detail
+# However, data scientists and ordinal developers who apply these models would be better to focus on applying models to make benefits rather than researching new models
+# To apply model, the most recommended way is to read related thesis papers which are written by researchers
+
+
+      </xmp>
+   </BODY>
+</HTML>
