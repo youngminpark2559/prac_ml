@@ -153,7 +153,28 @@ print(ahash.reshape(1,-1))
 
 print(ahash)
 print(np2hash(ahash))
-   
-</xmp>
+
+@
+ahash_1 = average_hash('tower.jpg')
+ahash_2 = average_hash('test.png')
+a = print(ahash_1.reshape(1,-1))
+b = print(ahash_2.reshape(1,-1))
+
+# This compare 2 hashed value and returns true if 2 points are same
+print(a != b)
+# [
+#     [True True False
+#     True True False
+#     True False False
+#     True True False
+#     False True False]
+# ]
+# True is 0 in number
+print((a != b).sum())
+# 155 means how many points are different
+# 155 is called haming distance
+# If 2 images have 155 different points out of 16*16=256 pixels, it's fair to say they're different images   
+
+      </xmp>
    </BODY>
 </HTML>
