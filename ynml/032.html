@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+032. Converting image into vector by hash function<br/>
+<br/>
+@<br/>
+# Average hash expresses image as hash value which can be compared to other hash value of image<br/>
+# We use MD5, SHA256, etc as hash function <br/>
+<br/>
+@<br/>
+# We use term of "hash" in 2 ways<br/>
+<br/>
+# We use term of "hash" for hashtable<br/>
+# Hashtable means one method of data structure, which stores data based on a pair of key and value like Python's dictionary, JavaScript's object<br/>
+<br/>
+# We use term of "hash" to call fixed length string as "hash"<br/>
+<br/>
+@<br/>
+# Let's learn how to use hash library in Python<br/>
+<br/>
+import hashlib<br/>
+<br/>
+m = hashlib.md5()<br/>
+m.update("StringWhatYouWantToHash")<br/>
+# I get final hashed string<br/>
+result = m.digest()<br/>
+<br/>
+@<br/>
+# Let's deal with image with hash library<br/>
+<br/>
+import hashlib<br/>
+<br/>
+# I open file stream which is automatically closed when task is finished<br/>
+with open("tower.jpg", "rb") as file:<br/>
+    # I get binary image represented in string from file<br/>
+    string = file.read()<br/>
+    m = hashlib.md5()<br/>
+    m.update(string)<br/>
+    result = m.digest()<br/>
+<br/>
+# The good points of hashed image<br/>
+# 1. It makes comparison possible to other image by fixed short unique sequence of characters<br/>
+# 1. A specific image generates unique hash value so hash value can be used when you claim intellecture property<br/>
+<br/>
+<br/>
+@<br/>
+# The process of converting image into vector is following<br/>
+# 1. I reduce size of image to 8*8<br/>
+# 1. I convert color of image to gray<br/>
+# 1. I calculate average value from values of all pixels<br/>
+# 1. If a pixel's darkness is larger than average, I input 1 into that pixel, otherwise I input 0 into corresponding pixel<br/>
+<br/>
+@<br/>
+pop install Pillow<br/>
+<br/>
+@<br/>
+from PIL import Image<br/>
+import numpy as np<br/>
+<br/>
+# This method takes 2 arguments(filename, size)<br/>
+def average_hash(fname, size = 16):<br/>
+    # I use Pillow to load file by file name<br/>
+    img = Image.open(fname)<br/>
+    # I convert color of image to gray<br/>
+    # You can use other options(1 for binary, RGB, RGBA, CMYK) to convert<br/>
+    img = img.convert('L')<br/>
+    # I resize image<br/>
+    img = img.resize((size, size), Image.ANTIALIAS)<br/>
+    # I extract pixel data<br/>
+    pixel_data = img.getdata()<br/>
+    # I convert pixel_data into numpy array<br/>
+    pixels = np.array(pixel_data)<br/>
+<br/>
+    # Converted pixel stored in numpy array is 1 dimensional arry<br/>
+    # [<br/>
+    #     1 1<br/>
+    #     1 1<br/>
+    # ]<br/>
+    # so it's hard to get clear overview data<br/>
+    # To resolve this issue, I reshape 1 dimensional array into 2 dimensional array<br/>
+    # [<br/>
+    #     [1 1]<br/>
+    #     [1 1]<br/>
+    # ]<br/>
+    # High number represents bright point<br/>
+    pixels = pixels.reshape((size, size))<br/>
+    # I find mean value of all pixels<br/>
+    avg = pixels.mean()<br/>
+    # If a pixel is larger than avg, 1 is assigned<br/>
+    diff = 1 * (pixels > avg)<br/>
+    return diff<br/>
+<br/>
+# This method converts data into binary hash<br/>
+def np2hash(n):<br/>
+    bhash = []<br/>
+    for nl in ahash.tolist():<br/>
+        sl = [str(i) for i in nl]<br/>
+        s2 = "".join(sl)<br/>
+        i = int(s2, 2) # 이진수를 정수로 변환하기<br/>
+        bhash.append("%04x" % i)<br/>
+    return "".join(bhash)<br/>
+<br/>
+# I use average_hash() with passing tower.jpg<br/>
+ahash = average_hash('tower.jpg')<br/>
+<br/>
+# You can reshape 2 dimensinal array into 1 dimensional array<br/>
+print(ahash.reshape(1,-1))<br/>
+<br/>
+print(ahash)<br/>
+print(np2hash(ahash))<br/>
+<br/>
+@<br/>
+ahash_1 = average_hash('tower.jpg')<br/>
+ahash_2 = average_hash('test.png')<br/>
+a = print(ahash_1.reshape(1,-1))<br/>
+b = print(ahash_2.reshape(1,-1))<br/>
+<br/>
+# This compare 2 hashed value and returns true if 2 points are same<br/>
+print(a != b)<br/>
+# [<br/>
+#     [True True False<br/>
+#     True True False<br/>
+#     True False False<br/>
+#     True True False<br/>
+#     False True False]<br/>
+# ]<br/>
+# True is 0 in number<br/>
+print((a != b).sum())<br/>
+# 155 means how many points are different<br/>
+# 155 is called haming distance<br/>
+# If 2 images have 155 different points out of 16*16=256 pixels, it's fair to say they're different images<br/>
+   </BODY>
+</HTML>
