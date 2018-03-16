@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+034. Converting image to vector and increasing quantity of data by processing some techniques like rotating<br/>
+<xmp>
+# How to increase data by rotating, stressing on brightness, etc
+
+from PIL import Image
+import os, glob
+import numpy as np
+import random, math
+
+# I define folder for image files
+root_dir = "./image/"
+# I defind categories for image data
+categories = ["normal", "beni", "negi", "cheese"]
+# The number of class is same length of list of category
+nb_classes = len(categories)
+# I will use image sized 50*50
+image_size = 50
+
+# This is space of list for image data
+X = []
+# This is space of list for image's label data
+Y = []
+
+def add_sample(cat, fname, is_train):
+    # I open image file with file name
+    img = Image.open(fname)
+    # I convert loaded image file into vector which keeps color information
+    img = img.convert("RGB")
+    # I resize image by 50*50
+    img = img.resize((image_size, image_size))
+    # I make data with process image
+    data = np.asarray(img)
+    # I append data into list X
+    X.append(data)
+    # I append category label data into list Y
+    Y.append(cat)
+    if not is_train: return
+    
+    # I add image data which is created by manipulating angle of image
+    # 5 is steps
+    # So, it will process by -20, -15, -10, ...
+    for ang in range(-20, 20, 5):
+        # First, I rotate image by -20 and assign it to img2
+        img2 = img.rotate(ang)
+        # I store rotated image into array
+        data = np.asarray(img2)
+        # I append data into X
+        X.append(data)
+        # I append label data
+        Y.append(cat)
+        # img2.save("gyudon-"+str(ang)+".PNG")
+
+        # 반전하기
+        img2 = img2.transpose(Image.FLIP_LEFT_RIGHT)
+        data = np.asarray(img2)
+        X.append(data)
+        Y.append(cat)
+
+def make_sample(files, is_train):
+    global X, Y
+    X = []; Y = []
+    for cat, fname in files:
+        add_sample(cat, fname, is_train)
+    return np.array(X), np.array(Y)
+# I collect files in each folder
+allfiles = []
+for idx, cat in enumerate(categories):
+    image_dir = root_dir + "/" + cat
+    files = glob.glob(image_dir + "/*.PG")
+    for f in files:
+        allfiles.append((idx, f))
+# I suffle files and then separate train data and test data
+random.shuffle(allfiles)
+th = math.floor(len(allfiles) * 0.6)
+train = allfiles[0:th]
+test  = allfiles[th:]
+X_train, y_train = make_sample(train, True)
+X_test, y_test = make_sample(test, False)
+xy = (X_train, X_test, y_train, y_test)
+np.save("./image/gyudon2.npy", xy)
+print("ok,", len(y_train))
+
+      </xmp>
+   </BODY>
+</HTML>
