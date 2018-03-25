@@ -46,17 +46,21 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-004. Basic of BeautifulSoup<br/><br/>
+004. using basic of BeautifulSoup
 <xmp>
 @
-# BeautifulSoup is libray having a lot of functionalities for analyzing and parsing html, xml
-# Let's suppose we have following html markup
+beauty.py
+
+from bs4 import BeautifulSoup
+
+# BeautifulSoup analyzes and parses html and xml
+# Suppose we have following html code
 html="""
 <html>
     <body>
         <div id="meigen">
             <h1>Wikibooks</h1>
-            <ul class="items">
+            <ul class="items art it book">
                 <li>Unity</li>
                 <li>Swift</li>
                 <li>Website</li>
@@ -66,103 +70,135 @@ html="""
 </html>
 """
 
+# I create BeautifulSoup instance
+# html : html code
+# Kind of parser(this one parses html)
+soup = BeautifulSoup(html, "html.parser")
+
+# below 'ul.items', select all(descendant) 'li'
+list_items = soup.select("ul.items > li")
+# soup.select("ul.items li")
+# soup.select("li")
+# < <li>Unity</li>
+# < <li>Swift</li>
+# < <li>Website</li>
+
+# Let's select <h1>Wikibooks</h1>
+header = soup.select_one("body > div > h1")
+
+# Let's use extracted data
+print(header.string)
+# < Wikibooks
+# This one is dictionary type
+# header.attrs['title']
+print(soup.select_one("ul").attrs)
+# < {'class': ['items', 'art', 'it', 'book']}
+for li in list_items:
+    print(li.string)
+# < Unity
+# < Swift
+# < Website
+
+
+
+
 @
-# Why we should extract parts from html tags by using BeautifulSoup?
+# Why should we extract parts from html by using BeautifulSoup?
 # It's because all web pages are built by html
 
 @
-from bs4 import BeautifulSoup
+# The most used methods are "select()" and "select_one()"
+# which are used along with CSS selectors
+
+# I select specific tag with specific tag name
+# If I want to select <ul></ul>, I need to input "ul"
+# This is tag selector in BeautifulSoup : "ul", "div", "li", ...
+
 
 @
-# I bring BeautifulSoup instance
-# At that time, I pass "html" and "the kind of parser"
-soup = BeautifulSoup(html, "html-parser")
-# Now, I can utilize various methods which are given by soup instance
-# The most used methods are "select()" and "select_one()" which are used along with CSS selectors
-
-@
-# I select a specific tag with a specific tag name
-# If I want to select <ul></ul>, I just need to input "ul"
-# This is a tag selector : "ul", "div", "li", ...
-
-@
+<div id="meigen">
 # Id selector : #meigen
 
-@
 # class selector : .items
-# If it has multiple classes, <ul class = "items art it book">
-# .item.it
+# If element has multiple classes like <ul class = "items art it book">
+# if you want to select element with multiple clases, you can use .item.it
 
 @
+<ul class="items art it book">
+    <li>Unity</li>
+    <li>Swift</li>
+    <li>Website</li>
+</ul>
+
 # "ul.book.items"
+# < <li>Unity</li>
+# < <li>Swift</li>
+# < <li>Website</li>
+
+# tag + class selection pattern like "ul.book" is most used
+
+# If summany,
+# 1. tag selector
+# "h1"
+# "html"
+# 1. id selector
+# "#meigen"
+# 1. class selector
+# ".book"
 
 @
-# tag + class selector is most used
-# "ul.book"
+# Let's talk about structure selector
 
-@
-# descendant selector : all elements below a specific tag
-# child selector : elements one step below a specific tag
+<html>
+    <body>
+        <div id="meigen">
+            <h1>Wikibooks</h1>
+            <ul class="items art it book">
+                <li>Unity</li>
+                <li>Swift</li>
+                <li>Website</li>
+            </ul>
+        </div>
+    </body>
+</html>
+
+# 1. descendant selector : all elements under every indent below a specific tag
+# 1. child selector : all elements under one indent below a specific tag
 
 # descendant of <html> is
-# <body>
-#     <div id="meigen">
-#         <h1>Wikibooks</h1>
-#         <ul class="items">
-#             <li>Unity</li>
-#             <li>Swift</li>
-#             <li>Website</li>
-#         </ul>
-#     </div>
-# </body>
+<body>
+    <div id="meigen">
+        <h1>Wikibooks</h1>
+        <ul class="items">
+            <li>Unity</li>
+            <li>Swift</li>
+            <li>Website</li>
+        </ul>
+    </div>
+</body>
 
 # child of <html> : <body>
+<body>
+</body>
 
 @
-# descendant selector
-# "html li" means below html, select its child li
+# descendant selector (all elements under every indent)
+# "html li" means below html, select its descendant li
+# <li>Unity</li>
+# <li>Swift</li>
+# <li>Website</li>
 
-# "#meigen li" : below #meigen, select its child li
-
-@
-child selector
-"ul.items > li" : select li below "ul.items"
-
-@
-# in web page, you got a lot of <ul>
-# At that situation, when you want to select <li> in <ul>, you can do as following
-
-# There are 3 <li> in <ul>
-# So, you should decide whether you use select_one() or select()
-# In this case, you need to select multiple li, so you should use select()
-
-# You can write code like this
-soup = BeautifulSoup(html, "html-parser")
-list_items = soup.select("li")
-# or
-list_items = soup.select("ul.items li")
-# or more precisely
-list_items = soup.select("ul.items > li")
+# "#meigen li" : below #meigen, select its descendant li
+# <li>Unity</li>
+# <li>Swift</li>
+# <li>Website</li>
 
 @
-# When you want to select <h1>, it's only one in entire tags, you can use select_one()
-soup = BeautifulSoup(html, "html-parser")
-header = soup.select_one("li")
-# or
-header = soup.select("div > h1")
-# or more precisely
-header = soup.select("body > div > h1")
-
-@
-# select_one() returns element
-# select() returns array of element
-
-# So, when you use returned data, you can use as following
-# header.string is used when you use string
-# header.attrs is used when you use attributes inside of it
-# Since it's dictionary type, when you extract title attribute, you can use header.attrs["title"]
-# for li in list_items:
-#     li.string
+# child selector (all elements under one indent)
+# "ul.items > li" : below ul.items, select its child li
+# <li>Unity</li>
+# <li>Swift</li>
+# <li>Website</li>
 </xmp>
    </BODY>
 </HTML>
