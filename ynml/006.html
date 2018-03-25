@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$','$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,92 +46,77 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-006. Login by requests library<br/>
+006. login by using "requests library"
 <xmp>
-@
-# We scraped web data by using built in url library in python
-# When you do login, we should use "session" technique
-# But since Dealing with "session" only by url library is pretty difficult, we'd better use external module "requests"
+# @
+# test.py
 
-@
+# @
+# We scraped web data by using built-in url library in python
+# When you login, we should use "session" technique
+# But since dealing with "session" only by url library is difficult,
+# we'd better use external module "requests"
+
+# @
 # pip install requests
 
-@
 import requests
 
-# first, you create session instance
-session = requests.session()
-# and you can use get, post, put, delete methods
-# url is url what we want to scrap
-# session.get(url)
-# session.post(url)
-# session.put(url)
-# session.delete(url)
-
-@
-# You get response instance
-response = session.get(url)
-# And then, you can use raise_for_status() to actually fire your request
-response.raise_for_status()
-# And then you can utilize text in response
-response.text
-
-@
 url = "http://google.com"
-
-session = requests.session()
-response = session.get(url)
-response.raise_for_status()
-
-print(response.text)
-
-# You can see main page of google
-# Encoding and other things are automatically processed by "requests library"
-
-@
-# You can make and use an data instance for "appointing data" rather using querystring
-
-url = "http://google.com"
+# You can make and use data instance for "appointing data" rather writing manually querystring
 data = 
 {
     "a":"10",
     "b":"20"
 }
 
+# You create session instance
 session = requests.session()
-# You can pass querystring data in get()
-response = session.get(url, data=data)
+# < and you can use get, post, put, delete methods
+# < url : url of site what we want to collect
+# < session.get(url)
+# < session.post(url)
+# < session.put(url)
+# < session.delete(url)
+# > You get response instance from 'session.get()'
+response = session.get(url, data = data)
+# And then, you can use raise_for_status() to actually perform your request
 response.raise_for_status()
-
+# And then you can utilize text data stored in response object
 print(response.text)
+# < You can see main page of google
+# < Encoding and other things are automatically processed by "requests library"
 
-@
-# When you encounter some problem with url library, you can resolve 99% of them by this method
+
+# When you encounter some problems with get() in url library,
+# you can resolve 99% of them by this way
 # 1. Go to web page
-# 1. Open developer tool by F12
+# 1. Open developer tool
 # 1. Go to "network" tab
 # 1. Check if you can see "recording red light"
 # 1. Check if you checked "preserve log"
-# 1. If you need, you configure as Doc on the under horizonotal bar
+# 1. If you need, you configure as 'Doc' on the under horizonotal bar
 
-@
 # Now, we will try to login
-First, try to login directly and see what happens in terms of network
+# First, try to login directly and see what happens in terms of network
 
-@
 # We entered login.html
-# We moved to login_proc.php
-# We moved to index.html
+# We were moved to login_proc.php
+# We were moved to index.html
 
-# We should find the place where we login and it's actually login_proc.php
-# And the way to find that place is to check the place ID and password are sent
-# When I see login.html, I can't see anything related to ID and password, so I can conclude it's not the place what I'm looking for
-# When I see login_proc.php, I can see something related to ID and password in "Form Data" section, I can conclude that login happened at this moment of this page
+# We should find place where we logedin and it's actually login_proc.php
+# And the way to find that place is to check the place where ID and password are sent
+# When I see login.html, I can't see any record related to ID and password,
+# so I can conclude it's not the place what I'm looking for
+# When I see login_proc.php,
+# I can see something related to ID and password in "Form Data" section,
+# I can conclude that login happened at this moment of this page
 
-# So, in conclusion, if you imitate this request of page by using "requests library", you will be able to login in python code
+# So, in conclusion, if you imitate this request of page by using "requests library",
+# you will be able to login in python
 
-@
-# First, you need to grab what information are sent
+# @
+# First, you need to see what information are sent
 # And they're following elements
 
 # In "Form Data" section,
@@ -143,29 +128,29 @@ First, try to login directly and see what happens in terms of network
 # request url : http://www.hanbit.co.kr/member/login_proc.php
 # request methods : post
 
-@
-url = "http://www.hanbit.co.kr/member/login_proc.php"
-data = 
+# @
+url_hanbit = "http://www.hanbit.co.kr/member/login_proc.php"
+data_hanbit = 
 {
     "return_url" : "http://www.hanbit.co.kr/index.html",
     "m_id" : "myid",
     "m-password" : "yourpassword"
 }
 
-session = requests.session()
-response = session.post(url, data=data)
-response.raise_for_status()
+session_hanbit = requests.session()
+response_hanbit = session_hanbit.post(url_hanbit, data = data_hanbit)
+response_hanbit.raise_for_status()
+print(response_hanbit.text)
 
-print(response.text)
-
-@
-# Grab e-coin web data in logined page
-url = "http://www.hanbit.co.kr/myhanbit/myhanbit.html"
-response = session.get(url)
-response.raise_for_status()
-BeautifulSoup(response.text, "html-parser")
-text = soup.select_one(".mileage_section2 span").get_text()
-print("your e-coin : ", text)
+# @
+# Let's grab e-coin data from logedin page
+url_ecoin = "http://www.hanbit.co.kr/myhanbit/myhanbit.html"
+response_ecoin = session.get(url_ecoin)
+response_ecoin.raise_for_status()
+BeautifulSoup(response_ecoin.text, "html.parser")
+# class mileage_section2, descendant tag span
+text_ecoin = soup.select_one(".mileage_section2 span").get_text()
+print("your e-coin : ", text_ecoin)
 </xmp>
    </BODY>
 </HTML>
