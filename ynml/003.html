@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$','$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,74 +46,79 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-003. Basic of GET request<br/><br/>
-@<br/>
-# When you scrap online site, you need to know how the server is composed<br/>
-# It's actually huge quantity of contents of server<br/>
-# So, let's just inspect GET method from server technology<br/>
-<br/>
-# When you request, there will be "request method", "target of request", "addtional information"<br/>
-<br/>
-@<br/>
-# https://www.google.com/xxx?cid=33<br/>
-# request method : GET, POST, PUT, DELETE, PATCH<br/>
-# target of request : https://www.google.com<br/>
-# name of host : www.google.com<br/>
-# addtional information<br/>
-# 1. path : xxx<br/>
-# 1. appointing data: ?cid=33<br/>
-<br/>
-@<br/>
-# https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&<br/>query=%EC%B4%88%EC%BD%9C%EB%A6%BF<br/>
-# request method : GET<br/>
-# target of request : https://search.naver.com<br/>
-# name of host : search.naver.com<br/>
-# addtional information<br/>
-# 1. path : search.naver<br/>
-# 1. appointing 5 data(querystring): ?where=nexearch & sm=top_hty & fbm=0 & ie=utf8 & <br/>query=%EC%B4%88%EC%BD%9C%EB%A6%BF<br/>
-<br/>
-@<br/>
-# %EC%B4%88%EC%BD%9C%EB%A6%BF is encoded characters<br/>
-# When %EC%B4%88%EC%BD%9C%EB%A6%BF is decoded, it becomes 초콜릿<br/>
-<br/>
-@<br/>
-import urllib.request<br/>
-import urllib.parse<br/>
-# https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&<br/>query=%EC%B4%88%EC%BD%9C%EB%A6%BF<br/>
-api = "https://search.naver.com/search.naver"<br/>
-values = <br/>
-{<br/>
-    "where" : "nexearch",<br/>
-    "sm" : "top_hty",<br/>
-    "fbm" : "0",<br/>
-    "ie" : "utf8",<br/>
-    "query" : "초콜릿"<br/>
-} <br/>
-<br/>
-# The reason that I imported "urllib.parse" is that I should encode characters in values<br/>
-params = urllib.parse.urlencode(values)<br/>
-<br/>
-@<br/>
-# Now, I configure complete "url" by adding "?" and send a request<br/>
-url = api + "?" + params<br/>
-<br/>
-@<br/>
-# I input "url" and read that site and grab data<br/>
-data = urllib.request.urlopen(url).read()<br/>
-print(data)<br/>
-<br/>
-@<br/>
-# b' means that this data is binary format<br/>
-<br/>
-@<br/>
-# I want to convert binary format to text format<br/>
-# I want convert binary format data to "utf-8" by using decode()<br/>
-# If you have an issue with utf-8, when you decode binary format korean web page to text, try <br/>"euc-kr"<br/>
-text = data.decode("utf-8")<br/>
-pritn(text)<br/>
-# Now, you can see Korean languae in output<br/>
+003. basic of "GET request"
+<xmp>
+@
+download-png1.py
 
-     
+@
+import urllib.request
+import urllib.parse
+# https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%B4%88%EC%BD%9C%EB%A6%BF
+api = "https://search.naver.com/search.naver"
+values = {
+    "where" : "nexearch",
+    "sm" : "top_hty",
+    "fbm" : "0",
+    "ie" : "utf8",
+    "query" : "초콜릿"
+} 
+
+# The reason that I imported "urllib.parse" is
+# that I should encode "values" object
+params = urllib.parse.urlencode(values)
+
+# Let's build full url
+url = api + "?" + params
+
+# I input "url" and read that site and collect data
+data = urllib.request.urlopen(url).read()
+print(data)
+
+# b' means that this data is binary format
+# I want to convert binary format to text format
+# I want convert binary format data into "utf-8" by using decode()
+# If you have issue with utf-8,
+# when you decode binary format korean web page into text,
+# try with "euc-kr" instead of "utf-8"
+text = data.decode("utf-8")
+pritn(text)
+# < Now, you can see Korean languae in output
+
+
+
+
+@
+# When you scrap web site, you need to know how server is composed
+# Since contents of server technology is huge,
+# let's just inspect "GET request" of server technology
+
+# When you request,
+# you give "request method", "target of request", "addtional information"
+
+@
+# https://www.google.com/xxx?cid=33
+# request method : GET(POST, PUT, DELETE, PATCH)
+# target of request : https://www.google.com
+# name of host : www.google.com
+# addtional information
+# 1. path : xxx
+# 1. querystring appointing data: ?cid=33
+
+@
+# https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%B4%88%EC%BD%9C%EB%A6%BF
+# request method : GET
+# target of request : https://search.naver.com
+# name of host : search.naver.com
+# addtional information
+# 1. path : search.naver
+# 1. appointing 5 data(querystring): 
+# ? where=nexearch & sm=top_hty & fbm=0 & ie=utf8 & query=%EC%B4%88%EC%BD%9C%EB%A6%BF
+
+@
+# %EC%B4%88%EC%BD%9C%EB%A6%BF is encoded characters
+# When %EC%B4%88%EC%BD%9C%EB%A6%BF is decoded, it becomes 초콜릿   
+</xmp>
 
    </BODY>
 </HTML>
