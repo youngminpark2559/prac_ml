@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,17 +46,17 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-010. Basic of JSON and parsing<br/>
+010. json, json.loads(), json.dumps()
 <xmp>
-@
-# JSON is the method which is used to express object in JavaScript
-# Actually it's different between the method of expressing object with JSON and the method of expressing object with JavaScript
-# But it's fair to say it's similar them
+# @
+# JSON is way which is used to express object in JavaScript
+# Actually it's different between way of expressing object with JSON and way of expressing object with JavaScript
+# Way of expressing object with JSON is similar to python's way
 
-@
+# @
 # Data types which can be used in JSON are 6
 # 1. numerics : 10, 12
-# 1. sequence of characters : "hello"
+# 1. string : "hello"
 # 1. boolean : true, false
 # 1. null : null
 # 1. array : [10, "hello", true, null]
@@ -66,63 +66,55 @@ MathJax.Hub.Config({
 #     "key2" : "hello",
 #     "key3" : true,
 #     "key4" : [12, "hello2"],
-#     "key4" : 
+#     "key5" : 
 #     {
-#         "key" : "hello3"
+#         "key6" : "hello3"
 #     }
 # }
 
+import json
+import urllib.request as request
 
-@
-# The most general formation of JSON is array or object are located outter area because sending simple word, number can be processed by ordinal data form without JSON
-json_str = 
-"""
-[
+# @
+# The most general form of JSON is array or object are located outter area
+# because sending simple sing or number can be processed by ordinal data type without JSON
+json_str = """[
     {"name" : "apple", "price" : 1000},
     {"name" : "banana", "price" : 2000},
     {"name" : "pear", "price" : 3000},
     {"name" : "orange", "price" : 4000},
     {"name" : "prune", "price" : 5000}
-]
-"""
+]"""
 
-@
-import json
-
-# If you want to convert external sequence of characters into data type of python
-# you can you json.load() when you load one value and json.loads() when you load multiple values
+# @
+# If you want to convert external string into python data type,
+# you can you json.load()
+# you use json.load() when you load one value
+# you use json.loads() when you load multiple values, which is used in most cases
 
 # output is python data type
 output = json.loads(json_str)
 print(output)
 print(type(output))
-# class 'list'
+# # class 'list'
+print('')
 
-print()
-# If you want to convert data type of python into external sequence of characters(JSON)
-# you can you json.dump() when you dump one value and json.dumps() when you dump multiple values
+# If you want to convert python data type into external JSON string
+# you can you json.dump() when you dump one value
+# you can you json.dump() json.dumps() when you dump multiple values
 
 # text is JSON data type
 text = json.dumps(output)
 print(text)
 print(type(text))
-# class 'str'
+# # class 'str'
 
-@
-# I will try to scrap web data
+# @
 # go to api.github.com/repositories
-
-# You can see most outter area starts with squared bracket
-# And you can see many groups wrapped by curly bracket, representing each repository
-
-@
-import urllib.request as request
-import json
-
-json_str = request.urlopen("https://api.github.com/repositories").read()
-output = json.loads(json_str)
-print(output)
-print(type(output))
+jsonStrForGithub = request.urlopen("https://api.github.com/repositories").read()
+outputOfGithub = json.loads(jsonStrForGithub)
+print(outputOfGithub)
+print(type(outputOfGithub))
 # class 'list'
 
 for item in output:
@@ -132,9 +124,10 @@ for item in output:
     print(item["owner"]["login"])
     print()
 
-@
-# It's also useful when you scrap web data, to convert them into JSON string
-# Then, you can use converted JSON string in various ways, so it's recommneded to remember "json.dumps()"
+# @
+# It's also useful, when you scrap web data, to convert them into JSON string
+# Then, you can use converted JSON string in various ways,
+# so it's recommneded to also remember "json.dumps()"
     
 </xmp>
    </BODY>
