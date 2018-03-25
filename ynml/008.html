@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,114 +46,100 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-008. Applying PhantomJS and Selenium<br/>
+008. using phantomjs and selenium, login, bring email data
 <xmp>
-@
+# @
+# docker run -i -t -v /c/users/yourname/sample:/sample -e ko_KR.UTF-8 -e PYTHONIOENCODING=utf_8 ubuntu-phantomjs /bin/bash
+# cd /sample/
+
+# @
+# test.py
+
 from selenium import webdriver
 
 url = "http://www.xxx.com/"
 
-# You create an instance of PhantomJS, which means you create a web browser
+# You create instance of phantomjs,
+# which means you created one web browser
 browser = webdriver.PhantomJS()
-# There is a bug in PhantomJS so you should wait almost 3 second at initial time
+# There is bug in PhantomJS,
+# so you should wait almost 3 seconds at initial time of phantomjs
 browser.implicitly_wait(3)
-# You load url and open browser with that url by get()
+# You read url and open browser with that url
 browser.get(url)
+
 # You can add codes what you want to do here
 # For example, you can capture screen as image file
 browser.save_screenshot("website.png")
-# You can terminate browser by quit()
+
+# You can terminate browser
 browser.quit()
 
-@
-# This process is generating a web browser and analyzing that web browser, which mean we can scrap and analyze every stuff
+# python3 test.py
 
-# The only thing what we can't automatically pass with this method is contents protected by captcha
+# @
+# Since this way is generating web browser
+# and analyzing web page,
+# which mean we can collect and analyze everything
 
-@
-# I will try to log in by PhantomJS
+# The only thing what we can't automatically pass with this way
+# is contents protected by captcha
 
-from selenium import webdriver
+# @
+# I will login by phantomjs
+url_login = "http://nid.naver.com/nidlogin.login"
 
-url = "http://nid.naver.com/nidlogin.login"
+browser_login = webdriver.PhantomJS()
+browser_login.implicitly_wait(3)
 
-browser = webdriver.PhantomJS()
-browser.implicitly_wait(3)
-browser.get(url)
-browser.save_screenshot("website_B.png")
-browser.quit()
-
-@
-# Go to inspect page and inspect each tag for ID, password, login button
-from selenium import webdriver
-
-url = "http://nid.naver.com/nidlogin.login"
-
-browser = webdriver.PhantomJS()
-browser.implicitly_wait(3)
-
-browser.get(url)
-# text input box for id=id
-element_id = browser.find_element_by_id("id")
-# You clear text box first before inputting id
+browser_login.get(url_login)
+# browser_login.save_screenshot("website_B.png")
+# I get id text input box element
+element_id = browser_find_element_by_id("id")
+# After finding element, you clear text box
 element_id.clear()
 element_id.send_keys("yourid")
-
-# text input box for id=pw
-element_pw = browser.find_element_by_id("pw")
+# I get pw text input box element
+element_pw = browser_find_element_by_id("pw")
 element_pw.clear()
 element_pw.send_keys("yourpassword")
-
-browser.save_screenshot("website_C.png")
-
-# Now, you should press login button
-# But this tag has no id so you should use css selector to bring the button instance
-button = browser.find_element_by_css_selector("input.btn_global[type=submit]")
+# You can check by screenshot
+# browser_login.save_screenshot("website_C.png")
+# tag input and class="btn_global" and type="submit"
+button_login = browser.find_element_by_css_selector("input.btn_global[type=submit]")
 # You press button
-button.submit()
+button_login.submit()
 
-browser.quit()
+browser_login.quit()
 
-@
-# The thing which waits a second and shows contents via JavaScript should be processed by selenium, PhantomJS because it can't be brought by ordinal accessing
 
-@
+# @
 # Let's try grab contents of email
-
-# from selenium import webdriver
-
-# url = "http://nid.naver.com/nidlogin.login"
-
-# browser = webdriver.PhantomJS()
-# browser.implicitly_wait(3)
-
-# browser.get(url)
-
-# element_id = browser.find_element_by_id("id")
-# element_id.clear()
-# element_id.send_keys("yourid")
-
-# element_pw = browser.find_element_by_id("pw")
-# element_pw.clear()
-# element_pw.send_keys("yourpassword")
-
-# browser.save_screenshot("website_C.png")
-
-# button = browser.find_element_by_css_selector("input.btn_global[type=submit]")
-
-# button.submit()
-
 # Open mail page
-browser.get("https://mail.naver.com")
-browser.save_screenshot(website_D.png)
+url_emil = "https://mail.naver.com"
+
+browser_email = webdriver.PhantomJS()
+browser_email.implicitly_wait(3)
+# You open browser with specific web page
+browser_email.get(url_emil)
+
+element_id = browser_find_element_by_id("id")
+element_id.clear()
+element_id.send_keys("yourid")
+element_pw = browser_email_find_element_by_id("pw")
+element_pw.clear()
+element_pw.send_keys("yourpassword")
+button_login = browser_email.find_element_by_css_selector("input.btn_global[type=submit]")
+button_login.submit()
+
 # select mails in mail page
-titles = browser.find_elements_by_css_selector("string.mail_title")
+# tag strong and class="mail_title"
+titles = browser_email.find_elements_by_css_selector("strong.mail_title")
 # use for loop to display all titles of mails
 for title in titles:
     print("-", title.text)
-
-# browser.quit()
-
+    # < mail titles
+browser_email.quit()
 </xmp>
    </BODY>
 </HTML>
