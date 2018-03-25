@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,63 +46,77 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-009. Basic of XML and parsing<br/>
+009. xml, collecting weather data
 <xmp>
-@
-# Various kind of data type of web data
+# @
+# When people use html,
+# they think html pattern can express data structure
+# For that kind of purpose,
+# people made new standard for data structure based on html
 
-@
-# When people use html, they think html can express not only web page but also data structure
-# For that kind of purpose, people made new standard for data structure based on html
+# @
+# xml has opening tag and closing tag
+# We call "<tag>xxx</tag>" or "<tag xxx />" element
 
-@
-# XML has opening tag(<tag>) and closing tag(</tag>)
-# We call <tag>xx</tag> or <tag/> element
+# @
+# We call xxx "contents"
+# We call xxx "text" if it's composed of only characters
 
-@
-# We call "xxx" between element contents
-# We call "xxx" text if it's composed of only characters
+# @
+# <tag>
+#     <tag></tag>
+# </tag>
+# xxx can be other tags,
+# so in this case, we call other tags "contents"
 
-@
-# "xxx" can be other tags inside of tag, so in this case, we call it contents
-
-@
-# contents : everything between element(tag)
+# contents
 #     text
 
-@
-# attribute is written inside of angular bracket
-# <tag attribute1="value-of-attribute-regardless-of-number-or-string" attribute2="value-of-attribute-regardless-of-number-or-string">contents</tag>
-# <tag attribute1="value-of-attribute-regardless-of-number-or-string" attribute2="value-of-attribute-regardless-of-number-or-string" />
+# @
+# attribute
+# <tag attr1="100" attr2="string">contents</tag>
+# <tag attr1="val1" attr2="val2" />
+# value is always string type
 
-@
-# Rule is that root tag which is located in the most top under <?xml version...> is only one
+# @
+# Rule
+# root tag("<rss version="2.0">") which is located in the most top under <?xml version="1.0" encoding="UTF-8"?> should be only one
+# <?xml version="1.0" encoding="UTF-8"?>
+    # <rss version="2.0">
 
-@
-<wf>
-<![CDATA[xxxxxxxxx]]>
-</wf>
+# @
+# <wf>
+# <![CDATA[xxxxxxxxx]]>
+# </wf>
 
-# When you see xml, you can encounter CDATA
-# If you bring wf tag, you can bring text of xxxxx
-# CDATA is playing a role of protecting very long text, as a special tag
+# When you see xml code, you can encounter CDATA
+# If you bring value of wf's attribute, you can bring text of xxxxxxxxx
+# CDATA plays role of protecting long text, as special tag
+# You don't need to consider CDATA when collecting
 
-@
+# @
+# test.py
+
 from bs4 import BeautifulSoup
 import urllib.request
 
 url = "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=108"
 request = urllib.request.urlopen(url)
 xml = request.read()
+# print(xml)
 
 # I will use BeautifulSoup to encode and decode xml
-# There is xml.parser but it's almost no different with html.parser so I'll just use it for xml
+# There is xml.parser
+# but it's almost no different with html.parser
+# so I'll just use html.parser for parsing xml
 soup = BeautifulSoup(xml, "html.parser")
 
-# I bring the first element for seoul weather from location data
+# I bring first element for seoul weather
+# tag location[0]
 seoul = soup.find_all("location")[0]
+# print(seoul)
+# < This shows many days weather data of seoul
 datas = seoul.find_all("data")
-
 for item in datas:
     print(item.find("wf").text)
     
