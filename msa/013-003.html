@@ -1,0 +1,297 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+013-003. create train data for chatbot
+<xmp>
+# @
+# You can build data to create "intent" and "NER" model
+# You build each "entity" for "order pizza", "book house", "request trip information"
+# You should create DB for each "entity" in service
+# Each entity has text composed of n*n 
+# train_data_order : entity
+# '판교에 오늘 피자 주문해줘' : text data
+train_data_order = ['판교에 오늘 피자 주문해줘']
+train_data_reserve = ['오늘 날짜에 호텔 예약 해줄레']
+train_data_info = ['모래 날짜의 판교 여행 정보 알려줘']
+
+get_data_list = train_data_info[0]
+
+dict_entity = {
+    'date' : ['오늘','내일','모래'],
+    'loc' : ['판교','야탑'],
+    'menu' : ['피자','햄버거'],
+    'hotel' : ['호텔','여관','민박'],
+    'travel' : ['여행','관광','카페']
+}
+
+length = 1
+# 'date', 'loc', 'menu', 'hotel', 'travel
+for key in list(dict_entity.keys()):
+    # length = 1 * 3
+    length = length * len(dict_entity[key])
+print("Augmentation length is {0}".format(length))
+# Augmentation length is 108
+
+# @
+# Mophological analysis
+from konlpy.tag import Mecab
+# I create Mecab instance
+mecab = Mecab('/usr/local/lib/mecab/dic/mecab-ko-dic')
+# I perform 'mecab pos' on '모래 날짜의 판교 여행 정보 알려줘'
+morpphed_text = mecab.pos(get_data_list)
+print(morpphed_text)
+# [('모래', 'NNG'), ('날짜', 'NNG'), ('의', 'JKG'), ('판교', 'NNG'), ('여행', 'NNG'), ('정보', 'NNG'), ('알려줘', 'VV+EC+VX+EC')]
+
+# @
+# Feature engineering for extracting nouns
+# Precision of "intent" and "NER" is increased via feature engineering
+
+# General noun(NNG) [메뉴]
+# Proper noun(NNP) [지역]
+# English(SL) [Pizza]
+# Time adverb(MAG) [오늘, 내일, 모래]
+# Korean "POS tag" comparison table
+# https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0
+
+# This is holder for tagged_text
+tagged_text = ''
+# [('모래', 'NNG'), ('날짜', 'NNG'), ('의', 'JKG'), ('판교', 'NNG'), ('여행', 'NNG'), ('정보', 'NNG'), ('알려줘', 'VV+EC+VX+EC')]
+for pos_tags in morpphed_text:
+    # Check only noun
+    # 'NNG', 모래
+    if (pos_tags[1] in ['NNG','MAG', 'NNP','SL'] and len(pos_tags[0]) > 1): 
+        # feature_value = 모래
+        feature_value = pos_tags[0]
+        # tagged_text = '' + 모래 + ' '
+        tagged_text = tagged_text + pos_tags[0] + ' '
+print(tagged_text)
+# < 모래 날짜 판교 여행 정보
+
+# @
+# Structure of train data for 'intenet'
+# You make parsed Text Data "respresent" for increasing performance of 'intent'
+# This is holder for pattern
+pattern = ''
+# 모래 날짜 판교 여행 정보
+for word in tagged_text.split(' '):
+    # 모래
+    entity = list(filter(lambda key:word in dict_entity[key], list(dict_entity.keys())))
+    if(len(entity) > 0):
+        # pattern = '' + tag + date + ' '
+        pattern = pattern + 'tag' + entity[0] + ' '
+    else:
+        # pattern = '' + 모래
+        pattern = pattern + word + ' '
+print(pattern)
+# < tagdate 날짜 tagloc tagtravel 정보  
+
+# @
+# Data augmentation (Entity and Pattern)
+# I augment pattern text of each intent as entity composed of n*n
+# pattern : tagdate 날짜 tagloc tagtravel 정보
+# dict_entity : 
+# dict_entity = {
+#     'date' : ['오늘','내일','모래'],
+#     'loc' : ['판교','야탑'],
+#     'menu' : ['피자','햄버거'd
+#     'hotel' : ['호텔','여관','민박'],
+#     'travel' : ['여행','관광','카페']
+# }
+def augmentation_pattern(pattern, dict_entity):
+    # I convert 'tagdate 날짜 tagloc tagtravel 정보' into list [tagdate, 날짜, tagloc, tagtravel, 정보]
+    aug_pattern = pattern.split(' ')
+    augmented_text_list = []
+    temp_aug = []
+    # 0 to 5
+    for i in range(0,len(aug_pattern)):
+        # tagdate
+        if(aug_pattern[i].find("tag") > -1):
+            # tagdate -> date
+            # dict_list = dict_entity[date]
+            # dict_list = ['오늘','내일','모래']
+            dict_list = dict_entity[aug_pattern[i].replace("tag","")]
+            # 0 to 3
+            for j in range(0, len(dict_list)):
+                # 최초 Entity값은 그냥 추가만함
+                if(i == 0):
+                    augmented_text_list.append(dict_list[j] + " ")
+                elif(j == 1):
+                    augmented_text_list = list(filter(lambda word:len(word.split(' ')) == i + 1 ,augmented_text_list))
+                    copy_data_order = augmented_text_list * (len(dict_list)-2)
+                    augmented_text_list = list(map(lambda x:x + dict_list[j] + " ",augmented_text_list))
+                    augmented_text_list = augmented_text_list + temp_aug + copy_data_order
+                else:
+                    # I add value as I'm countinig number
+                    temp_aug = list(filter(lambda word:len(word.split(' ')) == i+1 ,augmented_text_list))
+                    temp_aug = list(map(lambda x:x + dict_list[j] + " " ,temp_aug))
+                    # I delete existing value for newly added list
+                    if(j != 0):
+                        augmented_text_list = augmented_text_list[0:len(augmented_text_list) - len(temp_aug)]
+                    augmented_text_list = augmented_text_list + temp_aug
+        # I added only pattern if it's not object for entity addition
+        else:
+            augmented_text_list = list(map(lambda x:x + aug_pattern[i] + " ",augmented_text_list))
+        # This is list to make n*n
+        temp_aug = augmented_text_list
+    return augmented_text_list
+augmented_text_list = augmentation_pattern(pattern, dict_entity)
+print(augmented_text_list)
+# ['오늘 날짜 야탑 관광 정보   ',
+#  '내일 날짜 야탑 관광 정보   ',
+#  '모래 날짜 야탑 관광 정보   ',
+#  '오늘 날짜 판교 관광 정보   ',
+#  '내일 날짜 판교 관광 정보   ',
+#  '모래 날짜 판교 관광 정보   ',
+#  '오늘 날짜 야탑 여행 정보   ',
+#  '내일 날짜 야탑 여행 정보   ',
+#  '모래 날짜 야탑 여행 정보   ',
+#  '오늘 날짜 판교 여행 정보   ',
+#  '내일 날짜 판교 여행 정보   ',
+#  '모래 날짜 판교 여행 정보   ',
+#  '오늘 날짜 야탑 카페 정보   ',
+#  '내일 날짜 야탑 카페 정보   ',
+#  '모래 날짜 야탑 카페 정보   ',
+#  '오늘 날짜 판교 카페 정보   ',
+#  '내일 날짜 판교 카페 정보   ',
+#  '모래 날짜 판교 카페 정보   ']
+
+
+# BIO Tagging
+def augmentation_bio_pattern(pattern, dict_entity):
+    aug_pattern = pattern.split(' ')
+    augmented_text_list = []
+    temp_aug = []
+    for i in range(0,len(aug_pattern)):
+        if(aug_pattern[i].find("tag") > -1):
+            dict_list = dict_entity[aug_pattern[i].replace("tag","")]
+            bio_tag = aug_pattern[i].replace("tag","B_")
+            for j in range(0,len(dict_list)):
+                if(i == 0):
+                    augmented_text_list.append(bio_tag + " ")
+                elif(j == 1):
+                    augmented_text_list = list(filter(lambda word:len(word.split(' ')) == i + 1 ,augmented_text_list))
+                    copy_data_order = augmented_text_list * (len(dict_list)-2)
+                    augmented_text_list = list(map(lambda x:x + bio_tag + " ",augmented_text_list))
+                    augmented_text_list = augmented_text_list + temp_aug + copy_data_order
+                else:
+                    temp_aug = list(filter(lambda word:len(word.split(' ')) == i+1 ,augmented_text_list))
+                    temp_aug = list(map(lambda x:x + bio_tag + " " ,temp_aug))
+                    if(j != 0):
+                        augmented_text_list = augmented_text_list[0:len(augmented_text_list) - len(temp_aug)]
+                    augmented_text_list = augmented_text_list + temp_aug
+        else:
+            augmented_text_list = list(map(lambda x:x + aug_pattern[i] + " ",augmented_text_list))
+        temp_aug = augmented_text_list
+    return augmented_text_list
+bio_list = augmentation_bio_pattern(pattern, dict_entity)
+print(bio_list)
+# ['B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ',
+#  'B_date 날짜 B_loc B_travel 정보   ']
+
+# @
+# I obtain 'full train text' for NER
+# I convert 'tag entity' into 'Labeled Entity' for training NER (for training by Bi-LSTM)
+ner_train_text = [augmented_text_list, bio_list]
+print(ner_train_text)
+# [['오늘 날짜 야탑 관광 정보   ',
+#   '내일 날짜 야탑 관광 정보   ',
+#   '모래 날짜 야탑 관광 정보   ',
+#   '오늘 날짜 판교 관광 정보   ',
+#   '내일 날짜 판교 관광 정보   ',
+#   '모래 날짜 판교 관광 정보   ',
+#   '오늘 날짜 야탑 여행 정보   ',
+#   '내일 날짜 야탑 여행 정보   ',
+#   '모래 날짜 야탑 여행 정보   ',
+#   '오늘 날짜 판교 여행 정보   ',
+#   '내일 날짜 판교 여행 정보   ',
+#   '모래 날짜 판교 여행 정보   ',
+#   '오늘 날짜 야탑 카페 정보   ',
+#   '내일 날짜 야탑 카페 정보   ',
+#   '모래 날짜 야탑 카페 정보   ',
+#   '오늘 날짜 판교 카페 정보   ',
+#   '내일 날짜 판교 카페 정보   ',
+#   '모래 날짜 판교 카페 정보   '],
+#  ['B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ',
+#   'B_date 날짜 B_loc B_travel 정보   ']]
+# I can train algorithm for obtaining 'intent' and 'NER' model, based on above data
+
+      </xmp>
+   </BODY>
+</HTML>
