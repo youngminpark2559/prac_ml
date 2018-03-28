@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+nlpperceptron-TjAUahEVyKw
+<xmp>
+# @
+# Original text: https://mlwave.com/online-learning-perceptron/
+# Its code:
+# https://github.com/MLWave/online-learning-perceptron
+# https://github.com/MLWave/online-learning-perceptron/blob/master/perceptron.py
+
+# @
+# Corresponding paper: https://link.springer.com/article/10.1007%2FBF02478259
+
+# @
+# Online Learning Perceptron algorithm in Python is implemented by using standard libraries of python
+# So, script is executed in PyPy with 3-4 times speed without numpy, scikit-learn, pandas, etc
+# This algorithm was inspired by 'online logistic regression script' from 'display advertising challenge'
+# Display Advertising Challenge - Kaggle, Beat the benchmark with less then 200MB of memory.
+# Code : https://kaggle2.blob.core.windows.net/forum-message-attachments/53646/1539/fast_solution.py
+
+# @
+# Perceptron can use online learning algorithm which means perceptron learns via one sample per each moment
+# That means model doesn't need entire dataset(out-of-core algorithm)
+# So, this way is beneficial for larger dataset like predicting stock or timeseries data
+# Example is Vowpal Wabbit (Fast Learning)
+
+# @
+# Hashing Representations
+# Vectorized hashing trick started from 'Vopal Webbit'
+# This trick sets fixed number of size whose size is the number of connection input into perceptron
+# So, this trick hashes all primitive feature into number under fixed size(fixed_size = 1024)
+# Vowpal Wabbit doesn't read all data at once into memory
+# So, it can train model in high speed
+
+# @
+sample = "This movie sucks"
+fixed_size = 1024
+
+print(sample.split())
+
+features = [(hash(f)%fixed_size,1) for f in sample.split()]
+
+# list of tuples in form (feature_index,feature_value)
+print(features)
+# < ['This', 'movie', 'sucks']
+# < [(746, 1), (981, 1), (282, 1)]
+
+# @
+# Progressive test loss
+# If model trains sample one by one, it gradually makes train loss smaller
+# Model predicts with first sample not target
+# Then, it calculates error rate by comparing prediction and corresponding label
+
+
+# @
+# If you use Vowpal Wabbit, you can pass dataset with low learning rate into model multiple times
+
+# @
+# opts["D"] 여기에 있는 코드에서는 고정 값으로 다음의 값을 사용한다.
+# 2 ** 25
+# 33554432
+
+# @
+# https://github.com/MLWave/online-learning-perceptron
+
+import re
+import random
+from math import exp, log
+from datetime import datetime
+from operator import itemgetter
+
+def clean(s):
+    """
+        Returns a cleaned, lowercased string
+    """
+    return " ".join(re.findall(r'\w+', s, flags = re.UNICODE)).lower()
+
+
+def get_data_tsv(loc_dataset,opts):
+    """
+    Running through data in an online manner
+    Parses a tsv file for this competition 
+    and yields label, identifier and features
+    output:
+            label: int, The label / target (set to "1" if test set)
+            id: string, the sample identifier
+            features: list of tuples, 
+                in the form [(hashed_feature_index,feature_value)]
+    """
+    # Read file
+    for e, line in enumerate(open(loc_dataset,"rb")):
+        if e > 0:
+            r = line.decode('utf-8').strip().split("\t")
+            id = r[0]
+
+            if opts["clean"]:
+                try:
+                    r[2] = clean(r[2])
+                except:
+                    r[1] = clean(r[1])
+
+            # opts["D"] = 2 ** 25 = 33554432 = fixed size
+            # I use hashing trick of Vowpal Wabbit
+            if len(r) == 3: # train set
+                features = [(hash(f)%opts["D"],1) for f in r[2].split()]
+                label = int(r[1])
+            else: #test set
+                features = [(hash(f)%opts["D"],1) for f in r[1].split()]
+                label = 1
+            
+            # If you use bigram, you hash both corresponding feature[i] and its next feature[i+1]
+            if opts["2grams"]:
+                for i in range(len(features)-1):
+                    features.append(
+                        (hash(str(features[i][0])+str(features[i+1][0]))%opts["D"],1))
+            yield label, id, features
+
+# Vector inner product between features and weights
+def dot_product(features,weights):
+    """
+    Calculate dot product from features and weights
+    input:
+            features: A list of tuples [(feature_index,feature_value)]
+            weights: the hashing trick weights filter, 
+            note: length is max(feature_index)
+    output:
+            dotp: the dot product
+    """
+    dotp = 0
+    for f in features:
+        dotp += weights[f[0]] * f[1]
+    return dotp
+
+# Train with train dataset
+def train_tron(loc_dataset,opts):
+    # Starting time of test
+    start = datetime.now()
+    print("\nPass\t\tErrors\t\tAverage\t\tNr. Samples\tSince Start")
+
+    # Initialize weight
+    if opts["random_init"]:
+        random.seed(3003)
+        weights = [random.random()] * opts["D"]
+    else:
+        weights = [0.] * opts["D"]
+
+    # Running training passes
+    # n_passes: the number of training
+    for pass_nr in range(opts["n_passes"]):
+        error_counter = 0
+        
+        for e, (label, id, features) in enumerate( \
+            get_data_tsv(loc_dataset,opts) ):
+            
+            # Perceptron is one of supervised learning classifiers
+            # This learns from previous value and then predicts
+            # 0.5: critical value
+            dp = dot_product(features, weights) > 0.5
+            
+            # dp: perceptron predicts
+            # label: answer from dataset
+            # weights[feature_index] += learning_rate * error * feature_value
+            error = label - dp 
+
+            # If prediction is false, perceptron updates weight
+            if error != 0:
+                error_counter += 1
+                # Updating the weights
+                for index, value in features:
+                    weights[index] += opts["learning_rate"] * error * log(1.+value)
+
+        #Reporting
+        print("%s\t\t%s\t\t%s\t\t%s\t\t%s" % ( \
+            pass_nr+1,
+            error_counter,
+            round(1 - error_counter /float(e+1),5),
+            e+1,datetime.now()-start))
+
+        # Perceptron stops training when error_counter == 0 and overfitting 
+        if error_counter == 0 or error_counter < opts["errors_satisfied"]:
+            print("%s errors found during training, halting"%error_counter)
+            break
+    return weights
+
+# This method predicts based on learnt data from above
+def test_tron(loc_dataset,weights,opts):
+    """
+        output:
+                preds: list, a list with
+                [id,prediction,dotproduct,0-1normalized dotproduct]
+    """
+    start = datetime.now()
+    print("\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start")
+    preds = []
+    error_counter = 0
+    # test data doesn't have label, so, label should be initialized by 1
+    for e, (label, id, features) in enumerate( \
+        # Load tsv data
+        get_data_tsv(loc_dataset,opts) ):
+        # Calculate inner product
+        dotp = dot_product(features, weights)
+        dp = dotp > 0.5
+        if dp > 0.5: # we predict positive class
+            preds.append( [id, 1, dotp ] )
+        else:
+            preds.append( [id, 0, dotp ] )
+        
+        if label - dp != 0:
+            error_counter += 1
+
+    print("%s\t\t%s\t\t%s\t\t%s" % (
+        error_counter,
+        round(1 - error_counter /float(e+1),5),
+        e+1,
+        datetime.now()-start))
+
+    # normalizing dotproducts into between 0 and 1 
+    # TODO: proper probability (bounded sigmoid?), 
+    # online normalization
+    max_dotp = max(preds,key=itemgetter(2))[2]
+    min_dotp = min(preds,key=itemgetter(2))[2]
+    for p in preds:
+        # appending normalized value into predictions
+        p.append((p[2]-min_dotp)/float(max_dotp-min_dotp)) 
+        
+    #Reporting stuff
+    print("Done testing in %s"%str(datetime.now()-start))
+    return preds
+
+#Setting options
+opts = {}
+# Fixed value for hashing
+opts["D"] = 2 ** 25
+opts["learning_rate"] = 0.1
+# Maximum number of passes to run before halting
+opts["n_passes"] = 80 
+# Halt when training errors < errors_satisfied
+opts["errors_satisfied"] = 0
+# set random weights, else set all 0 
+opts["random_init"] = False 
+# clean the text a little
+opts["clean"] = True 
+# add 2grams
+opts["2grams"] = True 
+
+# training and saving model into weights
+# %time weights = train_tron("data/labeledTrainData.tsv",opts)
+# Pass		Errors		Average		Nr. Samples	Since Start
+# 1		5648		0.77408		25000		0:00:19.187437
+# 2		3161		0.87356		25000		0:00:38.114154
+# 3		2218		0.91128		25000		0:00:57.910578
+# 4		1643		0.93428		25000		0:01:13.906263
+# 5		1254		0.94984		25000		0:01:29.959013
+# 6		1038		0.95848		25000		0:01:44.738919
+# 7		805		0.9678		25000		0:01:59.575742
+# 8		579		0.97684		25000		0:02:14.277759
+# 9		513		0.97948		25000		0:02:29.356437
+# 10		464		0.98144		25000		0:02:44.361049
+# 11		367		0.98532		25000		0:02:59.225589
+# 12		363		0.98548		25000		0:03:19.239056
+# 13		231		0.99076		25000		0:03:35.903281
+# 14		203		0.99188		25000		0:03:53.428992
+# 15		160		0.9936		25000		0:04:08.202330
+# 16		163		0.99348		25000		0:04:27.039214
+# 17		144		0.99424		25000		0:04:43.598832
+# 18		168		0.99328		25000		0:04:59.653083
+# 19		99		0.99604		25000		0:05:16.492206
+# 20		98		0.99608		25000		0:05:31.565497
+# 21		127		0.99492		25000		0:05:46.293131
+# 22		81		0.99676		25000		0:06:01.460219
+# 23		73		0.99708		25000		0:06:17.186924
+# 24		92		0.99632		25000		0:06:33.383587
+# 25		96		0.99616		25000		0:06:50.064784
+# 26		82		0.99672		25000		0:07:06.048313
+# 27		41		0.99836		25000		0:07:21.237198
+# 28		84		0.99664		25000		0:07:36.076427
+# 29		75		0.997		25000		0:07:52.291855
+# 30		66		0.99736		25000		0:08:08.568775
+# 31		20		0.9992		25000		0:08:25.085804
+# 32		27		0.99892		25000		0:08:41.198909
+# 33		7		0.99972		25000		0:08:57.871054
+# 34		46		0.99816		25000		0:09:13.094634
+# 35		23		0.99908		25000		0:09:27.876432
+# 36		7		0.99972		25000		0:09:42.681918
+# 37		61		0.99756		25000		0:09:57.770814
+# 38		7		0.99972		25000		0:10:15.091846
+# 39		0		1.0		25000		0:10:30.445496
+# 0 errors found during training, halting
+# CPU times: user 10min 17s, sys: 3.64 s, total: 10min 21s
+# Wall time: 10min 30s
+
+
+# testing and saving predictions into preds
+# I pass learnt data(weights) from above and option to predict
+%time preds = test_tron("data/testData.tsv",weights,opts)
+# Testing online
+# Errors		Average		Nr. Samples	Since Start
+# 12731		0.49076		25000		0:00:17.228997
+# Done testing in 0:00:17.255413
+# CPU times: user 16.7 s, sys: 143 ms, total: 16.9 s
+# Wall time: 17.3 s
+
+preds[:10]
+# [['"12311_10"', 1, 77.70179894076985, 0.6557850948318409],
+#  ['"8348_2"', 0, -99.60524984646412, 0.4754283296904748],
+#  ['"5828_4"', 0, -0.2079441541680142, 0.5765352887259396],
+#  ['"7186_2"', 0, -3.2577917486317594, 0.5734329831488402],
+#  ['"12128_7"', 1, 22.66591280431018, 0.5998025805541847],
+#  ['"2913_8"', 1, 68.48294143932256, 0.6464076711556087],
+#  ['"4396_1"', 0, -36.2515975432851, 0.5398716773602201],
+#  ['"395_2"', 0, -1.3169796430639447, 0.5754071776069943],
+#  ['"10616_1"', 0, -87.47517418666499, 0.48776704505393825],
+#  ['"9074_9"', 0, -23.497689420982187, 0.5528449552280901]]
+
+
+# writing kaggle submission file
+with open("data/submit_perceptron.csv","wb") as outfile:
+    outfile.write('"id","sentiment"\n'.encode('utf-8'))
+    for p in sorted(preds):
+        outfile.write("{},{}\n".format(p[0],p[3]).encode('utf-8'))
+# Score: 0.95338
+# 129/578
+# 0.2231833910034602
+
+
+
+import pandas as pd
+
+presult = pd.DataFrame(preds)
+presult.head()
+# <             0  	1	        2          3
+# < 0	"12311_10"	1	77.701799	0.655785
+# < 1	"8348_2"	0	-99.605250	0.475428
+# < 2	"5828_4"	0	-0.207944	0.576535
+# < 3	"7186_2"	0	-3.257792	0.573433
+# < 4	"12128_7"	1	22.665913	0.599803
+output_sentiment = presult[1].value_counts()
+print(output_sentiment[0] - output_sentiment[1])
+# output_sentiment
+# 462
+# 0    12731
+# 1    12269
+# Name: 1, dtype: int64
+</xmp>
+   </BODY>
+</HTML>
