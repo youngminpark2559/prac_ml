@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+# googleColaboratory2-UKujX90xLHo. using keras in colaboratory
+<xmp>
+# @
+# You can use gpu in colaboratory for keras
+# ref: https://keras.io/utils/#multi_gpu_model
+
+# @
+# Memory infomation
+!cat /proc/meminfo
+# MemTotal:       13341960 kB
+# MemFree:         8533256 kB
+# MemAvailable:   12413480 kB
+# Buffers:          592664 kB
+# Cached:          3106704 kB
+# SwapCached:            0 kB
+# Active:          2154112 kB
+# Inactive:        1833004 kB
+# Active(anon):     457024 kB
+# Inactive(anon):   114432 kB
+# Active(file):    1697088 kB
+# Inactive(file):  1718572 kB
+# Unevictable:           0 kB
+# Mlocked:               0 kB
+# SwapTotal:             0 kB
+# SwapFree:              0 kB
+# Dirty:               380 kB
+# Writeback:             0 kB
+# AnonPages:        287764 kB
+# Mapped:           164784 kB
+# Shmem:            283716 kB
+# Slab:             746368 kB
+# SReclaimable:     717980 kB
+# SUnreclaim:        28388 kB
+# KernelStack:        3184 kB
+# PageTables:         4448 kB
+# NFS_Unstable:          0 kB
+# Bounce:                0 kB
+# WritebackTmp:          0 kB
+# CommitLimit:     6670980 kB
+# Committed_AS:    1548724 kB
+# VmallocTotal:   34359738367 kB
+# VmallocUsed:           0 kB
+# VmallocChunk:          0 kB
+# AnonHugePages:         0 kB
+# HugePages_Total:       0
+# HugePages_Free:        0
+# HugePages_Rsvd:        0
+# HugePages_Surp:        0
+# Hugepagesize:       2048 kB
+# DirectMap4k:      384972 kB
+# DirectMap2M:    10100736 kB
+# DirectMap1G:     5242880 kB
+
+!cat /proc/cpuinfo
+# processor	: 0
+# vendor_id	: GenuineIntel
+# cpu family	: 6
+# model		: 63
+# model name	: Intel(R) Xeon(R) CPU @ 2.30GHz
+# stepping	: 0
+# microcode	: 0x1
+# cpu MHz		: 2300.000
+# cache size	: 46080 KB
+# physical id	: 0
+# siblings	: 2
+# core id		: 0
+# cpu cores	: 1
+# apicid		: 0
+# initial apicid	: 0
+# fpu		: yes
+# fpu_exception	: yes
+# cpuid level	: 13
+# wp		: yes
+# flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms xsaveopt
+# bugs		:
+# bogomips	: 4600.00
+# clflush size	: 64
+# cache_alignment	: 64
+# address sizes	: 46 bits physical, 48 bits virtual
+# power management:
+
+# processor	: 1
+# vendor_id	: GenuineIntel
+# cpu family	: 6
+# model		: 63
+# model name	: Intel(R) Xeon(R) CPU @ 2.30GHz
+# stepping	: 0
+# microcode	: 0x1
+# cpu MHz		: 2300.000
+# cache size	: 46080 KB
+# physical id	: 0
+# siblings	: 2
+# core id		: 0
+# cpu cores	: 1
+# apicid		: 1
+# initial apicid	: 1
+# fpu		: yes
+# fpu_exception	: yes
+# cpuid level	: 13
+# wp		: yes
+# flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms xsaveopt
+# bugs		:
+# bogomips	: 4600.00
+# clflush size	: 64
+# cache_alignment	: 64
+# address sizes	: 46 bits physical, 48 bits virtual
+# power management:
+
+
+# https://keras.io/
+# install and import keras
+!pip install -q keras
+import keras
+# Using TensorFlow as keras' backend.
+
+import tensorflow as tf
+from keras.applications import Xception
+from keras.utils import multi_gpu_model
+import numpy as np
+​
+num_samples = 100
+height = 71
+width = 71
+num_classes = 100
+
+# I first run model by cpu
+with tf.device('/cpu:0'):
+    model = Xception(weights=None,
+                     input_shape=(height, width, 3),
+                     classes=num_classes)
+​
+# We can't use 8 gpu in colaboratory
+# But if we use 1 gpu, it also triggers error with saying use over 2 gpu
+# In conclusion, we can't use multi_gpu_model of keras
+# We will replace this code with following code
+parallel_model = multi_gpu_model(model, gpus=1)
+parallel_model.compile(loss='categorical_crossentropy',
+                       optimizer='rmsprop')
+​
+# Generate dummy data.
+x = np.random.random((num_samples, height, width, 3))
+y = np.random.random((num_samples, num_classes))
+​
+# This `fit` call will be distributed on 8 GPUs.
+# Since the batch size is 256, each GPU will process 32 samples.
+parallel_model.fit(x, y, epochs=20, batch_size=256)
+​
+# Save model via the template model (which shares the same weights):
+model.save('my_model.h5')
+# ---------------------------------------------------------------------------
+# ValueError                                Traceback (most recent call last)
+# <ipython-input-6-4353c6d558e3> in <module>()
+#       6 # Replicates the model on 8 GPUs.
+#       7 # This assumes that your machine has 8 available GPUs.
+# ----> 8 parallel_model = multi_gpu_model(model, gpus=1)
+#       9 parallel_model.compile(loss='categorical_crossentropy',
+#       10                        optimizer='rmsprop')
+
+# /usr/local/lib/python3.6/dist-packages/keras/utils/training_utils.py in multi_gpu_model(model, gpus)
+#     121             raise ValueError('For multi-gpu usage to be effective, '
+#     122                              'call `multi_gpu_model` with `gpus >= 2`. '
+# --> 123                              'Received: `gpus=%d`' % gpus)
+#     124         num_gpus = gpus
+#     125         target_gpu_ids = range(num_gpus)
+
+# ValueError: For multi-gpu usage to be effective, call `multi_gpu_model` with `gpus >= 2`. Received: `gpus=1`
+
+
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+# < [name: "/device:CPU:0"
+# < device_type: "CPU"
+# < memory_limit: 268435456
+# < locality {
+# < }
+# < incarnation: 4221312434634366830
+# < , name: "/device:GPU:0"
+# < device_type: "GPU"
+# < memory_limit: 356515840
+# < locality {
+# <   bus_id: 1
+# < }
+# < incarnation: 11454811533186484289
+# < physical_device_desc: "device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7"
+# < ]
+
+import datetime
+
+# We will process same task with gpu​
+start = datetime.datetime.now()
+with tf.device('/gpu:0'):
+  model = Xception(weights=None,
+                   input_shape=(height, width, 3),
+                   classes=num_classes)
+  model.compile(loss='categorical_crossentropy',
+                     optimizer='rmsprop')
+​
+  # Generate dummy data.
+  x = np.random.random((num_samples, height, width, 3))
+  y = np.random.random((num_samples, num_classes))
+​
+  model.fit(x, y, epochs=3, batch_size=16)
+​
+  model.save('my_model.h5')
+  
+# < end = datetime.datetime.now()
+# < time_delta = end - start
+# < Epoch 1/3
+# < 100/100 [==============================] - 7s 66ms/step - loss: 235.2676
+# < Epoch 2/3
+# < 100/100 [==============================] - 1s 11ms/step - loss: 231.3431
+# < Epoch 3/3
+# < 100/100 [==============================] - 1s 11ms/step - loss: 228.3584
+
+# < print('Taking time: {} seconds'.format(time_delta.seconds))
+# < Taking time: 29 seconds
+
+
+# We will process same task with cpu
+start = datetime.datetime.now()
+with tf.device('/cpu:0'):
+  model = Xception(weights=None,
+                   input_shape=(height, width, 3),
+                   classes=num_classes)
+  model.compile(loss='categorical_crossentropy',
+                     optimizer='rmsprop')
+​
+  # Generate dummy data.
+  x = np.random.random((num_samples, height, width, 3))
+  y = np.random.random((num_samples, num_classes))
+​
+  model.fit(x, y, epochs=3, batch_size=16)
+​
+  model.save('my_model.h5')
+  
+  
+# < end = datetime.datetime.now()
+# < time_delta = end - start
+# < Epoch 1/3
+# < 100/100 [==============================] - 25s 248ms/step - loss: 271.1356
+# < Epoch 2/3
+# < 100/100 [==============================] - 19s 187ms/step - loss: 258.8897
+# < Epoch 3/3
+# < 100/100 [==============================] - 19s 186ms/step - loss: 247.9633
+
+# < print('Taking time: {} seconds'.format(time_delta.seconds))
+# < Taking time: 88 seconds
+
+</xmp>
+   </BODY>
+</HTML>
