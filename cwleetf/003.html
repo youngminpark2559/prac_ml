@@ -85,7 +85,7 @@ b_o = tf.Variable(tf.zeros(shape=[CLASSES]), dtype=tf.float32)
 # we create saver
 # You can specify parameters you want to save
 # When you don't specify it, all will be saved
-param_list = [W_h1, b_h1, w_hw, b_h2, W_o, b_o]
+param_list = [W_h1, b_h1, W_h2, b_h2, W_o, b_o]
 saver = tf.train.Saver()
 
 hidden1 = tf.sigmoid(tf.matmul(x, W_h1) + b_h1)
