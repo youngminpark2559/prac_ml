@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+003. evaluate and save model
+<xmp>
+# We talked about how to train in previous lecture 
+# In this lecture, we will complete this model up to testing model
+
+# If we input [1,5,3,7,8,10,12] and model ouputs [0,0,0,1,0],
+# we can say model can predict well
+
+
+import tensorflow as tf
+
+input_data = [[1,5,3,7,8,10,12],
+              [5,8,10,3,9,7,1]]
+label_data = [[0,0,0,1,0],
+              [1,0,0,0,0]]
+
+INPUT_SIZE = 7
+HIDDEN1_SIZE = 10
+HIDDEN2_SIZE = 8
+CLASSES = 5
+Learning_rate = 0.05
+
+x = tf.placeholder(tf.float32, shape=[None, INPUT_SIZE])
+y_ = tf.placeholder(tf.float32, shape=[None, CLASSES])
+tensor_map = {x: input_data, y_: label_data}
+
+W_h1 = tf.Variable(tf.truncated_normal(shape=[INPUT_SIZE, HIDDEN1_SIZE]), dtype=tf.float32)
+b_h1 = tf.Variable(tf.zeros(shape=[HIDDEN1_SIZE]), dtype=tf.float32)
+
+W_h2 = tf.Variable(tf.truncated_normal(shape=[HIDDEN1_SIZE, HIDDEN2_SIZE]), dtype=tf.float32)
+b_h2 = tf.Variable(tf.zeros(shape=[HIDDEN2_SIZE]), dtype=tf.float32)
+
+W_o = tf.Variable(tf.truncated_normal(shape=[HIDDEN2_SIZE, CLASSES]), dtype=tf.float32)
+b_o = tf.Variable(tf.zeros(shape=[CLASSES]), dtype=tf.float32)
+
+# At point of finishing configuring weights,
+# we create saver
+# You can specify parameters you want to save
+# When you don't specify it, all will be saved
+param_list = [W_h1, b_h1, w_hw, b_h2, W_o, b_o]
+saver = tf.train.Saver()
+
+hidden1 = tf.sigmoid(tf.matmul(x, W_h1) + b_h1)
+hidden2 = tf.sigmoid(tf.matmul(hidden1, W_h2) + b_h2)
+y = tf.sigmoid(tf.matmul(hidden2, W_o) + b_o)
+
+cost = tf.reduce_sum(-y_*tf.log(y) - (1-y_)*tf.log(1-y), reduction_indices=1)
+loss = tf.reduce_mean(cost)
+train = tf.train.GradientDescentOptimizer(Learning_rate).minimize(cost)
+
+# argmax() returns index of maximal value
+# tf.argmax(input, dimension, name=None)
+
+# We extract index of maximal value from prediction by using argmax()
+# Then, we compare extracted index and index of label by using tf.equal()
+# Then we can get like this [1,0,1,1]
+# We calculate [1,0,1,1] to find mean value(3/4)
+
+# For example, we will denote maximal value as 1
+# index   prediction    label        
+# 1       [0 0 1 0 0]   [0 0 1 0 0]  => true => 1
+# 2       [1 0 0 0 0]   [0 1 0 0 0]  => false => 0
+# 3       [0 0 0 0 1]   [0 0 0 0 1]  => true => 1
+# n       [0 0 1 0 0]   [0 0 1 0 0]  => true => 1
+
+# This code displays accuracy
+# Since y is vector, we pass 1
+comp_pred = tf.equal(tf.argmax(y, 1) tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(comp_pred, tf.float32))
+
+sess = tf.Session()
+init = tf.initialize_all_variables()
+sess.run(init)
+
+for i in range(1000):
+    _, loss, acc = sess.run([train, cost, accuracy], tensor_map)
+    pred = sess.run(tf.argmax(y, 1), tensor_map)
+    if i % 100 == 0:
+        saver.save(sess, './tflectcheckpoint')
+        print('----------')
+        print('step: ', i)
+        print('loss: ', loss)
+        print('accuracy: ', acc)
+
+      </xmp>
+   </BODY>
+</HTML>
