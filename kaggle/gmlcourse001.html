@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+google machine learning course 001. pandas
+<xmp>
+import pandas as pd
+pd.__version__
+
+# Pandas' data type is composed of 2 classes(DataFrame and Series)
+# Series1 = [1,2,3,...]
+# Series2 = [4,5,6,...]
+# Dataframe=
+# series1 series2
+# 1       4
+# 2       5
+# 3       6
+
+# @
+# I can create series by creating Series object
+pd.Series(['San Francisco', 'San Jose', 'Sacramento'])
+
+# I can create dataframe
+city_names = pd.Series(['San Francisco', 'San Jose', 'Sacramento'])
+population = pd.Series([852469, 1015785, 485199])
+print(​pd.DataFrame({'City name': city_names, 'Population': population}))
+#   City name       Population
+# 0 San Francisco   852469
+# 1 San Jose        1015785
+# 2 Sacramento      485199
+
+
+# I load california_housing_train.csv file as dataframe
+california_housing_dataframe = pd.read_csv("https://storage.googleapis.com/mledu-datasets/california_housing_train.csv", sep=",")
+# Or you can use that file from your local folder after downloading it
+california_housing_dataframe = pd.read_csv("california_housing_train.csv", sep=",")
+california_housing_dataframe.describe()
+# longitude	latitude	housing_median_age	total_rooms	total_bedrooms	population	households	median_income	median_house_value
+# count	17000.000000	17000.000000	17000.000000	17000.000000	17000.000000	17000.000000	17000.000000	17000.000000	17000.000000
+# mean	-119.562108	35.625225	28.589353	2643.664412	539.410824	1429.573941	501.221941	3.883578	207300.912353
+# std	2.005166	2.137340	12.586937	2179.947071	421.499452	1147.852959	384.520841	1.908157	115983.764387
+# min	-124.350000	32.540000	1.000000	2.000000	1.000000	3.000000	1.000000	0.499900	14999.000000
+# 25%	-121.790000	33.930000	18.000000	1462.000000	297.000000	790.000000	282.000000	2.566375	119400.000000
+# 50%	-118.490000	34.250000	29.000000	2127.000000	434.000000	1167.000000	409.000000	3.544600	180400.000000
+# 75%	-118.000000	37.720000	37.000000	3151.250000	648.250000	1721.000000	605.250000	4.767000	265000.000000
+# max	-114.310000	41.950000	52.000000	37937.000000	6445.000000	35682.000000	6082.000000	15.000100	500001.000000
+
+
+# You can use head() or tail() which shows several data from the first one or the last one
+# Default is 5
+california_housing_dataframe.head()
+# longitude	latitude	housing_median_age	total_rooms	total_bedrooms	population	households	median_income	median_house_value
+# 0	-114.31	34.19	15.0	5612.0	1283.0	1015.0	472.0	1.4936	66900.0
+# 1	-114.47	34.40	19.0	7650.0	1901.0	1129.0	463.0	1.8200	80100.0
+# 2	-114.56	33.69	17.0	720.0	174.0	333.0	117.0	1.6509	85700.0
+# 3	-114.57	33.64	14.0	1501.0	337.0	515.0	226.0	3.1917	73400.0
+# 4	-114.57	33.57	20.0	1454.0	326.0	624.0	262.0	1.9250	65500.0
+
+# Yuo can visualize dataframe
+# housing_median_age: column
+# %matplotlib inline
+california_housing_dataframe.hist('housing_median_age')
+# img 29dde448-e3d7-47e4-9361-66cfe9c39d57
+# array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7f67b46b9c88>]],
+#       dtype=object)
+
+
+# @
+# You can access to dataframe data by using dictionary and list
+cities = pd.DataFrame({ 'City name': city_names, 'Population': population })
+print(type(cities['City name']))
+# <class 'pandas.core.series.Series'>
+cities['City name']
+# 0    San Francisco
+# 1         San Jose
+# 2       Sacramento
+# Name: City name, dtype: object
+
+print(type(cities['City name'][1]))
+# cities['City name'][1]
+# <class 'str'>
+# 'San Jose'
+
+print(type(cities[0:2]))
+# <class 'pandas.core.frame.DataFrame'>
+cities[0:2]
+# City name	Population
+# 0	San Francisco	852469
+# 1	San Jose	1015785
+
+# @
+# Arithmetics on series
+population / 1000.
+# 0     852.469
+# 1    1015.785
+# 2     485.199
+# dtype: float64
+
+# @
+# You can use most of pandas series as argument of numpy method
+import numpy as np
+np.log(population)
+# 0    13.655892
+# 1    13.831172
+# 2    13.092314
+# dtype: float64
+
+# @
+# You can use apply() for complex transformation
+# Like python map(), Series.apply() can take lambda function as arguement
+# Following code makes new series
+# population > 1000000
+population.apply(lambda val: val > 1000000)
+# 0    False
+# 1     True
+# 2    False
+# dtype: bool
+
+@
+# You can edit dataframe
+# Following code adds 2 series on exsiting dataframe
+cities['Area square miles'] = pd.Series([46.87, 176.53, 97.92])
+cities['Population density'] = cities['Population'] / cities['Area square miles']
+print(cities)
+# <   City name	Population	Area square miles	Population density
+# < 0	San Francisco	852469	46.87	18187.945381
+# < 1	San Jose	1015785	176.53	5754.177760
+# < 2	Sacramento	485199	97.92	4955.055147
+
+# Practice 1
+# You edit city table with adding new true boolean row only if following 2 statements are true
+# 1. City name is given from saint person name
+# 1. City area is wider than 130 squre kilometer
+cities['Is wide and has saint name'] = (cities['Area square miles'] > 130) & cities['City name'].apply(lambda name: name.startswith('San'))
+print(cities)
+# <   City name	Population	Area square miles	Population density	Is wide and has saint name
+# < 0	San Francisco	852469	46.87	18187.945381	False
+# < 1	San Jose	1015785	176.53	5754.177760	True
+# < 2	Sacramento	485199	97.92	4955.055147	False
+
+
+# @
+# Index
+# Series and DataFrame have index attribute
+# Basically, pandas assigns index numbers to represent order
+# Index values are fixed
+# It's not changed even when order of data is rearranged
+print(city_names.index)
+# RangeIndex(start=0, stop=3, step=1)
+
+print(cities.index)
+# RangeIndex(start=0, stop=3, step=1)
+
+# You can manually rearrage order of rows by using DataFrame.reindex()
+# 0    2
+# 1 -> 0
+# 2    1
+# For example, following code has same effect with classifying cities by city name
+print(cities.reindex([2, 0, 1]))
+# <   City name	Population	Area square miles	Population density	Is wide and has saint name
+# < 2	Sacramento	485199	97.92	4955.055147	False
+# < 0	San Francisco	852469	46.87	18187.945381	False
+# < 1	San Jose	1015785	176.53	5754.177760	True
+
+# reindex() is good way for shuffling data
+# In following code, I shuffle index array by using numpy's random.permutation()
+# And then, I invoke reindex() on above shuffled array, then I get shuffled rows
+cities.reindex(np.random.permutation(cities.index))
+# <   City name	Population	Area square miles	Population density	Is wide and has saint name
+# < 0	San Francisco	852469	46.87	18187.945381	False
+# < 2	Sacramento	485199	97.92	4955.055147	False
+# < 1	San Jose	1015785	176.53	5754.177760	True
+
+# You can give index as string
+index = pd.Index(['e', 'd', 'a', 'b'])
+print(index)
+# Index(['e', 'd', 'a', 'b'], dtype='object')
+
+print('d' in index)
+# True
+
+# You can give range to index
+index = pd.Index(list(range(5)), name='rows')
+columns = pd.Index(['A', 'B', 'C'], name='cols')
+df = pd.DataFrame(np.random.randn(5,3), index=index, columns=columns)
+print(df)
+# cols A  B  C
+# rows
+# 0   randomnumber  randomnumber  randomnumber
+# 1
+# 2
+# 3
+# 4
+
+# @
+# Practice 2
+# You can give non exsiting value as index and it will show as NaN
+cities.reindex([0, 4, 5, 2])
+# <     City name	Population	Area square miles	Population density	Is wide and has saint name
+# < 0	San Francisco	852469.0	46.87	18187.945381	False
+# < 4	NaN	NaN	NaN	NaN	NaN
+# < 5	NaN	NaN	NaN	NaN	NaN
+# < 2	Sacramento	485199.0	97.92	4955.055147	False
+
+</xmp>
+   </BODY>
+</HTML>
