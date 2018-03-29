@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+002. build predicting model
+<xmp>
+import tensorflow as tf
+
+# 2 dimension
+input_data = [[1,5,3,7,8,10,12],
+              [5,8,10,3,9,7,1]]
+# When training completes, [1,5,3,7,8,10,12] should be classified to 4th class
+label_data = [[0,0,0,1,0],
+              [1,0,0,0,0]]
+
+# To get above result, we will create model, train dataset
+
+# We have to create tensor
+
+# Setting hyper parameters constant
+# 7 nodes in input layer
+INPUT_SIZE = 7
+# 10 nodes in hidden layer 1
+HIDDEN1_SIZE = 10
+# 8 nodes in hidden layer 2
+HIDDEN2_SIZE = 8
+# 5 nodes in output layer
+CLASSES = 5
+Learning_rate = 0.05
+
+# This x is placeholder for feature
+# shape=[]
+# 1th: batch size, if we have 10 of [1,5,3,7,8,10,12], we specify 10,
+# if we don't know batch size, we can specify it as 'None'
+# 2th: dimensionality
+# 2 dimension
+x = tf.placeholder(tf.float32, shape=[None, INPUT_SIZE])
+
+# This y is placeholder for label
+# Prediction is represented by y
+y_ = tf.placeholder(tf.float32, shape=[None, CLASSES])
+
+# Placeholder maps between tensor and data
+# We makes feed_dict for that
+tensor_map = {x: input_data, y_: label_data}
+
+# When we run session, we order tensor x uses input_data
+
+# This h1 weight is hidden1's weight which is created by multiplied with input data
+# Weight uses variable data type
+# We input random method to randomly initialize weight
+# truncated_normal(): it's normal distribution with truncated
+# shape: variable's shape
+# input_data's dimension is 7
+# HIDDEN1_SIZE's dimension is 10
+# So, shape=[INPUT_SIZE, HIDDEN1_SIZE]
+# 1*7 * 7*10 = 1*10 
+# 1*10 * 10*1 = 1*1
+# seed: random seed
+# truncated_normal(shape, mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
+W_h1 = tf.Variable(tf.truncated_normal(shape=[INPUT_SIZE, HIDDEN1_SIZE]), dtype=tf.float32)
+# We need to create bias
+# We initialize this with generally zeros()
+b_h1 = tf.Variable(tf.zeros(shape=[HIDDEN1_SIZE]), dtype=tf.float32)
+# We have to use matrix multiplication
+# and pass output into sigmoid function
+hidden1 = tf.sigmoid(tf.matmul(x, W_h1) + b_h1)
+# < tf.matmul() is 'operation tensor node' which takes 'x tensor node' and 'W_in tensor node'
+# < and then returns 'operated tensor node'
+
+
+
+# and then, we iterate above steps for hidden layer 2
+W_h2 = tf.Variable(tf.truncated_normal(shape=[HIDDEN1_SIZE, HIDDEN2_SIZE]), dtype=tf.float32)
+b_h2 = tf.Variable(tf.zeros(shape=[HIDDEN2_SIZE]), dtype=tf.float32)
+hidden2 = tf.sigmoid(tf.matmul(hidden1, W_h2) + b_h2)
+
+# Now, data should be towards output layer from hidden layer 2
+W_o = tf.Variable(tf.truncated_normal(shape=[HIDDEN2_SIZE, CLASSES]), dtype=tf.float32)
+b_o = tf.Variable(tf.zeros(shape=[CLASSES]), dtype=tf.float32)
+# We will denote output(prediction) as y
+y = tf.sigmoid(tf.matmul(hidden2, W_o) + b_o)
+
+
+# To perform training, we should define loss function
+# linear regression: mean square loss function
+# logistic regression(classification): cross entropy
+# loss: cross entropy
+# y_: label of train dataset
+# y: prediction
+# input_tensor:
+# [[loss loss loss loss loss],
+#  [loss loss loss loss loss]]
+# reduction_indices: how much you want to reduce?
+# None: 1 value
+# 0: projection by row
+# 1: projection by column
+# x=  [[1,1,1],
+#      [1,1,1]]
+# tf.reduce_sum(x) => 6
+# tf.reduce_sum(x, 0) => [2,2,2]
+# tf.reduce_sum(x, 1) => [3, 3]
+# tf.reduce_sum(x, 1, keep_dims=True) => [[3], [3]]
+# tf.reduce_sum(x, [0, 1]) => 6
+# tf.reduce_sum(input_tensor, reduction_indices=None, keep_dims=False, name=None)
+# reduce mean means calculating mean with reducing dimensionality
+# loss = tf.reduce_sum(-y_*tf.log(y) - (1-y_)*tf.log(1-y))
+loss = tf.reduce_mean(-y_*tf.log(y) - (1-y_)*tf.log(1-y))
+# < Now, we should minimize above loss function for optimization
+
+# To do that, we will use GradientDescentOptimizer
+# tf.train.GradientDescentOptimizer.__init__(learning_rate, use_locking=False, name='GradientDescent')
+train = tf.train.GradientDescentOptimizer(Learning_rate).minimize(loss)
+
+# For test, first, open session
+sess = tf.Session()
+# Second, create random initialization order
+init = tf.initialize_all_variables()
+# Third, perform random initialization into each node
+sess.run(init)
+# Fourth, run session with loss function and tensor_map(placeholder)
+# print(sess.run(loss, feed_dict=tensor_map))
+# label - prediction
+# < [[loss loss loss loss loss],
+# <  [loss loss loss loss loss]]
+
+# I iterate training 10 times
+for i in range(10):
+    # _ is for return from train(but nothing to see)
+    _, loss = sess.run([train, loss], feed_dict=tensor_map)
+    # I display results per 100
+    if i % 100 == 0:
+        print('step: ', i)
+        print('loss: ', loss)
+# < step: 100
+# < loss: loss
+# < step: 200
+# < loss: loss
+# < step: 300
+# < loss: loss
+# < step: 3
+# < loss: loss
+
+      </xmp>
+   </BODY>
+</HTML>
