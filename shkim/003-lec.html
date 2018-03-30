@@ -52,13 +52,14 @@ MathJax.Hub.Config({
 # You move down along with slope of loss function
 # When slope is 0, you don't have place to move
 
-# $$$W := W -\alpha \partial{}{W} cost(W)$$$
+# $$$W := W -\alpha \frac{\partial}{\partial{W}} cost(W)$$$
 # Let's say learning rate $$$\alpha = 0.1$$$
 # You find slope of cost(W) in respect to W
-# Let's say $$$\partial{}{W} cost(W)=10$$$
+# Let's say $$$\frac{\partial}{\partial{W}} cost(W)=10$$$
 # $$$0.1\times 10 = 1$$$
-# Then, you find new W which will be moved to left from formular exsiting W - 1
+# Then, you find 'new W which will be moved to left' from formular 'exsiting W - 1'
 
+# @
 # To prevent minimization from falling into local minima,
 # you'd better confirm if your loss function L(W, b) forms convex shape
 
