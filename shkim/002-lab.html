@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+002-lab. lineaar regression with tensorflow
+<xmp>
+import tensorflow as tf
+# for reproducibility
+tf.set_random_seed(777)
+
+# train dataset
+# x_train : feature
+# y_train : label
+x_train = [1, 2, 3]
+y_train = [1, 2, 3]
+
+# We define weight node and bias node as Variable
+# Variable is used by tensorflow with manipulating it
+W = tf.Variable(tf.random_normal([1]), name='weight')
+b = tf.Variable(tf.random_normal([1]), name='bias')
+
+# Hypothesis function node
+# H(x)=Wx+b
+hypothesis = x_train * W + b
+
+# loss function
+cost = tf.reduce_mean(tf.square(hypothesis - y_train))
+
+# Minimize loss
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
+train = optimizer.minimize(cost)
+
+# I create session object
+sess = tf.Session()
+# When you use Variable(for W and b in this example),
+# you should use tf.global_variables_initializer() tp initialize Variables
+sess.run(tf.global_variables_initializer())
+
+# I actually train model
+for step in range(2001):
+    sess.run(train)
+    if step % 20 == 0:
+        print(step, sess.run(cost), sess.run(W), sess.run(b))
+
+# best fit is W:[ 1.],  b:[ 0.]
+
+# '''
+# 0 2.82329 [ 2.12867713] [-0.85235667]
+# 20 0.190351 [ 1.53392804] [-1.05059612]
+# 40 0.151357 [ 1.45725465] [-1.02391243]
+# ...
+# 1920 1.77484e-05 [ 1.00489295] [-0.01112291]
+# 1940 1.61197e-05 [ 1.00466311] [-0.01060018]
+# 1960 1.46397e-05 [ 1.004444] [-0.01010205]
+# 1980 1.32962e-05 [ 1.00423515] [-0.00962736]
+# 2000 1.20761e-05 [ 1.00403607] [-0.00917497]
+# '''
+
+# @
+# usingPlaceHolderInLinearRegression.py
+
+import tensorflow as tf
+tf.set_random_seed(777)
+
+W = tf.Variable(tf.random_normal([1]), name='weight')
+b = tf.Variable(tf.random_normal([1]), name='bias')
+
+# We give values for X, Y later by using feed_dict()
+X = tf.placeholder(tf.float32)
+Y = tf.placeholder(tf.float32)
+
+hypothesis = X * W + b
+
+cost = tf.reduce_mean(tf.square(hypothesis - Y))
+
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
+train = optimizer.minimize(cost)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+for step in range(2001):
+    cost_val, W_val, b_val, _ = \
+        sess.run([cost, W, b, train], feed_dict={X: [1, 2, 3], Y: [1, 2, 3]})
+    if step % 20 == 0:
+        print(step, cost_val, W_val, b_val)
+
+# Learns best fit W:[ 1.],  b:[ 0]
+# 1980 1.32962e-05 [ 1.00423515] [-0.00962736]
+# 2000 1.20761e-05 [ 1.00403607] [-0.00917497]
+
+
+# Testing our model
+print(sess.run(hypothesis, feed_dict={X: [5]}))
+print(sess.run(hypothesis, feed_dict={X: [2.5]}))
+print(sess.run(hypothesis, feed_dict={X: [1.5, 3.5]}))
+# [ 5.0110054]
+# [ 2.50091505]
+# [ 1.49687922  3.50495124]
+
+# Fit line with new training data
+for step in range(2001):
+    cost_val, W_val, b_val, _ = \
+        sess.run([cost, W, b, train],
+                 feed_dict={X: [1, 2, 3, 4, 5],
+                            Y: [2.1, 3.1, 4.1, 5.1, 6.1]})
+    if step % 20 == 0:
+        print(step, cost_val, W_val, b_val)
+
+print(sess.run(hypothesis, feed_dict={X: [5]}))
+print(sess.run(hypothesis, feed_dict={X: [2.5]}))
+print(sess.run(hypothesis, feed_dict={X: [1.5, 3.5]}))
+# 1960 3.32396e-07 [ 1.00037301] [ 1.09865296]
+# 1980 2.90429e-07 [ 1.00034881] [ 1.09874094]
+# 2000 2.5373e-07 [ 1.00032604] [ 1.09882331]
+# [ 6.10045338]
+# [ 3.59963846]
+# [ 2.59931231  4.59996414]
+
+      </xmp>
+   </BODY>
+</HTML>
