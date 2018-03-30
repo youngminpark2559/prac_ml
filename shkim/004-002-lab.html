@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+004-002-lab. slicing, using loaded csv file as data, queue runners, batch, reader
+<xmp>
+# lab-04-3-file_input_linear_regression.py
+
+# @
+# data-01-test-score.csv
+# EXAM1,EXAM2,EXAM3,FINAAL
+# 73,80,75,152
+# 93,88,93,185
+# 89,91,90,180
+# 96,98,100,196
+# 73,66,70,142
+
+import tensorflow as tf
+import numpy as np
+tf.set_random_seed(777)
+
+# Slicing
+nums = range(5)
+print(nums)
+# < [0,1,2,3,4]
+print(nums[2:4])
+# < [2,3]
+print(nums[2:])
+# < [2,3,4]
+print(nums[:2])
+# < [0,1]
+print(nums[:])
+# < [0,1,2,3,4]
+print(nums[:-1])
+# < [0,1,2,3]
+nums[2:4] = [8,9]
+print(nums)
+# < [0,1,8,9,4]
+
+# We can use slicing on numpy high dimension array
+b = np.array([[1,2,3,4]. [5,6,7,8]. [9,10,11,12]])
+print(b)
+# < array([[1,2,3,4],
+# <        [5,6,7,8],
+# <        [9,10,11,12]])
+# from entire row, select 1th column
+b[:, 1]
+# < array([2, 6, 10])
+b[-1]
+# < array([9,10,11,12])
+# from last row, select entire column
+b[-1, :]
+# < array([9,10,11,12])
+b[-1, ...]
+# < array([9,10,11,12])
+b[0:2, :]
+# < array([[1,2,3,4],
+# <        [5,6,7,8]]
+
+# I use loadtxt from numpy
+xy = np.loadtxt('data-01-test-score.csv', delimiter=',', dtype=np.float32)
+# I create dataset from data-01-test-score.csv file
+# from entire row, select 0:-1 columns
+# That is, 3 features data
+x_data = xy[:, 0:-1]
+# from entire row, select last column
+y_data = xy[:, [-1]]
+
+# You check shape and data
+print(x_data.shape, x_data, len(x_data))
+print(y_data.shape, y_data)
+
+# XW = H(X)
+# $$$[None, 3] \cdot [3, 1] = [None, 1]$$$
+X = tf.placeholder(tf.float32, shape=[None, 3])
+Y = tf.placeholder(tf.float32, shape=[None, 1])
+
+W = tf.Variable(tf.random_normal([3, 1]), name='weight')
+b = tf.Variable(tf.random_normal([1]), name='bias')
+
+# Hypothesis function node
+hypothesis = tf.matmul(X, W) + b
+
+# Loss function node
+cost = tf.reduce_mean(tf.square(hypothesis - Y))
+
+# We minimize loss by GradientDescentOptimizer
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-5)
+train = optimizer.minimize(cost)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+for step in range(2001):
+    cost_val, hy_val, _ = sess.run(
+        [cost, hypothesis, train], feed_dict={X: x_data, Y: y_data})
+    if step % 10 == 0:
+        print(step, "Cost: ", cost_val, "\nPrediction:\n", hy_val)
+
+# When my score is [100, 70, 101], what will prediction value of my final exam score?
+print("Your score will be ", sess.run(hypothesis, feed_dict={X: [[100, 70, 101]]}))
+# < Your score will be  [[ 181.73277283]]
+print("Other scores will be ", sess.run(hypothesis, feed_dict={X: [[60, 70, 110], [90, 100, 80]]}))
+# < Other scores will be  [[145.86265564] [187.23129272]]
+
+
+
+
+# @
+# lab-04-4-tf_reader_linear_regression.py
+
+# When size of dataset files is too big to load them onto memory at onece,
+# tensorflow provides 'queue runners'
+
+# Tensorflow suffles fiels and then stacks them onto queue
+
+# One queue generates multiple readers(reader1, reader2, ...)
+
+# Each reader is decoded(parsed) by decoder(parser) and then stacked into example queue
+
+# We can load them in batch size
+
+# Lab 4 Multi-variable linear regression
+# https://www.tensorflow.org/programmers_guide/reading_data
+
+@
+import tensorflow as tf
+tf.set_random_seed(777)
+
+filename_queue = tf.train.string_input_producer(\
+    ['data-01-test-score.csv', 'data-02-test-score.csv', 'data-02-test-score.csv'],\
+    shuffle=False,\
+    name='filename_queue')
+
+# I declare reader node
+reader = tf.TextLineReader()
+key, value = reader.read(filename_queue)
+
+# We define default values in case empty columns exist.
+# And default values also can specify type of the decoded result
+record_defaults = [[0.], [0.], [0.], [0.]]
+# We will use decode_csv decoder(parser)
+xy = tf.decode_csv(value, record_defaults=record_defaults)
+
+# We create batch data
+train_x_batch, train_y_batch = \
+    tf.train.batch([xy[0:-1], xy[-1:]], batch_size=10)
+
+X = tf.placeholder(tf.float32, shape=[None, 3])
+Y = tf.placeholder(tf.float32, shape=[None, 1])
+
+W = tf.Variable(tf.random_normal([3, 1]), name='weight')
+b = tf.Variable(tf.random_normal([1]), name='bias')
+
+hypothesis = tf.matmul(X, W) + b
+
+cost = tf.reduce_mean(tf.square(hypothesis - Y))
+
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-5)
+train = optimizer.minimize(cost)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+# Youu start populating filename queue
+coord = tf.train.Coordinator()
+threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+
+for step in range(2001):
+    x_batch, y_batch = sess.run([train_x_batch, train_y_batch])
+    cost_val, hy_val, _ = sess.run(
+        [cost, hypothesis, train], feed_dict={X: x_batch, Y: y_batch})
+    if step % 10 == 0:
+        print(step, "Cost: ", cost_val, "\nPrediction:\n", hy_val)
+
+coord.request_stop()
+coord.join(threads)
+
+Let model predict my score of final exam
+print("Your score will be ", sess.run(hypothesis, feed_dict={X: [[100, 70, 101]]}))
+# < Your score will be  [[ 177.78144836]]
+print("Other scores will be ", sess.run(hypothesis, feed_dict={X: [[60, 70, 110], [90, 100, 80]]})
+# < Other scores will be  [[ 141.10997009] [ 191.17378235]]
+
+      </xmp>
+   </BODY>
+</HTML>
