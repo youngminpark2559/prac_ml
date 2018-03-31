@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+006-lec-002. softmax function for multinomial classification
+<xmp>
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/7a07fc9b-f094-4f8f-935b-799502082f0a.png"/><xmp>
+@
+softmax function
+$$$S(y_{i}) = \frac{e^{y_{i}}}{\sum\limits_{j}e^{y_{j}}}$$$
+    
+output layer y has scores: 2.0, 1.0, 0.1
+We pass scores into softmax function
+We obtain probabilities: 0.7, 0.2, 0.1
+probability of occurring a is 0.7
+probability of occurring b is 0.2
+probability of occurring c is 0.1
+
+Then, we perform one hot encoding with converting highest value into 1.0, remainders into 0.0
+We can use argmax() of tensorflow to do this
+
+
+@
+We use cross entropy function as loss function for multinomial classification(logistic regression)
+Let's say we have $$$\hat{Y}$$$ and Y
+We can find difference between them by using cross entropy function
+$$$L_{i}$$$ : label
+$$$\sum\limits_{i} [(L_{i}) \bigodot (-\log{\hat{y}_{i}})]$$$
+
+0: A
+1: B
+$$$L = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$$$
+$$$\hat{Y} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$$$
+This is right prediction
+Let's find loss $$$\sum\limits_{i} [(L_{i}) \bigodot (-\log{\hat{y}_{i}})]$$$
+$$$\begin{bmatrix} 0 \\ 1 \end{bmatrix} \bigodot -\log{\begin{bmatrix} 0 \\ 1 \end{bmatrix}}$$$
+img 7a07fc9b-f094-4f8f-935b-799502082f0a    
+$$$\begin{bmatrix} 0 \\ 1 \end{bmatrix} \bigodot \begin{bmatrix} \infty \\ 0 \end{bmatrix}$$$
+$$$\begin{bmatrix} 0 \\ 0 \end{bmatrix}$$$
+Sum all elements
+0, this is loss value when prediction is right
+
+$$$\hat{Y} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$$$
+$$$\begin{bmatrix} 0 \\ 1 \end{bmatrix} \bigodot -\log{\begin{bmatrix} 1 \\ 0 \end{bmatrix}}$$$
+$$$\begin{bmatrix} 0 \\ 1 \end{bmatrix} \bigodot \begin{bmatrix} 0 \\ \infty \end{bmatrix}$$$
+$$$\begin{bmatrix} 0 \\ \infty \end{bmatrix}$$$
+Sum all elements
+$$$\infty$$$, this is loss value when prediction is wrong
+        
+    
+What we saw in previous lecture, $$$C(H(x), y) = y\log{(H(x))} - (1-y)\log{(1-H(x))}$$$,
+is actually cross entropy function
+$$$C(H(x), y) = y\log{(H(x))} - (1-y)\log{(1-H(x))}$$$
+$$$D(S,L) = \sum\limits_{i} [(L_{i}) \bigodot (-\log{S_{i}})]$$$    
+$$$S = H(x) = \hat{y}$$$
+L = y
+    
+</xmp>
+   </BODY>
+</HTML>
