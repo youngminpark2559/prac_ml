@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005-002-lec. hypothesis function of logistic regression(classification), loss function of logistic regression(classification)
+<xmp>
+# @
+# lab-05-2-logistic_regression_diabetes.py
+
+# Loss function of H(x) = Wx + b is convex shape, where we can use gradient descent algorithm
+# Loss function of $$$H(x) = \frac{1}{1+e^{-W^{T}X}}$$$ is not smooth convex shape,
+# so we can't directly use gradient descent algorithm due to local minima
+
+# So, we'd better change loss function of $$$H(x) = \frac{1}{1+e^{-W^{T}X}}$$$ by using log
+# $$$Loss(W) = \frac{1}{m} \sum L(H(x), y)$$$
+# We define L(H(x), y) as following
+# $$$L(H(x), y) = -log(H(x))$$$ when y=1
+# $$$L(H(x), y) = -log(1-H(x))$$$ when y=0
+
+# In other words,
+# when label y=1, if prediction $$$H(x)=1 \rightarrow loss \approx 0$$$
+# when label y=1, if prediction $$$H(x)=0 \rightarrow loss \approx \infty$$$
+
+# when label y=0, if prediction $$$H(x)=0 \rightarrow loss \approx 0$$$
+# when label y=0, if prediction $$$H(x)=1 \rightarrow loss \approx \infty$$$
+
+# We can merge above 2 terms
+# $$$L(H(x), y) = -y\log{(H(x))} - (1-y)\log{(1-H(x))}$$$
+
+# Therefore, we can get final form of loss function
+# $$$Loss(W) = \frac{1}{m} \sum L(H(x), y)$$$
+# $$$Loss(W) = \frac{1}{m} \sum (-y\log{(H(x))} - (1-y)\log{(1-H(x))})$$$
+# $$$Loss(W) = -\frac{1}{m} \sum (y\log{(H(x))} + (1-y)\log{(1-H(x))})$$$
+
+# We can apply gradient descent algorithm on above loss function
+# We can update new Weight by using gradient descent algorithm
+# $$$W := W -\alpha \frac{\partial}{\partial{W}} Loss(W)$$$
+
+
+</xmp>
+   </BODY>
+</HTML>
