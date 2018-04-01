@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+009-lec-002. forwarpropagaion and backpropagation in deep neural net
+<xmp>
+@
+f=wx+b
+g=wx
+f=g+b
+
+Effect of w on f: $$$\frac{\partial{f}}{\partial{w}}$$$
+Effect of x on f: $$$\frac{\partial{f}}{\partial{x}}$$$
+Effect of b on f: $$$\frac{\partial{f}}{\partial{b}}$$$    
+    
+Step1. forwardpropagation with w=-2, x=5, b=3
+w*x=-2*5=-10=g
+g+b=-10+3=-7=f
+    
+Step2. backpropagation
+f=wx+b
+g=wx, $$$\frac{\partial{g}}{\partial{w}}=x$$$, $$$\frac{\partial{g}}{\partial{x}}=w$$$
+f=g+b, $$$\frac{\partial{f}}{\partial{g}}=1$$$, $$$\frac{\partial{f}}{\partial{b}}=1$$$
+
+Effect of w on f:
+$$$\frac{\partial{f}}{\partial{w}}=\frac{\partial{f}}{\partial{g}} \frac{\partial{g}}{\partial{w}}$$$
+$$$\frac{\partial{f}}{\partial{w}}=1*5=5$$$
+meaning: effect of changing b on f is 1:5    
+
+Effect of x on f:
+$$$\frac{\partial{f}}{\partial{x}}=\frac{\partial{f}}{\partial{g}} \frac{\partial{g}}{\partial{x}}$$$
+$$$\frac{\partial{f}}{\partial{w}}=1*-2=-2$$$
+
+Effect of g on f:
+$$$\frac{\partial{f}}{\partial{g}}=1$$$    
+meaning: effect of changing b on f is 1:1    
+    
+    
+@
+First, calculate last node
+f=a+b, $$$\frac{\partial{f}}{\partial{a}}$$$
+Effect of a on f: $$$\frac{\partial{f}}{\partial{a}}$$$
+
+We know $$$\frac{\partial{f}}{\partial{g}}$$$ which is calculated from behind
+
+Ultimately, we want to know effect of x on f $$$\frac{\partial{f}}{\partial{x}}$$$
+We know effect of x on g $$$\frac{\partial{g}}{\partial{x}}$$$
+because g=xy, $$$\frac{\partial{g}}{\partial{x}}$$$
+
+We use chain rule to find $$$\frac{\partial{f}}{\partial{x}}$$$
+$$$\frac{\partial{f}}{\partial{x}} = \frac{\partial{f}}{\partial{g}} \cdot \frac{\partial{g}}{\partial{x}}$$$
+
+In conclusion, even if there are many nodes between first node and last node,
+we can find effect of x on f $$$\frac{\partial{f}}{\partial{x}}$$$
+
+
+@
+Sigmoid $$$g(z) = \frac{1}{1+e^{-2}}$$$
+How to differentiate sigmoid function
+z ------ *-1 ------ exp ------ +1 ------ x ------ $$$\frac{1}{x}$$$ ------ g
+
+      </xmp>
+   </BODY>
+</HTML>
