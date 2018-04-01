@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+010-lec-002. initialize weight, RBM, xavier initialization, he initialization
+<xmp>
+@
+If 'some layer' has 0 weight, all layers whichi are located in front of 'some layer' have 0 gradient
+
+@
+So, we need to set initial value on weight wisely
+1. Don't give 0 to all weight or model can't be trained
+1. Consider RBM(restricted boltzmann machine)
+
+RBM(restricted boltzmann machine)
+Suppose we have 'forward' and 'backward'
+forward:
+$$$x_{1}w_{1} = value$$$
+
+backward
+$$$value\times w_{1} = input$$$
+
+Then, we compare '$$$x_{1}$$$' and 'input'
+We update weights of 'forward' model for '$$$x_{1}$$$' to have smallest difference with 'input'
+
+RBM is also known as 'encoder' and 'decoder'
+$$$x_{1}$$$ -> value : encoder
+$$$x_{1}$$$ <- value : decoder
+
+@
+Even though we have deep and wide nn,
+first of all, we can apply RBM to first 2 layers by encoding and decoding
+to update good weights
+
+@
+But we don't need to use RBM for weight initialization
+There are simple ways you can use
+1. xavier initialization
+1. he initialization
+
+You can give random value to weight
+But consider number of input and number of ouput
+
+xavier initialization
+W=np.random.randn(fan_in, fan_out) / np.sqrt(fan_in)
+
+he initialization
+W=np.random.randn(fan_in, fan_out) / np.sqrt(fan_in/2)
+
+
+@
+activation functions and initialization
+initialization method     maxout  ReLU  VLReLU  tanh  sigmoid
+LSUV                            93        92      92        89      n/c
+OrthNorm                      93        91      92        89      n/c
+OrthNorm-MSRA scaled   -          91      93         -        n/c
+xavier                           91        90      92         89     n/c
+MSRA                          n/c        90      92        89     n/c
+
+LSUV: layer sequential uniform variance
+
+      </xmp>
+   </BODY>
+</HTML>
