@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+011-lec-001. basic of cnn
+<xmp>
+@
+Suppose we have image(32*32*3)
+one element represents one value
+
+First of all, we process only partial area of image
+Suppose we have filter(5*5*3)
+Filter creates one number
+
+Just imagine we have 5 input values $$$x_{1}, x_{2}, x_{3}, x_{4}, x_{5}$$$
+And we use Wx+b formular to create 'one number'
+$$$\hat{y}=w_{1}x_{1}+w_{2}x_{2}+w_{3}x_{3}+w_{4}x_{4}+w_{5}x_{5}+b$$$
+Here, all weights are elements of filter
+
+We also can use relu
+ReLu(Wx+b)
+
+We slide filter along with other elements of image
+
+@
+Then, think of how many numbers we can get from sliding filter
+Figuring out this numbers are important when defining shape of weight, building model
+
+@
+Suppose 7*7 image, 3*3 filter, 1 stride
+Shape of output is 5*5  
+
+Suppose 7*7 image, 3*3 filter, 2 stride
+Shape of output is 3*3  
+
+Generalization
+((7-3)/2)+1
+
+@
+As we perform sliding filter, image becomes smaller and smaller
+which means we lose data of image
+To resolve this, we use 'padding' when we use cnn
+
+Padding is putting 0 along with most outter area
+There are 2 benefits of padding
+1. Padding prevents losing image data rapidly
+1. Padding makes us know most outter area of image
+
+7*7 image, 3*3 filter, 1 stride, 1 pixel pad
+7*7->9*9 image
+((9-3)/1)+1=7, therefore 7*7
+This means our raw image is 7*7 and output image is also 7*7
+
+@
+Sliding filter1 -> output1
+Sliding filter2 -> output2
+...
+Sliding filter6 -> output6
+
+shape of entire output: (28,28,6)
+28,28: using this formular ((9-3)/1)+1=7
+6: number of filters
+
+      </xmp>
+   </BODY>
+</HTML>
