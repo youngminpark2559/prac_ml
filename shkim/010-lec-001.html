@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+010-lec-001. hidden layer, deep nn, issue of backpropagation with sigmoid, vanishing gradient, sigmoid and relu
+<xmp>
+W1=tf.Variable(tf.random_uniform([2,5], -1.0, 1.0))
+W2=tf.Variable(tf.random_uniform([5,4], -1.0, 1.0))
+W3=tf.Variable(tf.random_uniform([4,1], -1.0, 1.0))
+    
+b1=tf.Variable(tf.zeros([5]), name="Bias1")
+b2=tf.Variable(tf.zeros([4]), name="Bias2")
+b3=tf.Variable(tf.zeros([1]), name="Bias3")
+
+% Hypothesis function
+L2=tf.sigmoid(tf.matmul(X, W1)+b1)
+L3=tf.sigmoid(tf.matmul(L2, W2)+b2)
+hypothesis=tf.sigmoid(tf.matmul(L3,W3)+b3)
+   
+@
+Let's build 9 layers
+We only should be careful on first and last shape of weight
+% W1=tf.Variable(tf.random_uniform([2,5],-1.0,1.0), name='Weight1')
+% W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
+Shape of weight in hidden layer can be defined whatever you want
+
+W1=tf.Variable(tf.random_uniform([2,5],-1.0,1.0), name='Weight1')
+
+W2=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight2')
+W3=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight3')
+W4=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight4')
+W5=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight5')
+W6=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight6')
+W7=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight7')
+W8=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight8')
+W9=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight9')
+W10=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight10')
+
+W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
+    
+b1=tf.Variable(tf.zeros([5]), name='Bias1')    
+b2=tf.Variable(tf.zeros([5]), name='Bias2')    
+b3=tf.Variable(tf.zeros([5]), name='Bias3')    
+b4=tf.Variable(tf.zeros([5]), name='Bias4')    
+b5=tf.Variable(tf.zeros([5]), name='Bias5')    
+b6=tf.Variable(tf.zeros([5]), name='Bias6')    
+b7=tf.Variable(tf.zeros([5]), name='Bias7')    
+b8=tf.Variable(tf.zeros([5]), name='Bias8')    
+b9=tf.Variable(tf.zeros([5]), name='Bias9')    
+b10=tf.Variable(tf.zeros([5]), name='Bias10')    
+
+Last shape of bias should be 1 from [5,1]
+% W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
+b11=tf.Variable(tf.zeros([1]), name='Bias11')    
+
+Then, we should connect them
+Each L is hypothesis function in each layer
+XW=H(X)
+L1   L2 L3 L4 L5 L6 L7 L8 L9   L10
+L1=tf.sigmoid(tf.matmul(X,W1)+b1)
+L2=tf.sigmoid(tf.matmul(L1,W2)+b2)
+L3=tf.sigmoid(tf.matmul(L2,W3)+b3)
+L4=tf.sigmoid(tf.matmul(L3,W4)+b4)
+L5=tf.sigmoid(tf.matmul(L4,W5)+b5)
+L6=tf.sigmoid(tf.matmul(L5,W6)+b6)
+L7=tf.sigmoid(tf.matmul(L6,W7)+b7)
+L8=tf.sigmoid(tf.matmul(L7,W8)+b8)
+L9=tf.sigmoid(tf.matmul(L8,W9)+b9)
+L10=tf.sigmoid(tf.matmul(L9,W10)+b10)
+
+hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+    
+@
+If you want to use tensorboard, you should give them name when you build layer
+So, you can replace above code with following one
+with tf.name_scope('layer1') as scope:
+    L1=tf.sigmoid(tf.matmul(X,W1)+b1)
+with tf.name_scope('layer2') as scope:
+    L2=tf.sigmoid(tf.matmul(L1,W2)+b2)
+with tf.name_scope('layer3') as scope:
+    L3=tf.sigmoid(tf.matmul(L2,W3)+b3)
+with tf.name_scope('layer4') as scope:
+    L4=tf.sigmoid(tf.matmul(L3,W4)+b4)
+with tf.name_scope('layer5') as scope:
+    L5=tf.sigmoid(tf.matmul(L4,W5)+b5)
+with tf.name_scope('layer6') as scope:
+    L6=tf.sigmoid(tf.matmul(L5,W6)+b6)
+with tf.name_scope('layer7') as scope:
+    L7=tf.sigmoid(tf.matmul(L6,W7)+b7)
+with tf.name_scope('layer8') as scope:
+    L8=tf.sigmoid(tf.matmul(L7,W8)+b8)
+with tf.name_scope('layer9') as scope:
+    L9=tf.sigmoid(tf.matmul(L8,W9)+b9)
+with tf.name_scope('layer10') as scope:
+    L10=tf.sigmoid(tf.matmul(L9,W10)+b10)
+
+with tf.name_scope('lat') as scope:
+    hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+
+@
+When you perform backpropagation, if some defferentiation is given after sigmoid,
+you will get near 0 when you perform chainrule because sigmoid function outputs value between 0 and 1
+
+That is, the more you use layers, the more frequently above issue occurs
+
+This issue is called 'vanishing gradient'
+
+@
+To resolve this issue, we use relu(rectified linear unit) function instead of sigmoid function
+So, in nn, we use relu than sigmoid
+L1=tf.sigmoid(tf.matmul(X,W1)+b1)
+L1=tf.nn.relu(tf.matmul(X,W1)+b1)
+
+@
+Let's apply relu function on layers
+with tf.name_scope('layer1') as scope:
+    L1=tf.nn.relu(tf.matmul(X,W1)+b1)
+with tf.name_scope('layer2') as scope:
+    L2=tf.nn.relu(tf.matmul(L1,W2)+b2)
+with tf.name_scope('layer3') as scope:
+    L3=tf.nn.relu(tf.matmul(L2,W3)+b3)
+with tf.name_scope('layer4') as scope:
+    L4=tf.nn.relu(tf.matmul(L3,W4)+b4)
+with tf.name_scope('layer5') as scope:
+    L5=tf.nn.relu(tf.matmul(L4,W5)+b5)
+with tf.name_scope('layer6') as scope:
+    L6=tf.nn.relu(tf.matmul(L5,W6)+b6)
+with tf.name_scope('layer7') as scope:
+    L7=tf.nn.relu(tf.matmul(L6,W7)+b7)
+with tf.name_scope('layer8') as scope:
+    L8=tf.nn.relu(tf.matmul(L7,W8)+b8)
+with tf.name_scope('layer9') as scope:
+    L9=tf.nn.relu(tf.matmul(L8,W9)+b9)
+with tf.name_scope('layer10') as scope:
+    L10=tf.nn.relu(tf.matmul(L9,W10)+b10)
+
+Note that we use sigmoid on last layer
+because value of last layer should be between 0 and 1
+with tf.name_scope('lat') as scope:
+    hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+
+
+@
+There are other activation functions
+Sigmoid
+tanh
+ReLU
+Leaky ReLu
+Maxout
+ELU    
+      </xmp>
+   </BODY>
+</HTML>
