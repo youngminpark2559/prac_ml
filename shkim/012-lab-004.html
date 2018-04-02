@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+012-lab-004. stack layer for rnn with softmax layer
+<xmp>
+# lab-12-3-char-seq-softmax-only.py
+
+import tensorflow as tf
+import numpy as np
+tf.set_random_seed(777)
+
+sample = " if you want you"
+idx2char = list(set(sample))
+char2idx = {c: i for i, c in enumerate(idx2char)}  # char -> idex
+
+# hyper parameters
+dic_size = len(char2idx)  # RNN input size (one hot size)
+rnn_hidden_size = len(char2idx)  # RNN output size
+num_classes = len(char2idx)  # final output size (RNN or softmax, etc.)
+batch_size = 1  # one sample data, one batch
+sequence_length = len(sample) - 1  # number of lstm rollings (unit #)
+learning_rate = 0.1
+
+sample_idx = [char2idx[c] for c in sample]  # char to index
+x_data = [sample_idx[:-1]]  # X data sample (0 ~ n-1) hello: hell
+y_data = [sample_idx[1:]]   # Y label sample (1 ~ n) hello: ello
+
+X = tf.placeholder(tf.int32, [None, sequence_length])  # X data
+Y = tf.placeholder(tf.int32, [None, sequence_length])  # Y label
+
+# flatten the data (ignore batches for now). No effect if the batch size is 1
+X_one_hot = tf.one_hot(X, num_classes)  # one hot: 1 -> 0 1 0 0 0 0 0 0 0 0
+X_for_softmax = tf.reshape(X_one_hot, [-1, rnn_hidden_size])
+
+# When you create cell, most importance thing is to determine hidden_size
+cell=rnn.BasicLSTMCell(hidden_size,state_is_tuple=True)
+# [cell]*2: How many cell do you want to stack?
+stackedcell=rnn.MultiRnnCell([cell]*2,state_is_tuple=True)
+outputs,_states=tf.nn.dynamic_rnn(stackedcell,X_one_hot,dtype=tf.float32)
+
+# We reshape outputs data to be able to go in softmax
+X_for_softmax=tf.reshape(outputs,[-1,hidden_size])
+
+# Now, we perform softmax
+softmax_w=tf.get_variable("softmax_w",[hidden_size,num_classes])
+softmax_b=tf.get_variable("softmax_b",[num_classes])
+outputs=tf.matmul(X_for_softmax,softmax_w)+softmax_b
+
+# outputs is data from softmax
+# We reshape outputs into [batch_size,seq_length,num_classes] shape
+outputs=tf.reshape(outputs,[batch_size,seq_length,num_classes])
+
+weights = tf.ones([batch_size, sequence_length])
+
+
+# Compute sequence cost/loss
+sequence_loss = tf.contrib.seq2seq.sequence_loss(
+    logits=outputs, targets=Y, weights=weights)
+loss = tf.reduce_mean(sequence_loss)  # mean all sequence loss
+train = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
+
+prediction = tf.argmax(outputs, axis=2)
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    for i in range(3000):
+        l, _ = sess.run([loss, train], feed_dict={X: x_data, Y: y_data})
+        result = sess.run(prediction, feed_dict={X: x_data})
+
+        # print char using dic
+        result_str = [idx2char[c] for c in np.squeeze(result)]
+        print(i, "loss:", l, "Prediction:", ''.join(result_str))
+
+'''
+0 loss: 2.29513 Prediction: yu yny y y oyny
+1 loss: 2.10156 Prediction: yu ynu y y oynu
+2 loss: 1.92344 Prediction: yu you y u  you
+..
+2997 loss: 0.277323 Prediction: yf you yant you
+2998 loss: 0.277323 Prediction: yf you yant you
+2999 loss: 0.277323 Prediction: yf you yant you
+'''
+      </xmp>
+   </BODY>
+</HTML>
