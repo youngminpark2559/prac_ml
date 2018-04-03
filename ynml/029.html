@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,9 +46,9 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-029. Classifying text data into class by MLP(multi layer perceptron), Converting text data into vector<br/>
+029. classify text data into class by mlp(multi layer perceptron), convert text data into vector
 <xmp>
-@
+# @
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -57,76 +57,79 @@ from sklearn.model_selection import train_test_split
 from sklearn import model_selection, metrics
 import json
 
-# The number of words in text is 56681
+# Mumber of words in text is 56681
 # You can check it out in word-dic.json file
-max_words = 56681
+max_words=56681
 # There are 6 categories(like genres)
-nb_classes = 6    
-batch_size = 64 
-nb_epoch = 20
+nb_classes=6
+batch_size=64
+nb_epoch=20
 
-# This is a method which creates MLP(multi layer perceptron) model,
-# which will be passed into KerasClassfier as argument
+# This method creates mlp(multi layer perceptron) model,
+# which will be passed into KerasClassifier as argument
 def build_model():
-    model = Sequential()
-    model.add(Dense(512, input_shape=(max_words,)))
+    model=Sequential()
+    model.add(Dense(512,input_shape=(max_words,)))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
-        optimizer='adam',
-        metrics=['accuracy'])
+                  optimizer='adam',
+                  metrics=['accuracy'])
     return model
 
 # I load mini size data file
-data = json.load(open("./newstext/data-mini.json")) 
+data=json.load(open("./newstext/data-mini.json")) 
 # I load full size data file
-#data = json.load(open("./newstext/data.json"))
-X = data["X"] # 텍스트를 나타내는 데이터
-Y = data["Y"] # 카테고리 데이터
+#data=json.load(open("./newstext/data.json"))
+# Data representing text
+X=data["X"]
+# Data representing category
+Y=data["Y"]
 
-# 학습하기 --- (※3)
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
-Y_train = np_utils.to_categorical(Y_train, nb_classes)
+# For learning
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y)
+Y_train=np_utils.to_categorical(Y_train,nb_classes)
 print(len(X_train),len(Y_train))
 
 # I create classifier
-model = KerasClassifier(
-    build_fn=build_model, 
-    nb_epoch=nb_epoch, 
+model=KerasClassifier(
+    build_fn=build_model,
+    nb_epoch=nb_epoch,
     batch_size=batch_size)
 
-# I make "created classifier" to learn
+# I let "created classifier" to train
 # by passing feature and label of train data
-# X_train is frequency of appearance of word like data = [2,2,2,1,1,1,1]
-# Y_train is categories(some like genre)
-model.fit(X_train, Y_train)
+# X_train is frequency of appearance of word like data=[2,2,2,1,1,1,1]
+# Y_train is categories(something like genre)
+model.fit(X_train,Y_train)
 
 # For predicting
-y = model.predict(X_test)
+y=model.predict(X_test)
 
 # For evaluating
-ac_score = metrics.accuracy_score(Y_test, y)
-cl_report = metrics.classification_report(Y_test, y)
-print("accuracy: ", ac_score)
-print("report: \n", cl_report)
+ac_score=metrics.accuracy_score(Y_test,y)
+cl_report=metrics.classification_report(Y_test,y)
+print("accuracy: ",ac_score)
+print("report: \n",cl_report)
 
 
-@
-# Let's talk about the method how you convert text data into fixed length vector
-# Suppose we have following sentence "몇 번을 쓰러지더라도 몇 번을 무너지더라도 다시 일어나라"
-# We process morphological analysis by Twitter morphological analyzer
-# and we get following processed output
+# @
+# Let's talk about way how you can convert text data into fixed length vector
+# Suppose we have following sentence
+# "몇 번을 쓰러지더라도 몇 번을 무너지더라도 다시 일어나라"
+# We will process morphological analysis by twitter morphological analyzer
+# and we will get following processed output
 # 몇|번|을|쓰러지다|몇|번|을|무너지다|다시|일어나다
 
 # To convert text data into vector, we need "word_dictionary" and "data"
 
 # If we can't find "몇" in word_dictionary, we input "몇" into word_dictionary
 # with unique ID number representing "몇"
-# If we can find "몇" in word_dictionary, we just pass without doing anything
+# If we can find "몇" in word_dictionary, we just pass with doing nothing
 
-# word_dictionary = 
+# word_dictionary=
 # {
 #     "몇":1,
 #     "번":2,
@@ -137,10 +140,10 @@ print("report: \n", cl_report)
 #     "일어나다":7
 # }
 
-# You can make this word dictionary for entire text, resulting a lot of elements in vector
+# You can create this word dictionary for entire text, resulting lots of elements in vector
 
-# Now, we can make vector of above sentence by counting frequency of appearance in text
-# data = [2,2,2,1,1,1,1]
+# Now, we can create vector of above sentence by counting frequency of appearance in text
+# data=[2,2,2,1,1,1,1]
 
 </xmp>
    </BODY>
