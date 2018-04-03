@@ -46,52 +46,58 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-025. Configuring KoNLPy<br/>
+025. konlpy
 <xmp>
-@
-# KoNLPy internally uses Java libraries
-# Installing KoNLPy
+# @
+# Konlpy internally uses java libraries
+# Install konlpy
 pip install konlpy
 
-# Reference KoNLPy document on konlpy-ko.readthedocs.io/ko/
-# Click api button to see api
+# Reference konlpy document in konlpy-ko.readthedocs.io/ko/
+# Click api button to see api information
 
-# KoNLPy has 5 tag packages(hannanum class, kkms class, komora class, mecab class, twitter class)
-# KoNLPy uses twitter morphological analyzer because it's easiest to deal with morphemes because of name of morpheme represented in korean
+# Konlpy has 5 tag packages
+# hannanum class, kkms class, komora class, mecab class, twitter class
+# Konlpy uses "twitter morphological analyzer"
+# because it's easiest to deal with morphemes
+# because name of morpheme is represented in korean
 
 # You can choose other morphological analyzers
-# The process of morphological analysis is done by one method, so it's not a big deal
+# Process of morphological analysis can be done by just one method,
+# so it's not big deal process
 
-@
+# @
 # How to use twitter morphological analyzer
 
 from konlpy.tag import Twitter
-
 twitter = Twitter()
-
-# Pyhon 3.6 version automatically process unicode characters, so, you don't need to explicitly mark "u" like print(twitter.morphs(u'단독입찰보다 복수입찰의 경우'))
-# The following are example of basic process of morphological analysis with Twitter morphological analyzer
+# Pyhon 3.6 version automatically processes unicode characters,
+# so, you don't need to mark "u"
+# like print(twitter.morphs(u'단독입찰보다 복수입찰의 경우'))
+# Followings are examples of process of morphological analysis
+# with Twitter morphological analyzer
 print(twitter.morphs('단독입찰보다 복수입찰의 경우'))
-output: shows all morphemes
-# ['단독','입찰','보다','복수','입찰','의','경우']
+# < Output shows all morphemes
+# < ['단독','입찰','보다','복수','입찰','의','경우']
 print(twitter.nouns('유일하게 항공기 체계 종합개발 경험을 갖고 있는 KAI는'))
-# output: shows nouns
-# ['유일하','항공기','체계','종합','개발','경험']
+# < Output shows nouns
+# < ['유일하','항공기','체계','종합','개발','경험']
 print(twitter.pos('이것도 되나욬ㅋㅋ'))
-# output: shows word and name of morpheme
-# [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되나욬', "Noun"), ('ㅋㅋ', "KoreanParticle")]
+# < Output shows word and name of morpheme
+# < [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되나욬', "Noun"), ('ㅋㅋ', "KoreanParticle")]
 print(twitter.pos('이것도 되나욬ㅋㅋ', norm=True))
-# output:
-# [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되', "Verb"), ('나요', "Eomi"), ('ㅋㅋ', "KoreanParticle")]
+# < output:
+# < [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되', "Verb"), ('나요', "Eomi"), ('ㅋㅋ', "KoreanParticle")]
 print(twitter.pos('이것도 되나욬ㅋㅋ', norm=True, stem=True))
-# output:
-# [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되다', "Verb"), ('ㅋㅋ', "KoreanParticle")]
+# < output:
+# < [('이', "Determiner"), ('것', "Noun"), ('도', "Josa"), ('되다', "Verb"), ('ㅋㅋ', "KoreanParticle")]
 
-@
-# If you run into an issuse related to jpype, you can run "pip install jpype1"
+# @
+# If you run into issuse related to jpype,
+# you can run "pip install jpype1"
 
-@
-# print(twitter.pos('이것도 되나욬ㅋㅋ', norm=True, stem=True)) will be mostly used
+# @
+# Way of twitter.pos('이것도 되나욬ㅋㅋ', norm=True, stem=True)) will be mostly used
 
 </xmp>
    </BODY>
