@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,25 +46,31 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-020. Classifier(svm, random forest, etc)<br/>
+020. classifier(svm, random forest, etc)
 <xmp>
-@
-# I can see the kind of classifiers by searching "scikit-learn classifier"
-# If data can be separated by linear line, you can use SVC(), svm
+# @
+# I can see various kind of classifiers by searching "scikit-learn classifier"
+# If data can be separated by linear line, you can use svm
 
-# On the contrary, if data can't be separated by linear line or if data can be separated by circle line or if data can be separated by grib line, you should use other methods
+# On the contrary, if data can't be separated by linear line
+# or if data can be separated by circle line
+# or if data can be separated by grid line,
+# you should use other methods
 
-# You can see the picture here
+# You can see pictures here
 # scikit-learn.org/stable/_images/sphx_glr_plot_classifier_comparison_001.png
 # scikit-learn.org/stable/auto_example/classification/plot_classifier_comparison.html
 
-@
-# You should test all methods with proper amount of data and choose method which gives highest performance and precision
+# @
+# You can test all methods with proper amount of data
+# and choose method which gives highest performance and precision
 
-@
-# Let's see random forest
-# Random forest makes randomly created forest at every running time to output result
-# So, whenever you run this random forest expecting model, accuracy changes a little bit
+# @
+# Let's talk about random forest
+# Random forest creates randomly generated forest
+# at every running time into output result
+# So, whenever you run 'this random forest model',
+# accuracy can be changed a little bit
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
