@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,28 +46,31 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-014. Basic of scikit-learn and simply applying svm<br/>
+014. basic of scikit-learn, basic of svm
 <xmp>
-@
+# @
 import sklearn import svm
 
-# I create support vector machine classifier instance
+# I create svm classifier instance
 clf = svm.SVC()
 
-# And then, we will use fit() for learning and predict() for predicting
-
+# And then, we will use fit() for training and predict() for predicting
 # 1 argument : data
 # 2 argument : label
 # We will deal with xor data
-clf.fit([[0,0], [1,0], [0,1], [1,1]], [[0, 1, 1, 0]])
+clf.fit(
+    [[0,0],
+    [1,0],
+    [0,1],
+    [1,1]],
+    [[0, 1, 1, 0]])
 
 results = clf.predict([0,0], [1,0])
 
 print(results)
-# output will be a list of [0,1]
+# output will be list of [0,1]
 
-
-@
+# @
 from sklearn import metrics
 
 datas = [[0,0], [1,0], [0,1], [1,1]]
