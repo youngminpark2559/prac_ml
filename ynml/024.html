@@ -46,93 +46,95 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-024. Basic of applying deep learning methodology with Keras<br/>
+024. deep learning with keras
 <xmp>
-@
-# Run bmi-create.py to create bmi.csv
+# @
+# Run bmi-create.py to create bmi.csv file
 
 import random
-# This is a method which returns calculated 3 labels of BMI
-def calc_bmi(h, w):
-    bmi = w / (h/100) ** 2
-    if bmi < 18.5: 
-        return "thin"
-    if bmi < 25: 
-        return "normal"
-    return "fat"
-
-# I prepare a csv file to contain data
-fp = open("bmi.csv", "w", encoding="utf-8")
-fp.write("height,weight,label\r\n")
-# I generate random data
-# I create cnt dictionary and each value of key is initialized by 0
-cnt = {"thin":0, "normal":0, "fat":0}
-# I will iterate from 0 to 20000
-for i in range(20000):
-    # I generate random number for height
-    h = random.randint(120,200)
-    # I generate random number for weight
-    w = random.randint(35, 80)
-    # I find bmi label among "normal", "fat", "thin" from above 2 values
-    label = calc_bmi(h, w)
-    # I increate one value for the corresponding label in the cnt dictionary
-    cnt[label] += 1
-    # I write contents into bmi.csv in the following format
-    fp.write("{0},{1},{2}\r\n".format(h, w, label))
-# I close file strean    
-fp.close()
-print("file generation is completed : ", cnt)
-
-
-@
-# Now, I will make the keras expecting model to learn as following steps
-# 1. I load modules I need to process this task
-# 1. I load bmi.csv file data
-# 1. I create a model which is similar to learning methods like fit() and predict() which are what we've learned
-# For learning
-# For predicting
-# For evaluating
-
 from keras.module import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.callbacks import EarlyStopping
 import pandas as pd
 import numpy as np
 
+# This is method which returns calculated 3 labels of BMI
+def calc_bmi(h,w):
+    bmi=w/(h/100)**2
+    if bmi<18.5: 
+        return "thin"
+    if bmi<25: 
+        return "normal"
+    return "fat"
 
-# I process features train data
+# I prepare csv file where data will be written
+fp=open("bmi.csv","w",encoding="utf-8")
+fp.write("height, weight, label\r\n")
+# I create random data
+# I create cnt dictionary and each value of key is initialized by 0
+cnt={"thin":0,"normal":0,"fat":0}
+# I will iterate from 0 to 20000
+for i in range(20000):
+    # I generate random number for height
+    h=random.randint(120,200)
+    # I generate random number for weight
+    w=random.randint(35, 80)
+    # I get bmi label
+    label=calc_bmi(h,w)
+    # I increate one value for the corresponding label in the cnt dictionary
+    cnt[label]+=1
+    # I write contents into bmi.csv in the following format
+    fp.write("{0},{1},{2}\r\n".format(h,w,label))
+# I close file strean
+fp.close()
+print("file generation is completed : ",cnt)
+
+
+# @
+# Now, I will let keras model to train with following steps
+# 1. I load modules I need to process this task
+# 1. I load bmi.csv file data
+# 1. I create model which is similar to learning methods like fit() and predict()
+
+# For learning
+# For predicting
+# For evaluating
+
+# I process features of train data
 # [
-#     # I normalize data by dividing them, resulting values from 0 to 1
-#     [height/200, weight/100],
-#     [height/200, weight/100]
+#     # I normalize data
+#     [height/200,weight/100],
+#     [height/200,weight/100]
 # ]
 
 # # I process labels of train data
 # [
 #     # Each label will be converted as one-hot-encoding
-#     # [1,0,0], [0,1,0], [0,0,1]
+#     # [1,0,0],[0,1,0],[0,0,1]
 #     "thin",
 #     "normal",
 #     "fat"
 
 # ]
 
-@
+# @
 # I load bmi.csv file
-csv = pd.read_csv("d://chromedown//bmi.csv")
-# I bring all data from weight column and I divide them all by 100, 200 to normalize
-csv["weight"] /= 100 
-csv["height"] /= 200
+csv=pd.read_csv("d://chromedown//bmi.csv")
+# I bring all data from weight column
+# and I normalize data
+csv["weight"]/=100 
+csv["height"]/=200
 
-# I make bmi_class dictionary and I convert each label into one-hot-encoding value in list
-bmi_class = 
+# I create bmi_class dictionary
+# and I convert each label into one-hot-encoding value in list
+bmi_class=
 {
     "thin":[1,0,0],
     "normal":[0,1,0],
     "fat":[0,0,1]
 }
 
-# I make 20000 lists which has 3 spaces inside of one list
+# I create 20000 lists which has 3 spaces inside of one list
 # For example,
 # [
 #     [0,0,0],
@@ -140,13 +142,14 @@ bmi_class =
 #     ...,
 #     [0,0,0]
 # ]
-y = np.empty((20000, 3))
+y=np.empty((20000,3))
 
-# I write index and value in frond area of tuple
-# from the data which I bring from csv["label"] by using enumerate(csv["label"])
-for i, v in enumerate(csv["label"]):
-    y[i] = bmi_class[v]
-    # I will use following output as label for corresponding feature train data
+# I write index and value in front of area of tuple from data
+# which I bring from csv["label"] by using enumerate(csv["label"])
+for i,v in enumerate(csv["label"]):
+    y[i]=bmi_class[v]
+    # I will use following output as label
+    # for corresponding feature of train data
     # output:
     # [
     #     [0 0 1]
@@ -155,14 +158,16 @@ for i, v in enumerate(csv["label"]):
     # ]
 
 # I convert data from csv file into matrix
-x = csv[["weight", "height"]].as_matrix()
+x=csv[["weight", "height"]].as_matrix()
 
 # I divide data into train data and test data
-x_train, y_train = x[1:15001], y[1:15001]
-x_test, y_test = x[15001:20001], y[15001:20001]
+x_train,y_train=x[1:15001],y[1:15001]
+x_test,y_test=x[15001:20001],y[15001:20001]
 
-# I use Sequential model and I compose layers and you get composed model
-model = Sequential()
+# I use Sequential model
+# and I compose layers
+# and you will get composed model
+model=Sequential()
 model.add(Dense(512, input_shape=(2,)))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
@@ -171,36 +176,32 @@ model.add(Activation('relu'))
 model.add(Dropout(0.1))
 model.add(Dense(3))
 model.add(Activation('softmax'))
-# I actually make model
-model.compile("rmsprop", "categorical_crossentropy", metrics=["accuracy"])
+# I actually build model
+model.compile("rmsprop","categorical_crossentropy",metrics=["accuracy"])
 
 # For learning
-# model.fit(x_train, y_train)
-# For learning to enhance performance by passing addtional arguments
+# model.fit(x_train,y_train)
+# To enhance performance, you can pass addtional arguments
 model.fit
 (
     x_train, 
     y_train,
-    # batch_size is page quantity of training book
-    # I want to enhance the page quantity of training book which is trained by model in one sequence of training, so expecting model can train more
-    # For this, I change default value 30 to 100
     batch_size=100,
-    # 1 epoch means expecting model finishes one training book
-    # So, I make expecting model to finish 20 training books
     nb_epoch=20,
     validation_split=0.1,
-    callbacks=[EarlyStopping(monitor='val_loss', patience=2)],
+    callbacks=[EarlyStopping(monitor='val_loss',patience=2)],
     verbose=1
 )
+
 # For predicting 
 model.predict()
 # For evaluating
-score = model.evaluate(x_test, y_test)
+score=model.evaluate(x_test,y_test)
 # score is returned as list
-print("score of loss:", score[0])
-print("score of accuracy:", score[1])
+print("score of loss:",score[0])
+print("score of accuracy:",score[1])
 
-@
+# @
 # Reference keras document on http://keras.io/modules/Sequential
 # For compile(), we pass 
 # 1 argument: optimizer, 
@@ -208,15 +209,15 @@ print("score of accuracy:", score[1])
 # 3 argument: metrics(default=none), if you use this, you can get better evalution from training and testing
 
 # You can see various kind of optimizers
-# You will try to use RMSprop optimizer
+# You can try to use RMSprop optimizer
 
 # You can see various kind of losses
-# You will try to use categorical_crossentropy loss
+# You can try to use categorical_crossentropy loss
 
-@
-# run this python file
-# and you can see tensorflow running in the backend
-# you can see loss value and accuracy value in the middle of training
+# @
+# Run this python file
+# and you will see tensorflow running in backend
+# you will see loss value and accuracy value in middle of training
 
 </xmp>
    </BODY>
