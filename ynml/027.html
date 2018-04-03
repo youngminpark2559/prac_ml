@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,113 +46,118 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-027. Word2Vec<br/>
+027. word2vec
 <xmp>
-@
-Word2Vec : This is library which can make words to be expressed on xy plane as number values
+# @
+# Word2Vec is library which can make words to be expressed on xy plane as number values
 
-@
-father-man+woman : the word of father - property of man + property of woman
-Then, you will get mother
+# @
+# father-man+woman : the word of father - property of man + property of woman
+# Then,you will get mother
 
-@
-When you use Word2Vec, it requires gensim library   
-pip3 install gensim
+# @
+# When you use Word2Vec,it requires gensim library   
+# pip3 install gensim
 
-@
+# @
 from gensim.models import word2vec
 
 # I input text data to make it as text data fitted to Word2Vec model
-data = word2vec.LineSentence("")
+data=word2vec.LineSentence("")
 # I input manipulated text data into Word2Vec() to make Word2Vec model
-model = word2vec.Word2Vec(data, size=200, window=10, hs=1, min_count=2, sg=1)
-# I save created Word2Vec model
+model=word2vec.Word2Vec(data,size=200,window=10,hs=1,min_count=2,sg=1)
+# I save created word2vec model
 model.save("filenameyouwant")
 
-@
+# @
 # I load text file
-fp = codecs.open("text.txt", "r", encoding="utf-16")
-# I use BeautifulSoup for parsing html
-soup = BeautifulSoup(fp, "html.parser")
-# I select body tag which is text tag's descendant
-body = soup.select_one("text body")
-# I bring text from the contents of body tag
-text = body.getText()
+fp=codecs.open("text.txt","r",encoding="utf-16")
+# I use beautifulsoup to parse html
+soup=BeautifulSoup(fp,"html.parser")
+# text tag, descendant, body tag
+body=soup.select_one("text body")
+# I extract text from body tag
+text=body.getText()
 
-@
-# And then, I use Twitter morphological analyzer to separate one sentence by one sentence based on \r\n
-twitter = Twitter()
-lines = text.split("\r\n")
-results = []
-# And then I process morphological analysis by pos()
+# @
+# And then, I use twitter morphological analyzer
+# to separate one sentence by one sentence based on \r\n
+twitter=Twitter()
+# I split text
+lines=text.split("\r\n")
+results=[]
 for line in lines:
-    r = []
-    malist = twitter.pos(line, norm=True, stem=True)
+    r=[]
+    # And then, I process morphological analysis
+    malist=twitter.pos(line,norm=True,stem=True)
     # Created malist in this way has "word(analyzed morpheme)" and "pumsa(part of speech)"
-    # word, pumsa is tuple so you can wrap them by parenthesis like this (word, pumsa)
-    for word, pumsa in malist:
-        # "text = body.getText()" has a lot of puntuations, so I want to exclude them all
-        # For that, I want to extract word only if its pumsa is not Josa, Eomi, puntuations
-        # And then I will put them into a list of "r"
-        if not pumsa in ["Josa, Eomi", "Punctuation"]:
+    # "word, pumsa" is returned as tuple,
+    # so you can wrap them by parenthesis like this (word,pumsa)
+    for word,pumsa in malist:
+        # "text=body.getText()" has lots of puntuations,
+        # so I want to remove them all
+        # For that, I want to extract word
+        # only if its pumsa is not Josa, Eomi, puntuations
+        # And then, I will put them into list of "r"
+        if not pumsa in ["Josa,Eomi","Punctuation"]:
             r.append(word)
-    # I want to add processed words into results list       
-    # I want insert a white space between each contents of "r" list
-    # And in case that something wrong happens, I apply strip on both ends when I append
+    # I want to add processed words into "results" list
+    # I want to insert white space between each contents of "r" list
+    # And in case that something wrong happens, 
+    # I apply strip on both ends when I append
     results.append((" ".join(r)).strip())
 
-# And then, I make the final output by joining each contents of results list
-output = (" ".join(results)).strip()
+# And then, I create final output by joining each contents of "results" list
+output=(" ".join(results)).strip()
 
 # I want to save output as file
-# I open file stream which is closed automatically when finished
-# w: write mode
-with open("toji.wakati", "w", encoding=utf-8) as fp:
+with open("toji.wakati","w",encoding=utf-8) as fp:
     fp.write(output)
 
-
-@
+# @
 # I input created and processed text file "toji.wakati" into LineSentence()
-data = word2vec.LineSentence("toji.wakati")
-model = word2vec.Word2Vec(data, size=200, window=10, hs=1, min_count=2, sg=1)
-# I save created model with the name "toji.model"
+data=word2vec.LineSentence("toji.wakati")
+model=word2vec.Word2Vec(data,size=200,window=10,hs=1,min_count=2,sg=1)
+# I save created model with name of "toji.model"
 model.save("toji.model")
 
-@
+# @
 # Now, you will have 2 files, toji.wakati and toji.model
 
-@
+# @
 # I want to use "toji.model"
 from gensim.models import word2vec
-model = word2vec.Word2Vec.load("toji.model")
-# Now, I have loaded Word2Vec model, and I can do various tasks with it
+model=word2vec.Word2Vec.load("toji.model")
+# Now, I have loaded Word2Vec model,
+# and I can do various tasks with it
 # I can find and see similar meaning words with "땅"
 model.most_similar(positive=["땅"])
 
-@
-# I use Wikipedia as a dictionary
+# @
+# I can use wikipedia as dictionary
 # Step
-# 1. I grab all data from Wikipedia
+# 1. I grab all data from wikipedia
 # 1. I make each wakati file for each data
-# 1. I make Word2Vec model based on each wakati file
+# 1. I create word2vec model based on each wakati file
 # 1. I test those models
 
 # Wikipedia US 10GB
 # Wikipedia JN 9GB
 # Wikipedia KR 2.3GB
 
-@
+# @
 # I load word2vec model file
-model = word2vec.Word2Vec.load("wiki2.model")
+model=word2vec.Word2Vec.load("wiki2.model")
 model.most_similar(positive="파이썬")
-model.most_similar(positive=["파이썬", "Python"])
+model.most_similar(positive=["파이썬","Python"])
 # I output data only in from 0 to 3
-model.most_similar(positive=["왕자", "여성"], negative=["남성"])[0:3]
+model.most_similar(positive=["왕자","여성"],negative=["남성"])[0:3]
 
-@
+# @
 model["고양이"]
 # You will see vectorized 고양이
-# The reason that the size of list is 100 is that you input size=100 in "model=word2vec.Word2Vec(data, size=100)"
+# The reason that the size of list is 100 is
+# because you input size=100 in "model=word2vec.Word2Vec(data,size=100)"
 # array([22,22,33,.....])
    
 </xmp>      
