@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,22 +46,17 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-016. Arguments of fit() of scikit-learn<br/>
+016. arguments of fit()
 <xmp>
-@
-# We will how and what arguments we should input into clf.fit()
+# @
+# We will talk about how and what arguments we should input into clf.fit()
 
-@
-# We will try MNIST
+# @
+# We will try mnist
 # We will convert numbers written as image into csv file
-# And We will input this csv file data into fit() to make the expecting model learn
+# And we will input this csv file data into fit() to let expecting model to train
 
-@
-# Converting is actually nearer to processing file rather than machine learning
-
-@
-# We will process downloading MNIST data and converting them into csv file
-
+# @
 import urllib.request as req
 import gzip, os, os.path
 
@@ -99,13 +94,13 @@ for f in files:
             w.write(body)
 print("ok")
 
-@
+# @
 # Run this python file
 # You can see the mnist folder created
 # You need to explore that folder
 
 
-@
+# @
 I need to convert mnist to csv
 import struct
 def to_csv(name, maxdata):
@@ -145,7 +140,7 @@ to_csv("t10k", 500)
 
 # The created files are (train csv + train0-5.pgm + ...) and (t10k csv + t10k0-5.pgm + ...)
 
-@
+# @
 # Open the train csv
 # The data in the first column represents label
 # The data in the columns excluded the first column, represents image of number represented by characters together
@@ -153,9 +148,9 @@ to_csv("t10k", 500)
 # There are 28 images of number
 # So, we have 28*28=784 number data
 
-@
+# @
 # we will input one data
-# I copy one entire row excluded the first data from right representing label
+# I copy one entire row excluded first data from right representing label
 
 input = "0 0 0 1 0 0...0"
 # I want to split string by white space
@@ -172,8 +167,9 @@ for i in range(len(input))
         print()
 
 
-@
-# Now, what we need to do is using learning methods by inputing vectorized image data and its label
+# @
+# Now, what we need to do is using learning methods
+# by inputing vectorized image data and its label
 f = svm.SVC()
 # For learning
 f.fit
@@ -190,28 +186,32 @@ f.fit
     ]
 )
 
-
-@
-# We want to use pandas to load csv
+# @
+# We want to use pandas to load csv file
 from sklearn import model_selection, svm, metrics
 import pandas
 
-# These files have no header so it's none
+# These files have no header so we specify none
+# Train dataset
 train_csv = pandas.read_csv("D://chromedown//train.csv", header=None)
+# Test dataset
 tk_csv = pandas.read_csv("D://chromedown//t10k.csv", header=None)
 
-# I extract each data
+# I will extract each data
 # iloc()
 # 1 argument : range of entire row you want to extract
-# 2 argument : range of rows you want to extract (in this example, we should exclude label row)
+# 2 argument : range of rows you want to extract
+# in this example, we should exclude label row
 # We need to convert number from 0 to 255 into number from 0 to 1
-# We will define a test(l) to convert number ranged from 0 to 1
+# We will define test(l) to convert number ranged from 0 to 1
+# This method is passed map() 
 def test(l):
     output = []
     for i in l:
         output.append(float(i)/256)
     return output        
 
+# Select entire row, select 1: column
 train_csv_data = list(map(test, train_csv.iloc[:, 1:].values))
 tk_csv_data = list(map(test, tk_csv.iloc[:, 1:].values))
 train_csv_label = train_csv[0].values
