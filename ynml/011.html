@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,62 +46,65 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-011. Basic of CSV(comma separated values)<br/>
+011. basic of csv
 <xmp>
-@
+# @
 # CSV
 # 1000,soap,300
 # 1001,glove,150
 # 1002,mask,230
 
-@
+# @
 # SSV(space separated values)
 # 1000 soap 300
 # 1001 glove 150
 # 1002 mask 230
 
-@
+# @
 # TSV(tab separated values)
 # 1000  soap    300
 # 1001  glove   150
 # 1002  mask    230
 
-@
-# The properties of CSV
-# CSV has one data by one line
-# Attributes are separated by comma
-# The most top line can be used as header
+# @
+# Properties of CSV:
+# 1. CSV has one data by one line
+# 1. Attributes of each data are separated by comma
+# 1. Most top line can be used as header
 
 # ID,name,price
 # 1000,soap,300 : data1
 # 1001,glove,150 : data2
 # 1002,mask,230 : data3
 
-@
+# @
 # Comparison between xml, json, csv
-# size of file : xml > json > csv
-# ability of expression : xml > json > csv
-# readability : json > xml > csv
+# size: xml > json > csv
+# expression: xml > json > csv
+# readability: json > xml > csv
 
-@
-# poisonous mushroom
+# @
+# Poisonous mushroom data
 # https://archive.ics.uci.edu/ml/datasets/mushroom
 # go to data folder
 # download agaricus-lepiota.data
 
-@
+# @
 # Analyzing csv
-
 csv = """\
 p,x,s,n,t,p,f,c,n,k,e,e,s,s,w,w,p,w,o,p,k,s,u
 e,x,s,y,t,a,f,c,b,k,e,c,s,s,w,w,p,w,o,p,n,n,g
 e,b,s,w,t,l,f,c,b,n,e,c,s,s,w,w,p,w,o,p,n,n,m\
 """
 
-# If you want to separate sequence of characters by a particular symbol, you can use split()
+# If you want to separate sequence of characters by particular symbol,
+# you can use split()
 # First, you can split sequence of characters by "\n"
 splitted = csv.split("\n")
-# you pass split symbol as first argument into split(), you can omit the name of arugment if you use only one argumet
+
+# You pass split symbol as first argument into split(),
+# you can omit the name of arugment if you use only first argumet
+# split(sep=",")
 for item in splitted:
     list_mushroom = csv.split(",")
     print(list_mushroom)
@@ -111,7 +114,7 @@ for item in splitted:
     # ['e','b','s','w','t','l','f','c','b','n','e','c','s','s','w','w','p','w','o','p','n','n','m']
 
 
-@
+# @
 # How to deal with "python list"
 # 1. When you choose one element
 list_mushroom[0]
@@ -134,32 +137,30 @@ list_mushroom[1:4]
 list_mushroom[5:]
 list_mushroom[:5]
 
-@
+# @
 # CSV files is generally created by excel
-# And many exported csv file from excel have euc-kr encoding
-# If you can export csv file as utf-8 encoding, you can do it
+# And many exported csv files from excel have euc-kr encoding
+# If you can export csv file as utf-8 encoding, you should do it
 
-@
+# @
 # codecs is module which converts encoding
 import csv, codecs
-
 filename = "test.csv"
-# We will just directly read file so we use r mode
+# When we read file in read only mode so we should use r
 # "euc-kr" means encoding format
-# When you read a file as euc-kr format, you should use codecs module
+# When you read file as euc-kr format, you should use codecs module
 file = codecs.open(filename, "r", "euc-kr")
-# 1 arg : iterable object
-# 2 arg : delimiter
+# 1 arg: iterable object
+# 2 arg: delimiter
 # 3 arg is quotechar'"' : if it need, for example, 'a','b','c'
 csv.reader(file, delimiter=",")
 
 for cells in reader:
     print(cells[1], cells[2])
 
-@
-# It's actually not often used to read csv by csv module
-# We use pandas to read csv
-
+# @
+# It's actually not much used to read csv file with csv module
+# We use pandas to read csv file
 </xmp>
    </BODY>
 </HTML>
