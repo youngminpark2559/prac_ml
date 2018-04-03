@@ -37,8 +37,8 @@ MathJax.Hub.Config({
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,34 +46,35 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-013. Additional contents of web scrapping<br/>
+013. web api
 <xmp>
-@
+# @
 # API has various meanings
 
-# Web API generally means xml, json, csv file data which are opened on the web
-# Data on the web actually can be called as web api
+# Web api generally means xml, json, csv file data which are opened on web
+# Data on web actually can be called web api
+# Data opened on web can be called open api
 
-# Open data on the web can be called as open api
+# @
+# Process of using web api is that you register web api service,
+# then, you declare that you want to get data,
+# then, you can obtain data
 
-@
-# The process of using web api is that you register service, you declare you want to get data, and you can get data
-
-@
-# You can see a list of api you can use in Korea in the following site
+# @
+# You can see list of api you can use in Korea in following site
 # apistore.co.kr
 
-@
 # You can collect data by using above site
 
-@
-# Now that we've learned how to parse html document, every data on the web can be target to be collected
+# @
+# Now that we've learned how to parse html document,
+# every data on web can be target to be collected
 
-@
-# You can see a list of data and rule which owner of data claims, in the following way
+# @
+# You can see list of data and rule which owner of data claims in the following site
 # www.xxx.com/robots.txt
 
-# user-agent:* disallow:/ means that all user can't take everything
+# user-agent:* disallow:/ means that all user can't get everything
 
 </xmp>
    </BODY>
