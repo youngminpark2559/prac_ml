@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+003-002. indexing with numpy array
+<xmp>
+# @
+# You can use boolean indexing, boolean array
+names=np.array(["Charles","Young","Alice","Young","Alice","Young","Young"])
+data=np.random.randn(7,4)
+names
+# < array(['Charles', 'Young', 'Alice', 'Young', 'Alice', 'Young', 'Young'], dtype='<U7')
+data
+# < array([[ 0.7540357 , -0.65693737,  0.85664083, -0.60241509],
+# <        [ 0.3895696 , -0.7051907 ,  0.39023878, -0.48335437],
+# <        [-2.89617544, -0.42798966, -0.33474263,  1.54424473],
+# <        [-0.90038613,  0.66942175,  0.98441066, -0.01437809],
+# <        [ 0.35546628, -1.79614974, -0.97606331,  0.41441987],
+# <        [ 0.13330959, -1.06778664,  0.81495713, -0.72482401],
+# <        [ 0.2339457 ,  0.37884242,  0.84497755,  0.87919576]])
+names=="Young"
+# < array([False,  True, False,  True, False,  True,  True])
+data[names="Young",:]
+# < array([[ 0.3895696 , -0.7051907 ,  0.39023878, -0.48335437],
+# <        [-0.90038613,  0.66942175,  0.98441066, -0.01437809],
+# <        [ 0.13330959, -1.06778664,  0.81495713, -0.72482401],
+# <        [ 0.2339457 ,  0.37884242,  0.84497755,  0.87919576]])
+</xmp>
+   </BODY>
+</HTML>
