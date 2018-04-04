@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+001-003. scipy, numpy, pandas, matplotlib
+<xmp>
+@
+Scipy
+    Numpy
+        Pandas
+        Matplotlib
+
+@
+Numpy is base library for data analysis
+Numpy provides powerful interface for vector and matrix operation
+
+@
+Pandas provides powerful data analysis,
+with data structure like series and dataframe
+
+@
+Matplotlib visualizes result of data analysis obtained from numpy or pandas
+</xmp>
+   </BODY>
+</HTML>
