@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+004-003. manipulate dataframe
+<xmp>
+import numpy as np
+import panda as pd
+
+df=pd.DataFrame(np.random.randn(6,4))
+df
+
+df.columns=["A","B","C","D"]
+# You can create datetime type index
+df.index=pd.date_range("20160701",periods=6)
+df.index
+df
+
+df["F"]=[1.0,np.nan,3.5,6.1,np.nan,7.0]
+df
+
+# You can remove entire row which contains nan
+df.dropna(how="any")
+
+# You can remove entire row which contains all nan
+df.dropna(how="all")
+
+# You can replace nan with value
+df.fillna(value=5.0)
+
+# You can get true value from nan
+df.isnull()
+
+df.loc[df.isnull()["F"],:]
+
+# @
+pd.to_datetime["20170601"]
+
+df.drop(pd.to_datetime["20170601"])
+
+df.drop([pd.to_datetime["20170601"],pd.to_datetime["20170605"]])
+
+df.drop("F",axis=1)
+
+df.drop(["B","F"],axis=1)
+
+
+</xmp>
+   </BODY>
+</HTML>
