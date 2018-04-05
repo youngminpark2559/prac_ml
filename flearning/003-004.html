@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+003-004. analyze movieLens 1m data by using numpy
+<xmp>
+import numpy as np
+
+data=np.loadtxt("/home/young/data/movielens-1m/ratings.dat",delimiter="::",dtype=np.int64)
+data[:5,:]
+# < array([[        1,      1193,         5, 978300760],
+# <        [        1,       661,         3, 978302109],
+# <        [        1,       914,         3, 978301968],
+# <        [        1,      3408,         4, 978300275],
+# <        [        1,      2355,         5, 978824291]])
+data.shape
+# < (1000209, 4)
+
+# You find averge of rating score of entire dataset
+mean_rating_total=data[:,2].mean()
+mean_rating_total
+# < 3.581564453029317
+
+# You find averge of rating score of each user
+# You first extract each user
+user_ids=np.unique(data[:,0])
+user_ids[:5]
+# < array([1, 2, 3, 4, 5])
+user_ids.shape
+# < (6040,)
+# You create empty list
+mean_rating_by_user_list=[]
+for user_id in user_ids:
+    # You get true or false with "data[:,0]==user_id"
+    # Select all columns on true
+    data_for_user=data[data[:,0]==user_id,:]
+    mean_rating_for_user=data_for_user[:,2].mean()
+    mean_rating_by_user_list.append([user_id,mean_rating_for_user])
+
+mean_rating_by_user_list[:5]
+# < [[1, 4.188679245283019],
+# <  [2, 3.7131782945736433],
+# <  [3, 3.9019607843137254],
+# <  [4, 4.190476190476191],
+# <  [5, 3.1464646464646466]]
+
+# You convert list into array to easily deal with
+mean_rating_by_user_array=np.array(mean_rating_by_user_list,dtype=np.float32)
+mean_rating_by_user_array[:5]
+# < array([[1.       , 4.188679 ],
+# <        [2.       , 3.7131784],
+# <        [3.       , 3.9019608],
+# <        [4.       , 4.1904764],
+# <        [5.       , 3.1464646]], dtype=float32)
+mean_rating_by_user_array.shape
+# < (6040, 2)
+
+# You will export as file
+np.savetxt("mean_rating_by_user.csv",mean_rating_by_user_array,fmt="%.3f",delimiter=",")
+
+</xmp>
+   </BODY>
+</HTML>
