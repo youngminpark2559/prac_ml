@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 25px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+010-002. rnn, train words, predict last character
+<xmp>
+# You will train words which have 4 characters,
+# so,when you give 3 characters to model,
+# it will predict corresponding 1 character
+
+import tensorflow as tf
+import numpy as np
+
+char_arr=['a','b','c','d','e','f','g',
+            'h','i','j','k','l','m','n',
+            'o','p','q','r','s','t','u',
+            'v','w','x','y','z']
+
+# You create correlational array,
+# to use one-hot-encoding and decoding
+# {'a': 0,'b': 1,'c': 2,...,'j': 9,'k',10,...}
+num_dic={n: i for i,n in enumerate(char_arr)}
+# < {'a': 0,
+# <  'b': 1,
+# <  'c': 2,
+# <  'd': 3,
+# <  'e': 4,
+# <  'f': 5,
+# <  'g': 6,
+# <  'h': 7,
+# <  'i': 8,
+# <  'j': 9,
+# <  'k': 10,
+# <  'l': 11,
+# <  'm': 12,
+# <  'n': 13,
+# <  'o': 14,
+# <  'p': 15,
+# <  'q': 16,
+# <  'r': 17,
+# <  's': 18,
+# <  't': 19,
+# <  'u': 20,
+# <  'v': 21,
+# <  'w': 22,
+# <  'x': 23,
+# <  'y': 24,
+# <  'z': 25}
+dic_len=len(num_dic)
+# < 26
+
+# You will use following array as input and output,
+# in following usage
+# wor is X,d is Y from "word"
+# woo is X,d is Y from "wood"
+seq_data=['word','wood','deep','dive','cold','cool','load','love','kiss','kind']
+
+def make_batch(seq_data):
+    input_batch=[]
+    target_batch=[]
+    for seq in seq_data:
+        # What you create here for input batch is index number of char_arr
+        # batch1,batch2,...
+        # [22,14,17],[22,14,14],[3,4,4],[3,8,21] ...
+        # wor
+        # [22,14,17]
+        input=[num_dic[n] for n in seq[:-1]]
+        # 3,3,15,4,3 ...
+        target=num_dic[seq[-1]]
+        # You perform one-hot-encoding
+        # if input is [0,1,2]:
+        # [[ 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+        #  [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+        #  [ 0.  0.  1.  0.  0.  0.  0.  0.  0.  0.]]
+        input_batch.append(np.eye(dic_len)[input])
+        # Loss function softmax_cross_entropy_with_logits should take label in one-hot-encoding
+        # But,sparse_softmax_cross_entropy_with_logits can take index value,
+        # because it doesn't use one-hot-encoding
+        target_batch.append(target)
+
+    return input_batch,target_batch
+
+# @
+# You configure options
+learning_rate=0.01
+n_hidden=128
+total_epoch=30
+# step of type: [1 2 3] => 3
+# n_step is number of sequence which consists of rnn
+n_step=3
+# Size of input will be 26,
+# because of one-hot-encoding of alphabet characters
+# Output also can be classified by 26 alphabet characters
+n_input=n_class=dic_len
+
+# @
+# You build rnn model
+X=tf.placeholder(tf.float32,[None,n_step,n_input])
+# Since you will use sparse_softmax_cross_entropy_with_logits() as loss function,
+# format of label will be index number, not one-hot vector
+# So, you will use 1 dimension array with 1 element
+# [3] [3] [15] [4] ...
+# If you use one-hot-encoding,
+# format of input should be [None,n_class]
+Y=tf.placeholder(tf.int32,[None])
+
+W=tf.Variable(tf.random_normal([n_hidden,n_class]))
+b=tf.Variable(tf.random_normal([n_class]))
+
+# You craete rnn cell
+cell1=tf.nn.rnn_cell.BasicLSTMCell(n_hidden)
+# You use dropout to prevent overfitting
+cell1=tf.nn.rnn_cell.DropoutWrapper(cell1,output_keep_prob=0.5)
+# You additionally create more rnn cell
+cell2=tf.nn.rnn_cell.BasicLSTMCell(n_hidden)
+
+# You create merged cell combined by multiple cells
+multi_cell=tf.nn.rnn_cell.MultiRNNCell([cell1,cell2])
+
+# You create recurrent neural network by using tf.nn.dynamic_rnn()
+# time_major=True
+outputs,states=tf.nn.dynamic_rnn(multi_cell,X,dtype=tf.float32)
+
+# You convert final result into one-hot-encoding format
+outputs=tf.transpose(outputs,[1,0,2])
+outputs=outputs[-1]
+model=tf.matmul(outputs,W) + b
+
+cost=tf.reduce_mean(
+            tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits=model,labels=Y))
+
+optimizer=tf.train.AdamOptimizer(learning_rate).minimize(cost)
+
+# @
+# You train rnn model
+sess=tf.Session()
+sess.run(tf.global_variables_initializer())
+
+input_batch,target_batch=make_batch(seq_data)
+
+for epoch in range(total_epoch):
+    _,loss=sess.run([optimizer,cost],
+                       feed_dict={X: input_batch,Y: target_batch})
+
+    print('Epoch:','%04d' % (epoch + 1),
+          'cost =','{:.6f}'.format(loss))
+
+print('Completed optimization')
+
+# @
+# You see result
+
+# Since label is int, you convert predicton into int
+prediction=tf.cast(tf.argmax(model,1),tf.int32)
+# Since you don't use one-hot-encoding on prediction and label,
+# you just compare them in index number
+prediction_check=tf.equal(prediction,Y)
+accuracy=tf.reduce_mean(tf.cast(prediction_check,tf.float32))
+
+input_batch,target_batch=make_batch(seq_data)
+
+predict,accuracy_val=sess.run([prediction,accuracy],\
+                    feed_dict={X: input_batch,Y: target_batch})
+
+predict_words=[]
+for idx,val in enumerate(seq_data):
+    last_char=char_arr[predict[idx]]
+    predict_words.append(val[:3] + last_char)
+
+print('\n=== Prediction ===')
+print('Input:',[w[:3] + ' ' for w in seq_data])
+print('Prediction:',predict_words)
+print('Accuracy:',accuracy_val)
+
+</xmp>
+   </BODY>
+</HTML>
