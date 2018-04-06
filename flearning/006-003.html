@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height: 35px
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+006-003. manipulate dataframe
+<xmp>
+import pandas as pd
+import numpy as np
+
+df=pd.DataFrame({'k1':['one']*3+['two']*4,
+                   'k2':[1,1,2,3,3,4,4]})
+#       k1	    k2
+# 0	    one	    1
+# 1	    one	    1
+# 2	    one	    2
+# 3	    two	    3
+# 4	    two	    3
+# 5	    two	    4
+# 6	    two	    4                   
+# You can see duplicated row in above dataframe
+
+df.duplicated()
+# 0    False
+# 1     True
+# 2    False
+# 3    False
+# 4     True
+# 5    False
+# 6     True
+# You can see False at duplicated row,
+# from above series boolean mask
+
+# You can use drop_duplicates(),
+# to removed duplicated row
+df.drop_duplicates()
+#       k1	    k2
+# 0	    one	    1
+# 2	    one	    2
+# 3	    two	    3
+# 5	    two	    4
+
+# You will add new column named "v1"
+df["v1"]=np.arange(7)
+#   k1	k2	v1
+# 0	one	1	0
+# 1	one	1	1
+# 2	one	2	2
+# 3	two	3	3
+# 4	two	3	4
+# 5	two	4	5
+# 6	two	4	
+
+# You can remove entire row based on k1 column,
+# if there is duplicated data
+df.drop_duplicates(["k1"])
+#   k1	k2	v1
+# 0	one	1	0
+# 3	two	3	3
+
+# You can remove entire row based on k1 and k2 columns,
+# if there is duplicated data
+# keep="last" means you remain last data
+df.drop_duplicates(["k1","k2"],keep="last")
+#       k1    k2	v1
+# 1	    one	  1	    1
+# 2	    one	  2	    2
+# 4	    two	  3	    4
+# 6	    two	  4	    6
+
+# You can use "first"(default)
+
+# @
+# Let's talk about data mapping
+
+df2=pd.DataFrame({'food': ['bacon','pulled pork','bacon','Pastrami',
+                           'corned beef','Bacon','pastrami','honey ham',
+                           'nova lox'],
+                  'ounces': [4,3,12,6,7.5,8,3,5,6]})
+# 	food	    ounces
+# 0	bacon	    4.0
+# 1	pulled pork	3.0
+# 2	bacon	    12.0
+# 3	Pastrami	6.0
+# 4	corned beef	7.5
+# 5	Bacon	    8.0
+# 6	pastrami	3.0
+# 7	honey ham	5.0
+# 8	nova lox	6.0
+
+# You create dictionary
+meat_to_animal={ 
+    'bacon': 'pig',
+    'pulled pork': 'pig',
+    'pastrami': 'cow',
+    'corned beef': 'cow',
+    'honey ham': 'pig',
+    'nova lox': 'salmon'
+}
+
+# You add "animal" column
+# You first bring "food" column,
+# and use apply() with passing lambda,
+# which uses key of meat_to_animal
+df2["animal"]=df2["food"].apply(lambda x: meat_to_animal[x.lower()])
+df
+# 	food	    ounces	animal
+# 0	bacon	    4.0	    pig
+# 1	pulled pork	3.0	    pig
+# 2	bacon	    12.0	pig
+# 3	Pastrami	6.0	    cow
+# 4	corned beef	7.5	    cow
+# 5	Bacon	    8.0	    pig
+# 6	pastrami	3.0	    cow
+# 7	honey ham	5.0	    pig
+# 8	nova lox	6.0	    salmon
+
+# @
+
+s=pd.Series([1.,-999.,2.,-999.,-1000.,3.])
+# 0       1.0
+# 1    -999.0
+# 2       2.0
+# 3    -999.0
+# 4   -1000.0
+# 5       3.0
+
+# You can use replace()
+# -999 is value which you want to find
+# np.nan is replacement for -999
+s2=s.replace(-999,np.nan)
+# 0       1.0
+# 1       NaN
+# 2       2.0
+# 3       NaN
+# 4   -1000.0
+# 5       3.0
+s2.replace(np.nan,0)
+
+# @
+# You can deal with category type data,
+# because pandas provides category data type
+
+# Benefits of category data type are reducing memory consumption,
+# and increasing indexing performace
+
+df3=pd.DataFrame({"id":[1,2,3,4,5,6],"raw_grade":['a','b','b','a','a','e']})
+#    id	    raw_grade
+# 0	 1	    a
+# 1	 2	    b
+# 2	 3	    b
+# 3	 4	    a
+# 4	 5	    a
+# 5	 6	    e
+
+# You can convert data type by using astype()
+df3["grade"]=df3["raw_grade"].astype("category")
+# 	id	raw_grade	grade
+# 0	1	a	        a
+# 1	2	b	        b
+# 2	3	b	        b
+# 3	4	a	        a
+# 4	5	a	        a
+# 5	6	e	        e
+
+df3["grade"]
+# 0    a
+# 1    b
+# 2    b
+# 3    a
+# 4    a
+# 5    e
+# Name: grade, dtype: category
+# Categories (3, object): [a, b, e]
+
+df3["grade"].cat.categories
+
+# You can change category data type values
+df3["grade"].cat.categories=["very good","good","very bad"]
+
+# You can number of categories,
+# from 3 categories to 5 categories
+df3["grade"]=df3["grade"].cat.set_categories(["very bad","bad","medium","good","very good"])
+
+# @
+# You can sort in order of,
+# "very bad","bad","medium","good","very good"
+df3.sort_values(by="grade")
+
+# @
+# You can categorize numerical data
+
+ages=[20,22,25,27,21,23,37,31,61,45,41,32]
+# This is sections you will use
+bins=[18,25,35,60,100]
+
+cats=pd.cut(ages,bins)
+
+cats.codes
+
+group_names=["Youth","YoungAdult","MiddleAged","Senior"]
+pd.cut(ages,bins,labels=group_names)
+
+
+data=np.random.rand(20)
+# This is simple way
+# 4 is number of categories
+# 2 is 0.0x for borderline of category
+pd.cut(data,4,precision=2)
+
+data2=np.random.randn(1000)
+# You create sections based on percentile value
+cats=pd.qcut(data2,4)
+
+</xmp>
+   </BODY>
+</HTML>
