@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height: 35px
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005-003. analyze and visualize "game of thrones" dataset by matplotlib and pandas
+<xmp>
+%matplotlib nbagg
+import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# This data contains data related to battles
+battles=pd.read_csv("data/game-of-thrones/battles.csv",sep=",")
+deaths=pd.read_csv("data/game-of-thrones/character-deaths.csv",sep=",")
+
+battles.shape
+battles.colums
+battles.head()
+
+deaths.shape
+deaths.colums
+deaths.head()
+
+# @
+# You will visualize number of deaths per episode
+
+# You select Book of Death column,
+# and get count data,
+# and then sort them
+book_nums_to_death_count=deaths["Book of Death"].value_counts().sort_index()
+book_nums_to_death_count
+# < 1.0 49 means number of deaths in episode 1
+# You will draw line plot,
+# by using plot() on seires
+ax1=book_nums_to_death_count.plot(color="k",marker="o",linestyle="--")
+# set_xticks(np.arange(1,6)): |1  2  3  4  5|
+ax1.set_xticks(np.arange(1,6))
+# set_xlim([0,6]): |0  1  2  3  4  5  6|
+ax1.set_xlim([0,6])
+# |0  20  40  60  80  100  120|
+ax1.set_ylim([0,120])
+
+# @
+# You will visualize data related to battles
+
+# You will let "name" (of battle) to be index
+battles=battles.set_index(["name"])
+# You get mask representing battles["attacker_size"]+battles["defender_size"]>10000
+large_battles_mask=battles["attacker_size"]+battles["defender_size"]>10000
+# You use boolean mask(large_battles_mask),
+# to extract "attacker_size" column and "defender_size" column
+large_battles=battles.loc[large_battles_mask,["attacker_size","defender_size"]]
+# You draw bar plot with large_battles
+ax2=large_battles.plot(kind="barh",stacked=True,fontsize=8)
+
+
+# You add attacker_pcts (percent) column
+# You find attacker_size/(attacker_size+defender_size),
+# and assign result into attacker_pcts column
+large_battles["attacker_pcts"]=\
+    large_battles["attacker_size"]/(large_battles["attacker_size"]+large_battles["defender_size"])
+large_battles["defender_pcts"]=\
+    large_battles["defender_size"]/(large_battles["attacker_size"]+large_battles["defender_size"])
+# You draw bar plot with 2 columns
+ax3=large_battles[["attacker_pcts","defender_pcts"]].plot(kind="barh",stacked=True,fontsize=8)
+
+# You will visualize frequency of intervention by each family on battles
+
+# You will bring related columns
+# attacker1,...attacker4,deffender1,...deffender4
+col_names=battles.columns[4:12]
+# You bring col_names,
+# and replace nan with string "None",
+# and extract value
+house_names=battles[col_names].fillna("None").values
+house_names
+# You will get unique family names
+house_names=np.unique(house_names)
+# You remove string "None",
+# by using boolean mask
+house_names=house_names[house_names!="None"]
+# You create series,
+# by using family name as index,
+# with initializing Series by 0
+houses_to_battle_counts=pd.Series(0,index=house_names)
+
+for col in col_names:
+    houses_to_battle_counts=\
+        # fill_value=0 means NaN is 0
+        houses_to_battle_counts.add(battles[col].value_counts(),fill_value=0)
+# bins=10 means 10 intervals
+ax4=houses_to_battle_counts.hist(bins=10)
+
+</xmp>
+   </BODY>
+</HTML>
