@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 1.5em;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+004-005. analyze "lending club loan" dataset by pandas
+<xmp>
+import pandas as pd
+import numpy as np
+
+df=pd.read_csv("data/lending-club-loan-data/loan.csv",sep=",")
+
+df.shape
+
+df.columns
+
+# @
+# We will extract columns which we need,
+# with creating new dataframe
+df2=df[["loan_amnt","loan_status","grade","int_rate","term"]]
+df2.head()
+df2.tail()
+
+# This dataset provides range type data
+df2["loan_status"].unique()
+df2["grade"].unique()
+df2["term"].unique()
+
+df.shape
+
+# You will delete entire row which contains at least one nan
+df2=df2.dropna(how="any")
+df.shape
+# < It turned out this dataset didn't contain any nan value
+
+# @
+term_to_loan_amnt_dict={}
+uniq_terms=df2["term"].unique()
+for term in uniq_terms:
+    loan_amnt_sum=df2.loc[df2["term"]==term,"loan_amnt"].sum()
+    term_to_loan_amnt_dict[term]=loan_amnt_sum
+
+term_to_loan_amnt_dict
+# 36 month goods has "" as sum of loan
+# 60 month goods has "" as sum of loan
+
+# You will convert dictionary into Series
+term_to_loan_amnt=pd.Series(term_to_loan_amnt_dict)
+term_to_loan_amnt
+
+# @
+df2.head()
+df2["load_status"].unique()
+
+total_status_category=df2["loan_status"].unique()
+# You will extract value of bad status category 
+bad_status_category=total_status_category[[1,3,4,5,6,8]]
+bad_status_category
+
+df2["bad_loan_status"]=df2["loan_status"].isin(bad_status_category)
+df2.head
+
+bad_loan_status_to_grades=df2.loc[df2["bad_loan_status"]==True,"grade"].value_counts()
+bad_loan_status_to_grades.sort_index()
+
+# @
+# What's relation between "total amount of loan"(loan_amnt) and "interest rate"(int_rate?
+# You can find it by coefficient analysis
+df2.head()
+df2["loan_amnt"].corr[df2["int_rate"]]
+# < It turned out low relation
+
+
+# @
+# We can write data into csv file
+# bad_loan_status.csv is file name
+# sep="," is delimiter
+bad_loan_status_to_grades.to_csv("bad_loan_status.csv",sep=",")
+
+</xmp>
+   </BODY>
+</HTML>
