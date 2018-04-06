@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height: 35px
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+006-001. merge series, merge dataframe
+<xmp>
+# You can see one dataset which is composed of mulitple files
+# You can encounter case,
+# you should merge mulitple dataframe from multiple files into one dataframe
+
+# Task of merging 2 dataframes into one dataframe can be devided into 2 ways
+# 1. concatenating:
+# You attatch one dataframe onto other dataframe consecutively
+# 1. merging:
+# You first find one column which is commonly contained in 2 dataframes,
+# and then,you merge row based on common column
+
+import pandas as pd
+import numpy as np
+
+# @
+# Let's talk about merging dataframe
+
+df1=pd.DataFrame({"key":list("bbacaab"),"data1":range(7)})
+df2=pd.DataFrame({"key":list("abd"),"data2":range(3)})
+
+# Above 2 dataframes have "key" column commonly
+# "key" column has range from a to d
+# You will merge 2 dataframes based on "key" column
+pd.merge(df1,df2,on="key")
+# Since c and d are only contained in df1,
+# rows which contain c or d aren't contained in merged dataframe
+
+# Above merge is similar to inner join
+
+# You can use other options to use outter join
+# Following rows will be also contained into merged dataframe
+# 3.0 c NaN
+# NaN d 2.0
+pd.merge(df1,df2,on="key",how="outer")
+
+# You can use left join,
+# which merges based on df1(left, 1st argument)
+# You first find row whose key is "b" in "data2",
+# and you attacth value onto merged dataframe
+# data1  key
+# 0      b
+# data2  key
+# 1      b
+# data1  key data2
+# 0      b   1
+pd.merge(df1,df2,on="key",how="left")
+pd.merge(df1,df2,on="key",how="right")
+
+# @
+# inner(default), outter, left, right
+
+
+df3=pd.DataFrame({"lkey":list("bbacaab"),"data1": range(7)})
+df4=pd.DataFrame({"rkey":list("abd"),"data2": range(3)})
+
+
+pd.merge(df3,df4,left_on="lkey",right_on="rkey")
+
+# @
+# You can merge dataframes based on index value
+
+left1=pd.DataFrame({'key': ['a','b','a','a','b','c'],'value': range(6)})
+right1=pd.DataFrame({'group_val': [3.5,7]},index=['a','b'])
+
+pd.merge(left1,right1,left_on="key",right_index=True)
+
+left2=pd.DataFrame([[1.,2.],[3.,4.],[5.,6.]]\
+                    ,index=['a','c','e']\
+                    ,columns=['Seoul','Incheon'])
+right2=pd.DataFrame([[7.,8.],[9.,10.],[11.,12.],[13,14]]\
+                    ,index=['b','c','d','e']\
+                    ,columns=['Daegu','Ulsan'])
+pd.merge(left2,right2,how="outer",left_index=True,right_index=True)
+
+# @
+# Let's talk about concatenating DataFrame
+
+# You create 3 Serieses
+s1=pd.Series([0,1],index=["a","b"])
+s2=pd.Series([2,3,4],index=["c","d","e"])
+s3=pd.Series([5,6],index=["f","g"])
+
+# You concatenate 3 Serieses
+pd.concat([s1,s2,s3])
+# You craete dataframe
+pd.concat([s1,s2,s3],axis=1)
+# You create Series
+s4=pd.concat([s1*5,s3])
+pd.concat([s1,s4],axis=1)
+# You give name for concatenated dataframe's index
+pd.concat([s1,s2,s3],axis=1,keys=["one","two","three"])
+
+# You perform concatenate for dataframe
+df1=pd.DataFrame(np.arange(6).reshape(3,2)\
+                    ,index=['a','b','c']\
+                    ,columns=['one','two'])
+df2=pd.DataFrame(5+np.arange(4).reshape(2,2)\
+                    ,index=['a','c']\
+                    ,columns=['three','four'])
+pd.concat([df1,df2],axis=1)
+
+# @
+# You create dataframes
+df3=pd.DataFrame(np.random.randn(3,4),columns=['a','b','c','d'])
+df4=pd.DataFrame(np.random.randn(2,3),columns=['b','d','a'])
+# You first try this one
+pd.concat([df3,df4])
+# < index will be 0 1 2 0 1
+pd.concat([df3,df4],ignore_index=True)
+# < index will be 0 1 2 3 4
+</xmp>
+   </BODY>
+</HTML>
