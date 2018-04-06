@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height: 35px
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+006-002. layered index
+<xmp>
+import pandas as pd
+import numpy as np
+
+# You can create index as 2 dimensional array,
+# then, you will have 2 layers index
+s=pd.Series(np.random.randn(10),
+              index=[["a","a","a","b","b","b","c","c","d","d"],
+                     [1,2,3,1,2,3,1,2,2,3]])
+# < a  1    0.012741
+# <    2   -0.381692
+# <    3   -1.397882
+# < b  1   -0.827033
+# <    2   -0.713064
+# <    3    1.124109
+# < c  1    0.715226
+# <    2    0.335037
+# < d  2   -0.325940
+# <    3    1.159985                     
+
+# Most outter index(1 layer): a,b,c,d
+# 2 layer index: 1,2,3
+
+s.index
+# < MultiIndex(levels=[['a', 'b', 'c', 'd'], [1, 2, 3]],
+# <            labels=[[0, 0, 0, 1, 1, 1, 2, 2, 3, 3], [0, 1, 2, 0, 1, 2, 0, 1, 1, 2]])
+
+# @
+# Let's talk about how to perform layered indexing on layered index
+
+# Rule: You should perform layered indexing from most outter index to inner index
+s["b"]
+# < 1   -0.827033
+# < 2   -0.713064
+# < 3    1.124109
+s["b":"c"]
+# < b  1   -0.827033
+# <    2   -0.713064
+# <    3    1.124109
+# < c  1    0.715226
+# <    2    0.335037
+s[("b",3)]
+# < 1.1241092017323921
+s[:,3]
+# < a   -1.397882
+# < b    1.124109
+# < d    1.159985
+
+# Let's create new dataframe
+# index is 2 dimensional array
+# columns is 2 dimensional array
+df=pd.DataFrame(np.arange(12).reshape((4,3)),
+                               index=[["a","a","b","b"],
+                                      [1,2,1,2]],
+                               columns=[["Seoul","Seoul","Busan"],
+                                        ["Green","Red","Green"]])
+
+# < 		Seoul	        Busan
+# <         Green	Red	    Green
+# < a	1	0	    1	    2
+# <     2	3	    4	    5
+# < b	1	6	    7	    8
+# <     2	9	    10  	11                                        
+
+# You can give name
+df.index.names=["key1","key2"]
+df.columns.names=["city","color"]
+# < 	    city	Seoul	        Busan
+# <         color	Green	Red	    Green
+# < key1	key2			
+# < a	    1	    0	    1	    2
+# <         2	    3	    4	    5
+# < b	    1	    6	    7	    8
+# <         2	    9	    10  	11
+
+# You can perform layered indexing on dataframe
+df["Seoul"]
+# < 	    color   Green	Red
+# < key1	key2		
+# < a	    1	    0	    1
+# <         2	    3	    4
+# < b	    1	    6	    7
+# <         2	    9	    10
+
+df["Seoul","Green"]
+# < key1  key2
+# < a     1       0
+# <       2       3
+# < b     1       6
+# <       2       9
+
+df.loc["a"]
+# < city	Seoul	Busan
+# < color	Green	Red     Green
+# < key2			
+# < 1	    0	    1	    2
+# < 2	    3	    4	    5
+
+df.loc[("a",1)]
+# < city   color
+# < Seoul  Green    0
+# <        Red      1
+# < Busan  Green    2
+
+df.loc["b",("Seoul","Red")]
+# < key2
+# < 1     7
+# < 2    10
+
+df.loc[("b",2),"Busan"]
+# < color
+# < Green    11
+
+df.loc[("b",1),("Seoul","Green")]
+# < 6
+
+# @
+# You can sort based on layered index
+# level=0 means most outter index key1(a,b,..)
+# level=1 means index key2(1,2,..)
+df.sort_index(axis=0,level=0)
+# < 	    city	Seoul	        Busan
+# <         color	Green	Red     Green
+# < key1	key2			
+# < a	    1	    0	    1	    2
+# <         2	    3	    4	    5
+# < b	    1	    6	    7	    8
+# <         2	    9	    10  	11
+df.sort_index(axis=0,level=1)
+# < 	    city	Seoul	        Busan
+# <         color	Green	Red	    Green
+# < key1	key2			
+# < a	    1	    0	    1	    2
+# < b	    1	    6	    7	    8
+# < a	    2	    3	    4	    5
+# < b	    2	    9	    10  	11
+
+
+# You can designate index name for sorting
+df.sort_index(axis=0,level="key2")
+# Above code is same with df.sort_index(axis=0,level=1)
+
+# You can perform same task with above task for column by using axis=1
+df.sort_index(axis=1,level=0)
+df.sort_index(axis=1,level=1)
+df.sort_index(axis=1,level="color")
+
+
+# @
+# You can sort by value in layered index
+df.sort_values(by=("Busan","Green"))
+
+
+# @
+# < 		Seoul	        Busan
+# <         Green	Red	    Green
+# < a	1	0	    1	    2
+# <     2	3	    4	    5
+# < b	1	6	    7	    8
+# <     2	9	    10  	11
+
+# You can use statistical method on layered index
+# What you additionally need to do is to use level
+# axis=0 means row direction
+# level=0 means key1
+df.sum(axis=0,level=0)
+# < city	Seoul	        Busan
+# < color	Green	Red	    Green
+# < key1			
+# < a	    3	    5	    7
+# < b	    15  	17	    19
+
+# You use key2
+df.sum(axis=0,level=1)
+# < city	Seoul	        Busan
+# < color	Green	Red	    Green
+# < key2			
+# < 1	    6	    8	    10
+# < 2	    12  	14	    16
+
+df.mean(axis=1,level="color")
+# < 	    color	Green	Red
+# < key1	key2		
+# < a	    1	    1	    1
+# <         2	    4	    4
+# < b	    1	    7	    7
+# <         2	    10	    10
+
+# @
+df2=pd.DataFrame({'a': range(7),'b': range(7,0,-1),
+                    'c': ['one','one','one','two','two','two','two'],
+                    'd': [0,1,2,0,1,2,3]})
+# < 	    city	Seoul	        Busan
+# <         color	Green	Red	    Green
+# < key1	key2			
+# < a	    1	    0	    1	    2
+# <         2	    3	    4	    5
+# < b	    1	    6	    7	    8
+# <         2	    9	    10  	11                    
+
+# You can change "c","d" value columns into "c","d" index columns
+df3=df2.set_index(["c","d"])
+# < 		a	b
+# < c	d		
+# < one	0	0	7
+# <     1	1	6
+# <     2	2	5
+# < two	0	3	4
+# <     1	4	3
+# <     2	5	2
+# <     3	6	1
+
+# You sustain changed columns (c and d)
+df2.set_index(["c","d"],drop=False)
+# < 		a	b	c	d
+# < c	d				
+# < one	0	0	7	one	0
+# <     1	1	6	one	1
+# <     2	2	5	one	2
+# < two	0	3	4	two	0
+# <     1	4	3	two	1
+# <     2	5	2	two	2
+# <     3	6	1	two	3
+
+# You makes all index column as value column,
+# with creating integer index
+df3.reset_index()
+# < 	c	d	a	b
+# < 0	one	0	0	7
+# < 1	one	1	1	6
+# < 2	one	2	2	5
+# < 3	two	0	3	4
+# < 4	two	1	4	3
+# < 5	two	2	5	2
+# < 6	two	3	6	1
+
+# @
+# You can reshape dataframe
+
+df4=pd.DataFrame(np.arange(6).reshape((2,3)),
+                   index=['Seoul','Busan'],
+                   columns=['one','two','three'])
+# <	        one	two	three
+# <Seoul	0	1	2
+# <Busan	3	4	5                   
+
+# You give name to index and column
+df4.index.name="city"
+df4.columns.name="number"
+# < number	one	two	three
+# < city			
+# < Seoul	0	1	2
+# < Busan	3	4	5
+
+# ​You can use stack()
+# You make "one two three" as sub index of city
+df5=df4.stack()
+# < city   number
+# < Seoul  one       0
+# <        two       1
+# <        three     2
+# < Busan  one       3
+# <        two       4
+# <        three     5
+# You should distinguish between stack(), set_index()
+
+# You elevate most sub index into column
+df5.unstack()
+# < number	one	two	three
+# < city			
+# < Seoul	0	1	2
+# < Busan	3	4	5
+ 
+# You elevate most upper index into column
+df5.unstack(level=0)
+df5.unstack(level="city")
+
+# @
+s1=pd.Series([0,1,2,3],index=['a','b','c','d'])
+s2=pd.Series([4,5,6],index=['c','d','e'])
+s3=pd.concat([s1,s2],keys=["one","two"])
+
+s3.unstack()
+
+# @
+# More complex case
+df6=pd.DataFrame({"left":df5,"right":df5+5},
+                   columns=["left","right"])
+df6.columns.name="side"
+
+
+df6.unstack(level="city")
+df6.unstack(level="city").stack(level="side")
+
+# @
+# When you start using layered index,
+# dataframe can be too complex
+# So, I don't recommend you to use layered index for special case
+# But there is chance to meet layered index,
+# when you use dataframe
+# So, you need to at least understand layered index
+
+</xmp>
+   </BODY>
+</HTML>
