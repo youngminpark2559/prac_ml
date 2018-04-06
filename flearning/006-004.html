@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height: 35px
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+006-004. groupby()
+<xmp>
+df=pd.DataFrame({'key1' : ['a','a','b','b','a'],
+                   'key2' : ['one','two','one','two','one'],
+                   'data1': np.random.randn(5),
+                   'data2': np.random.randn(5)})
+#      data1       data2       key1     key2
+# 0    1.268888    -0.305794   a        one
+# 1    2.027708    0.735461    a        two
+# 2    -0.154353   0.917801    b        one
+# 3    -1.603911   -2.158357   b        two
+# 4    -1.144526   0.420716    a        one
+
+# df["data1"]: You extract data of "data1" column,
+# and this is series
+# You try to group by df["key1"]
+grouped=df["data1"].groupby(df["key1"])
+# <pandas.core.groupby.SeriesGroupBy object at 0x7f4f700bffd0>
+
+grouped.mean()
+# key1
+# a    0.717357
+# b   -0.879132
+# Name: data1, dtype: float64
+# Above result was from 2 groups(a and b)
+
+
+means=df["data1"].groupby([df["key1"],df["key2"]]).mean()
+# key1  key2
+# a     one     0.062181
+#       two     2.027708
+# b     one    -0.154353
+#       two    -1.603911
+# Name: data1, dtype: float64
+
+means.unstack()
+# key2   one        two
+# key1        
+# a      0.062181   2.027708
+# b      -0.154353  -1.603911
+
+# You can use groupby() on dataframe,
+# with specifying name of column
+df.groupby("key1").mean()
+df.groupby("key1").count()
+
+df.groupby(["key1","key2"]).mean()
+df.groupby(["key1","key2"]).count()
+
+# @
+df.groupby(["key1","key2"])["data2"].mean()
+
+# @
+# You can see groups
+for name,group in df.groupby("key1"):
+    print(name)
+    print(group)
+
+for (k1,k2),group in df.groupby(["key1","key2"]):
+    print(k1,k2)
+    print(group)
+
+pieces=dict(list(df.groupby("key1")))
+pieces
+pieces["b"]
+
+# @
+df2=pd.DataFrame(np.random.randn(5,5),
+                   columns=['a','b','c','d','e'],
+                   index=['Joe','Steve','Wes','Jim','Travis'])
+map_dict={'a': 'red','b': 'red','c': 'blue',
+            'd': 'blue','e': 'red','f' : 'orange'}
+
+df2.groupby(map_dict,axis=1).sum()
+
+map_s=pd.Series(map_dict)
+df2.groupby(map_dict,axis=1).count()
+
+
+# @
+grouped=df.groupby("key1")
+
+# You can create method 
+def peak_to_peak(arr):
+    return arr.max() - arr.min()
+
+grouped.agg(peak_to_peak)
+
+grouped.agg("std")
+
+grouped.describe()
+
+</xmp>
+   </BODY>
+</HTML>
