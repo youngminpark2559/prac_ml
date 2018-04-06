@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 1.5em;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005-001. matplotlib, line plot, bar plot, scatter diagram
+<xmp>
+
+
+# @
+# Most used plots are line plot, bar plot, histogram, scatter diagram
+
+# @
+# Magic command of matplotlib
+# %matplotlib <comand>
+# %matplotlib nbagg: You can manipulate plots interactively
+# %matplotlib inline: You can show plot in cell but can't manipulate plots interactively
+
+# @
+%matplotlib nbagg
+import matplotlib
+# pyplot is subpackage of matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+s=pd.Series(np.random.rand(10).cumsum(),index=np.arange(0,100,10))
+s
+
+# You can draw line plot
+s.plot()
+# You can get same result with above code by following code
+plt.plot(a)
+
+# @
+df=pd.DataFrame(np.random.rand(10,4),cumsum(axis=0),
+                columns=["A","B","C","D"],
+                index=np.arange(0,100,10))
+df
+
+df.plot()
+# plt.plot(df)
+
+# When you want to draw only one column data,
+# you should first extract column as Series,
+# then invoke plot()
+df["B"].plot()
+
+
+# @
+# Let's talk about bar plot
+# This is useful when X data has discret value
+
+s2=pd.Series(np.random.rand(16),index=list("abcdefghijklmnop"))
+
+s2.plot(kind="bar")
+s2.plot(kind="barh")
+
+# @
+df=pd.DataFrame(np.random.rand(6,4),
+                index=["one","two","three","four","five","six"],
+                columns=pd.Index(["A","B","C","D"],name="Genus"))
+df
+
+df2.plot(kind="bar")
+df2.plot(kind="barh",stacked=True)
+
+# @
+# Let's talk about histogram
+
+# Histogram doesn't require index
+
+s3=pd.Series(np.random.normal(0,1,size=200))
+s3.hist()
+# bin=50 means one segment contains 50
+s3.hist(bins=50)
+
+s3.hist(bins=100,normed=True)
+
+# @
+# Scatter diagram
+# bar, histogram: x -> y
+# scatter diagram: 2 independant variable x, y
+# its relation
+
+x1=np.random.normal(1,1,size=(100,1))
+x2=np.random.normal(-2,4,size=(100,1))
+x=np.concatenate((x1,x2),axis=1)
+x
+
+df3=pd.DataFrame(x,columns=["x1","x2"])
+df3
+
+plt.scatter(df3["x1"],df3["x2"])
+# width: x1
+# height: x2
+# If x1, x2 have positive relation,
+# scatter diagram will be plotted,
+# along with right increasing diagonal line
+# It turned out we can't see relation between x1 and x2
+
+</xmp>
+   </BODY>
+</HTML>
