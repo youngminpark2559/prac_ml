@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 1.5em;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+004-004. various methods of dataframe
+<xmp>
+# @
+import pandas as pd
+import numpy as np
+
+data=[[1.4,np.nan],
+      [7.1,-4.5],
+      [np.nan,np.nan],
+      [0.75,-1.3]]
+
+df=pd.DataFrame(data,columns=["one","two"],index=["a","b","c","d"])
+df
+
+# When you use sum() with axis,
+# result is calculated with excluding nan
+df.sum(axis=0)
+
+df.sum(axis=1)
+
+df["one"].sum()
+
+df.loc["b"].sum()
+
+# @
+# If you want to include nan,
+# you can use skipna=False
+df.mean(axis=1,skipna=False)
+
+
+# @
+# You find mean value from "one" column
+one_mean=df.mean(axis=0)["one"]
+# You find minimal value from "two" column
+one_min=df.mean(axis=0)["two"]
+# You fill nan from "one" column with "one_mean"
+df["one"]=df["one"].fillna(value=one_mean)
+df["two"]=df["two"].fillna(value=two_min)
+
+
+# @
+df2=pd.DataFrame(np.random.randn(6,4),
+                 columns=["A","B","C","D"],
+                 index=pd.date_range("20160701",periods=6))
+
+# You can find coefficient value between "A" column and "B" column
+# In this code, it uses pearson coefficient formula
+df2["A"].corr(df2["B"])
+
+# You can find covariance value between "B" column and "C" column
+# In this code, it uses pearson coefficient formula
+df2["B"].cov(df2["C"])
+
+# You can find covariance value and coefficient value,
+# in respect to each column and each row
+df2.corr()
+
+df2.cov()
+
+# When you want to know effect of one variable to other variable,
+# these codes can be useful
+
+
+# @
+# pandas provides sort by "index" and "value"
+dates=df2.index
+random_dates=np.random.permutation(dates)
+df2=df2.reindex(index=random_dates,columns=["D","B","C","A"])
+df2
+
+# You can sort by index in ascending order
+df2.sort.index(axis=0)
+
+# You can sort by column in ascending order
+df2.sort.index(axis=1)
+
+# You can sort by index in descending order
+df2.sort.index(axis=0,ascending=False)
+
+# You can sort by column in descending order
+df2.sort.index(axis=1,ascending=False)
+
+# You can sort by value 
+df2.sort.values(by="D")
+
+df2.sort.values(by="B")
+
+# You will add 2 columns and its values
+df2["E"]=np.random.randint(0,6,size=6)
+df2["F"]=["alpha","beta","gamma","gamma","alpha","gamma"]
+
+# You can sort by values from both "E" and "F"
+df2.sort.values(by=["E","F"])
+
+# @
+df2["F"].unique()
+
+df2["F"].value_counts()
+
+df2["F"].isin(["alpha","beta"])
+
+df2.loc[df2["F"].isin(["alpha","beta"])]
+
+# @
+df3=pd.DataFrame(np.random.randn(4,3),columns=["b","d","e"],
+                 index=["Seoul","Incheon","Busan","Daegu"])
+df3
+
+func=lambda x:x.max()-x.min()
+
+# You can use apply()
+df3.apply(func,axis=0)
+df3.apply(func,axis=1)
+
+
+</xmp>
+   </BODY>
+</HTML>
