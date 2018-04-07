@@ -80,6 +80,7 @@ series=pd.Series(np.random.rand(10).cumsum(),index=np.arange(0,100,10))
 # You can draw line plot on series
 series.plot()
 # img 8962dc24-8ebd-4ca8-aec7-e32f79d2182e
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/flearning/pic/8962dc24-8ebd-4ca8-aec7-e32f79d2182e.png"/><xmp>
 
 # You can get same result with above code by following code
 plt.plot(series)
@@ -103,6 +104,7 @@ dataframe=pd.DataFrame(np.random.rand(10,4).cumsum(axis=0)\
 dataframe.plot()
 # plt.plot(dataframe)
 # img d39b8e7c-140b-4ac9-8d78-ba195da3bc2e
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/flearning/pic/d39b8e7c-140b-4ac9-8d78-ba195da3bc2e.png"/><xmp>
 
 # When you want to draw only one column data,
 # for example, "B" column data,
@@ -110,7 +112,8 @@ dataframe.plot()
 # then invoke plot()
 dataframe["B"].plot()
 # img 9fbb28e8-708d-4f22-96e4-baad9058f0ff
-
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/flearning/pic/9fbb28e8-708d-4f22-96e4-baad9058f0ff.png"/><xmp>
+   
 # @
 # Let's talk about bar plot
 # This is useful when X data has discret value
@@ -135,7 +138,8 @@ series_2=pd.Series(np.random.rand(16),index=list("abcdefghijklmnop"))
 
 series_2.plot(kind="bar")
 # img 3bfb0c29-ec34-4033-a6cd-cff24cc4936b
-
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/flearning/pic/3bfb0c29-ec34-4033-a6cd-cff24cc4936b.png"/><xmp>
+   
 series_2.plot(kind="barh")
 
 # @
