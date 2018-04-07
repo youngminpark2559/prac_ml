@@ -46,40 +46,42 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-003-004. analyze movieLens 1m data by using numpy
+003-004. analyze "movieLens 1m" by numpy, np.loadtxt, np.mean(), np.unique()
 <xmp>
 import numpy as np
 
 data=np.loadtxt("/home/young/data/movielens-1m/ratings.dat",delimiter="::",dtype=np.int64)
 data[:5,:]
-# < array([[        1,      1193,         5, 978300760],
-# <        [        1,       661,         3, 978302109],
-# <        [        1,       914,         3, 978301968],
-# <        [        1,      3408,         4, 978300275],
-# <        [        1,      2355,         5, 978824291]])
+# array([[1,  1193,  5,  978300760],
+#        [1,   661,  3,  978302109],
+#        [1,   914,  3,  978301968],
+#        [1,  3408,  4,  978300275],
+#        [1,  2355,  5,  978824291]])
+
 data.shape
-# < (1000209, 4)
+# (1000209, 4)
 
 # You find averge of rating score of entire dataset
 mean_rating_total=data[:,2].mean()
 mean_rating_total
-# < 3.581564453029317
+# 3.581564453029317
 
-# You find averge of rating score of each user
+# You find averge of rating score from each user
 # You first extract each user
 user_ids=np.unique(data[:,0])
-user_ids[:5]
-# < array([1, 2, 3, 4, 5])
-user_ids.shape
-# < (6040,)
+user_ids
+# array([   1,    2,    3, ..., 6038, 6039, 6040])
+# You can see 6040 user ids
+
 # You create empty list
 mean_rating_by_user_list=[]
 for user_id in user_ids:
-    # You get true or false with "data[:,0]==user_id"
-    # Select all columns on true
-    data_for_user=data[data[:,0]==user_id,:]
-    mean_rating_for_user=data_for_user[:,2].mean()
-    mean_rating_by_user_list.append([user_id,mean_rating_for_user])
+    # You create mask(boolean array)
+    userTorF=data[:,0]==user_id
+    # You perfomr indexing with mask
+    dataForEachUser=data[userTorF,:]
+    meanRatingForEachUser=dataForEachUser[:,2].mean()
+    mean_rating_by_user_list.append([user_id,meanRatingForEachUser])
 
 mean_rating_by_user_list[:5]
 # < [[1, 4.188679245283019],
@@ -88,19 +90,21 @@ mean_rating_by_user_list[:5]
 # <  [4, 4.190476190476191],
 # <  [5, 3.1464646464646466]]
 
-# You convert list into array to easily deal with
-mean_rating_by_user_array=np.array(mean_rating_by_user_list,dtype=np.float32)
-mean_rating_by_user_array[:5]
-# < array([[1.       , 4.188679 ],
-# <        [2.       , 3.7131784],
-# <        [3.       , 3.9019608],
-# <        [4.       , 4.1904764],
-# <        [5.       , 3.1464646]], dtype=float32)
-mean_rating_by_user_array.shape
-# < (6040, 2)
+# You will convert list into array to easily deal with
 
-# You will export as file
-np.savetxt("mean_rating_by_user.csv",mean_rating_by_user_array,fmt="%.3f",delimiter=",")
+meanRatingFromEachUserArray=np.array(mean_rating_by_user_list,dtype=np.float32)
+meanRatingFromEachUserArray[:5]
+# < array([[1. , 4.188679 ],
+# <        [2. , 3.7131784],
+# <        [3. , 3.9019608],
+# <        [4. , 4.1904764],
+# <        [5. , 3.1464646]], dtype=float32)
+
+meanRatingFromEachUserArray.shape
+# (6040, 2)
+
+# You will export array as csv file
+np.savetxt("meanRatingFromEachUserArray.csv",meanRatingFromEachUserArray,fmt="%.3f",delimiter=",")
 
 </xmp>
    </BODY>
