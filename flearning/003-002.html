@@ -46,7 +46,7 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-003-002. indexing with numpy array
+003-002. indexing with numpy array, mask(boolean array), indexing with mask(boolean array)
 <xmp>
 # @
 # You can use boolean indexing, boolean array
@@ -62,13 +62,20 @@ data
 # <        [ 0.35546628, -1.79614974, -0.97606331,  0.41441987],
 # <        [ 0.13330959, -1.06778664,  0.81495713, -0.72482401],
 # <        [ 0.2339457 ,  0.37884242,  0.84497755,  0.87919576]])
+
+# You create mask(boolean array)
 names=="Young"
 # < array([False,  True, False,  True, False,  True,  True])
+
+# You perform boolean indexing
+# You select row by [False,  True, False,  True, False,  True,  True],
+# and you select all columns
 data[names="Young",:]
 # < array([[ 0.3895696 , -0.7051907 ,  0.39023878, -0.48335437],
 # <        [-0.90038613,  0.66942175,  0.98441066, -0.01437809],
 # <        [ 0.13330959, -1.06778664,  0.81495713, -0.72482401],
 # <        [ 0.2339457 ,  0.37884242,  0.84497755,  0.87919576]])
+
 </xmp>
    </BODY>
 </HTML>
