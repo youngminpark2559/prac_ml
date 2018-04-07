@@ -46,180 +46,304 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-004-002. indexing on dataframe, row, column, loc[], iloc[]
+004-002. indexing on dataframe, row data, column data, loc[], iloc[]
 <xmp>
 import pandas as pd
 import numpy as np
 
-data={"name":["Flash","Flash","Flash","Alice","Alice"],
-      "year":[2014,2015,2016,2015,2016],
-      "points":[1.5,1.7,3.6,2.4,2.9]}
-df=pd.DataFrame(data,columns=["year","names","points","penalty"],
-                     index=["one","two","three","four","five"])
-df
-# < 	    year	names	points	penalty
-# < one	    2014	NaN	    1.5 	NaN
-# < two	    2015	NaN	    1.7 	NaN
-# < three	2016	NaN	    3.6 	NaN
-# < four	2015	NaN	    2.4 	NaN
-# < five	2016	NaN	    2.9 	NaN
+dic_data_for_dataframe={"names":["Flash","Flash","Flash","Alice","Alice"],
+                        "year":[2014,2015,2016,2015,2016],
+                        "points":[1.5,1.7,3.6,2.4,2.9]}
+dataframe1=pd.DataFrame(\
+            dic_data_for_dataframe\
+            ,columns=["year","names","points","penalty"]\
+            ,index=["one","two","three","four","five"])
+dataframe1
+#        year    names  points penalty
+# one    2014    Flash    1.5    NaN
+# two    2015    Flash    1.7    NaN
+# three  2016    Flash    3.6    NaN
+# four   2015    Alice    2.4    NaN
+# five   2016    Alice    2.9    NaN
 
 # @
 # You will select year column
-df["year"]
-# < You will see index and value
-# < It's same with series
-# < When you extract one column or one row from dataframe,
-# < it's series
-# < one      2014
-# < two      2015
-# < three    2016
-# < four     2015
-# < five     2016
-# < Name: year, dtype: int64
+dataframe1["year"]
+# This is series
+# one      2014
+# two      2015
+# three    2016
+# four     2015
+# five     2016
 
+# @
 # You can obtain same result with following code
-df.year
-# < one      2014
-# < two      2015
-# < three    2016
-# < four     2015
-# < five     2016
-# < Name: year, dtype: int64
+dataframe1.year
+# one      2014
+# two      2015
+# three    2016
+# four     2015
+# five     2016
 
-# You can obtain multiple columns data
-df[["year","points"]]
-# < 	    year	points
-# < one	    2014	1.5
-# < two	    2015	1.7
-# < three	2016	3.6
-# < four	2015	2.4
-# < five	2016	2.9
+# @
+# You can obtain multiple columns dic_data_for_dataframe
+dataframe1[["year","points"]]
+#        year    points
+# one    2014    1.5
+# two    2015    1.7
+# three  2016    3.6
+# four   2015    2.4
+# five   2016    2.9
 
-# You can insert value into row data
-df["penalty"]=0.5
-# < 	    year	names	points	penalty
-# < one	    2014	NaN	    1.5 	0.5
-# < two	    2015	NaN	    1.7 	0.5
-# < three	2016	NaN	    3.6 	0.5
-# < four	2015	NaN	    2.4 	0.5
-# < five	2016	NaN	    2.9 	0.5
+# You can insert value into row dataframe1
+dataframe1["penalty"]=0.5
+#        year    names    points penalty
+# one    2014    Flash    1.5    0.5
+# two    2015    Flash    1.7    0.5
+# three  2016    Flash    3.6    0.5
+# four   2015    Alice    2.4    0.5
+# five   2016    Alice    2.9    0.5
 
-# You can insert each value into each row data
-df["penalty"]=[0.1,0.2,0.3,0.4,0.5]
-# < 	    year	names	points	penalty
-# < one	    2014	NaN	    1.5	    0.1
-# < two	    2015	NaN	    1.7	    0.2
-# < three	2016	NaN	    3.6	    0.3
-# < four	2015	NaN	    2.4	    0.4
-# < five	2016	NaN	    2.9	    0.5
+# You can insert each value into each row of dataframe1
+dataframe1["penalty"]=[0.1,0.2,0.3,0.4,0.5]
+#        year    names    points penalty
+# one    2014    Flash    1.5    0.1
+# two    2015    Flash    1.7    0.2
+# three  2016    Flash    3.6    0.3
+# four   2015    Alice    2.4    0.4
+# five   2016    Alice    2.9    0.5
 
 # You can use some methods to insert values
-df["penalty"]=np.arange(5)
-df
-# < 	    year	names	points	penalty
-# < one	    2014	NaN	    1.5	    0
-# < two	    2015	NaN	    1.7	    1
-# < three	2016	NaN	    3.6	    2
-# < four	2015	NaN	    2.4	    3
-# < five	2016	NaN	    2.9	    4
+# np.arange(5)=[0,1,2,3,4]
+dataframe1["penalty"]=np.arange(5)
+dataframe1
+#        year    names    points penalty
+# one    2014    Flash    1.5    0
+# two    2015    Flash    1.7    1
+# three  2016    Flash    3.6    2
+# four   2015    Alice    2.4    3
+# five   2016    Alice    2.9    4
 
-# You can use series when you insert value
-val=pd.Series([-1.2,-1.5,-1.7],index=["two","four","five"])
-df["debt"]=val
-df
-# < 	    year	names	points	penalty	debt
-# < one	    2014	NaN	    1.5	    0	    NaN
-# < two	    2015	NaN	    1.7	    1	    -1.2
-# < three	2016	NaN	    3.6	    2	    NaN
-# < four	2015	NaN	    2.4	    3	    -1.5
-# < five	2016	NaN	    2.9	    4	    -1.7
+# You can use series,
+# when you insert value into dataframe
+series_data_for_dataframe=pd.Series([-1.2,-1.5,-1.7],index=["two","four","five"])
+dataframe1["debt"]=series_data_for_dataframe
+dataframe1
+#        year    names    points penalty  debt
+# one    2014    Flash    1.5    0        NaN
+# two    2015    Flash    1.7    1        -1.2
+# three  2016    Flash    3.6    2        NaN
+# four   2015    Alice    2.4    3        -1.5
+# five   2016    Alice    2.9    4        -1.7
 
-# You can use dataframe when you insert value
-df["net_points"]=df["points"]-df["penalty"]
-df["high_points"]=df["net_points"]>2.0
-df
 
-# You select column and then you can delete it
-del df["high_points"]
-del df["net_points"]
-del df["zeros"]
-df
+dataframe1["net_points"]=dataframe1["points"]-dataframe1["penalty"]
+# You create mask(boolean array)
+dataframe1["high_points"]=dataframe1["net_points"]>2.0
+dataframe1
+#       year    names   points  penalty  debt   net_points  high_points
+# one   2014    Flash   1.5     0        NaN    1.5         False
+# two   2015    Flash   1.7     1        -1.2   0.7         False
+# three 2016    Flash   3.6     2        NaN    1.6         False
+# four  2015    Alice   2.4     3        -1.5   -0.6        False
+# five  2016    Alice   2.9     4        -1.7   -1.1        False
 
-# You can check only columns
-df.columns
+# You select column,
+# and then you can delete it
+del dataframe1["high_points"]
+del dataframe1["net_points"]
+dataframe1
+#       year    names    points  penalty   debt
+# one   2014    Flash    1.5     0         NaN
+# two   2015    Flash    1.7     1         -1.2
+# three 2016    Flash    3.6     2         NaN
+# four  2015    Alice    2.4     3         -1.5
+# five  2016    Alice    2.9     4         -1.7
+
+dataframe1.columns
+# Index(['year', 'names', 'points', 'penalty', 'debt'], dtype='object')
 
 # @
-df.index.name="Order"
-df.columns.name="Info"
-df
+dataframe1.index.name="Order"
+dataframe1.columns.name="Info"
+dataframe1
+# Information   year    names    points   penalty   debt
+# Order                    
+# one           2014    Flash    1.5      0         NaN
+# two           2015    Flash    1.7      1         -1.2
+# three         2016    Flash    3.6      2         NaN
+# four          2015    Alice    2.4      3         -1.5
+# five          2016    Alice    2.9      4         -1.7
 
 # @
-# Unlike numply, number of ways to index row and column is countless
+# Unlike numpy, number of ways,
+# to perform indexing row and column is countless
 # Besides, as version of pandas goes up,
-# these ways of index become slightly different
+# these ways of indexing become slightly different
 
 # @
-df[0:3]
+dataframe1[0:3]
 
-df["two":"four"]
+dataframe1["two":"four"]
 
 # @
-# You will be confused above ways to index dataframe
+# You will be confused above numerous ways to index dataframe
 # So, I recommend you to use only following 2 dictionary methods,
 # to index dataframe
 # loc[], iloc[]
 
-# loc[] is used when you bring row and column
-# and returns row in form of series
-df.loc["two"]
+# You will select "two" row data
+dataframe1.loc["two"]
+# Information
+# year        2015
+# names      Flash
+# points       1.7
+# penalty        1
+# debt        -1.2
 
-df.loc["two":"four"]
+# You will select from "two" row data to "four" row data
+dataframe1.loc["two":"four"]
+# Information  year    names    points penalty  debt
+# Order                  
+# two          2015    Flash    1.7    1        -1.2
+# three        2016    Flash    3.6    2        NaN
+# four         2015    Alice    2.4    3        -1.5
 
-df.loc["two":"four","points"]
+# You will select from "two" row data to "four" row data,
+# and "point" column data
+dataframe1.loc["two":"four","points"]
 
-df.loc[:,"year"]
-# Above code is same with df["year"]
+# You will select all row data,
+# and "year" column data
+dataframe1.loc[:,"year"]
 
-df.loc[:,["year","names"]]
+# You will select all row data,
+# and "year" column data and "names" column data
+dataframe1.loc[:,["year","names"]]
 
-df.loc[["three","five"],["year","names"]]
+# You will select all row data,
+# and from "year" column data to "penalty" column data
+dataframe1.loc[:,"year":"penalty"]
+
+# You will select "three" row data and "five" row data,
+# and "year" column data and "names" column data
+dataframe1.loc[["three","five"],["year","names"]]
 
 # You can add row
-df.loc["six",:]=[2013,"Alice",3.0,0.1,2.1]
+# You will select "six" row data,
+# and all column data,
+# and you add list into it
+dataframe1.loc["six",:]=[2013,"Alice",3.0,0.1,2.1]
+# Information  year    names   points   penalty   debt
+# Order                    
+# one          2014.0  Flash   1.5      0.0       NaN
+# two          2015.0  Flash   1.7      1.0       -1.2
+# three        2016.0  Flash   3.6      2.0       NaN
+# four         2015.0  Alice   2.4      3.0       -1.5
+# five         2016.0  Alice   2.9      4.0       -1.7
+# six          2013.0  Alice   3.0      0.1       2.1
 
 # @
 # Let's talk about iloc[]
 # iloc[] is used when you bring row and column,
 # by numpy array indexing way
 
-df.iloc[3]
+# You will select 3th row data
+dataframe1.iloc[3]
+# Information
+# year         2015
+# names       Alice
+# points        2.4
+# penalty         3
+# debt         -1.5
 
-df.iloc[3:5,0:2]
+# You will select from 3th to 5th row data,
+# and then, select from 0th to 2th column data
+dataframe1.iloc[3:5,0:2]
+# Information	year	names
+# Order		
+# four	        2015.0	Alice
+# five	        2016.0	Alice
 
-# You bring only each value individually
-# From row, you bring [0,1,3]
-# From column, you bring [1,2]
-df.iloc[[0,1,3],[1,2]]
+# You will select "0th", "1th", "3th" row data,
+# and then, select "1th", "2th" column data
+dataframe1.iloc[[0,1,3],[1,2]]
+# Information  names  points
+# Order
+# one          Flash  1.5
+# two          Flash  1.7
+# four         Alice  2.4
 
-df[:,1:4]
+# You will select all row data,
+# then, select from 1th to 4th column data
+dataframe1[:,1:4]
 
-df[1,1]
+# You will select 1th row data,
+# and then, select 1th column data
+dataframe1[1,1]
 
 # @
-# Let's talk about boolean indexing in dataframe
-df["year"]>2014
-# < And you will get series of boolean
+# You will select "year" column data,
+# and then, create mask(boolean array)
+dataframe1["year"]>2014
+# Order
+# one      False
+# two       True
+# three     True
+# four      True
+# five      True
+# six      False
+# Name: year, dtype: bool
 
-df.loc[df["year"]>2014,:]
+# You have mask(boolean array),
+# and will select row with mask,
+# and select all column data
+dataframe1.loc[dataframe1["year"]>2014,:]
+# Information year      names    points penalty debt
+# Order                    
+# two         2015.0    Flash    1.7    1.0    -1.2
+# three       2016.0    Flash    3.6    2.0    NaN
+# four        2015.0    Alice    2.4    3.0    -1.5
+# five        2016.0    Alice    2.9    4.0    -1.7
 
-df.loc[df["names"]=="Alice",["names","points"]]
+# You will select "names" column data,
+# and you create mask(boolean array) with "Alice",
+# and you will select row data with mask,
+# and you will select "names" and "points" column data
+dataframe1.loc[dataframe1["names"]=="Alice",["names","points"]]
+# Information  names    points
+# Order        
+# four         Alice    2.4
+# five         Alice    2.9
+# six          Alice    3.0
 
-df.loc[(df["points"]>2)&(df["points"]<3),:]
+# You select "points" column data,
+# and create mask(boolean array)
+# You select "points" column data,
+# and create mask(boolean array)
+# You combine 2 conditions
+# and select row data by combined conditions
+# And you select all column data
+dataframe1.loc[(dataframe1["points"]>2)&(dataframe1["points"]<3),:]
+# Information  year    names  points penalty debt
+# Order                   
+# four         2015.0  Alice  2.4    3.0     -1.5
+# five         2016.0  Alice  2.9    4.0     -1.7
 
-df.loc[df["points"]>3,"penalty"]=0
-
-
+# You select "points" column data,
+# and create mask(boolean array)
+# And you select row data with mask,
+# and select "penalty" column data
+# You assign 0 into it
+dataframe1.loc[dataframe1["points"]>3,"penalty"]=0
+# Information  year    names   points penalty  debt
+# Order                    
+# one          2014.0  Flash   1.5    0.0      NaN
+# two          2015.0  Flash   1.7    1.0      -1.2
+# three        2016.0  Flash   3.6    0.0      NaN
+# four         2015.0  Alice   2.4    3.0      -1.5
+# five         2016.0  Alice   2.9    4.0      -1.7
+# six          2013.0  Alice   3.0    0.1      2.1
 
 </xmp>
    </BODY>
