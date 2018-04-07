@@ -46,119 +46,200 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-004-004. various methods of dataframe
+004-004. df["one"] and df.loc["b"], axis=0, axis=1, skipna, df.corr(), df.cov(), df.sort_index(), df.sort_values(), df.apply()
 <xmp>
 # @
 import pandas as pd
 import numpy as np
 
-data=[[1.4,np.nan],
-      [7.1,-4.5],
-      [np.nan,np.nan],
-      [0.75,-1.3]]
+list_data_for_dataframe=[[1.4,np.nan],
+                         [7.1,-4.5],
+                         [np.nan,np.nan],
+                         [0.75,-1.3]]
 
-df=pd.DataFrame(data,columns=["one","two"],index=["a","b","c","d"])
-df
+dataframe1=pd.DataFrame(list_data_for_dataframe\
+                        ,columns=["one","two"]\
+                        ,index=["a","b","c","d"])
+#      one    two
+# a    1.40   NaN
+# b    7.10   -4.5
+# c    NaN    NaN
+# d    0.75   -1.3
 
 # When you use sum() with axis,
 # result is calculated with excluding nan
-df.sum(axis=0)
+# axis=0 means you sum column data
+dataframe1.sum(axis=0)
+# one    9.25
+# two   -5.80
 
-df.sum(axis=1)
+# axis=1 means you sum row data
+dataframe1.sum(axis=1)
+# a    1.40
+# b    2.60
+# c    0.00
+# d   -0.55
 
-df["one"].sum()
+# You select "one" column data,
+# and sum them
+dataframe1["one"].sum()
+# 9.25
 
-df.loc["b"].sum()
+# Difference between df["one"] and df.loc["b"] is,
+# that one is column name and b is index name
+# Impossible:
+# dataframe1["b"]
+# dataframe1.loc["one"]
+# You select "b" row data,
+# and sum them up
+dataframe1.loc["b"].sum()
+# 2.5999999999999996
 
 # @
 # If you want to include nan,
 # you can use skipna=False
-df.mean(axis=1,skipna=False)
-
+# You sum row data
+dataframe1.mean(axis=1,skipna=False)
+# a      NaN
+# b    1.300
+# c      NaN
+# d   -0.275
 
 # @
-# You find mean value from "one" column
-one_mean=df.mean(axis=0)["one"]
-# You find minimal value from "two" column
-one_min=df.mean(axis=0)["two"]
+# You find mean value from column data,
+# and select "one" column data
+one_mean=dataframe1.mean(axis=0)["one"]
+# 3.0833333333333335
+
+two_min=dataframe1.min(axis=0)["two"]
+# -4.5
+
 # You fill nan from "one" column with "one_mean"
-df["one"]=df["one"].fillna(value=one_mean)
-df["two"]=df["two"].fillna(value=two_min)
+# You select "one" column data,
+# and fill value into nan
+dataframe1["one"]=dataframe1["one"].fillna(value=one_mean)
+dataframe1["two"]=dataframe1["two"].fillna(value=two_min)
 
 
 # @
-df2=pd.DataFrame(np.random.randn(6,4),
-                 columns=["A","B","C","D"],
-                 index=pd.date_range("20160701",periods=6))
+dataframe2=pd.DataFrame(np.random.randn(6,4)\
+                        ,columns=["A","B","C","D"]\
+                        ,index=pd.date_range("20160701",periods=6))
+#             A          B           C           D
+# 2016-07-01  -0.933246  -0.027614   -0.334567   0.159137
+# 2016-07-02  -0.249595  -0.913389   0.636678    0.430772
+# 2016-07-03  -0.865065  -0.575583   -0.374929   -0.471759
+# 2016-07-04  -0.578484  -1.255931   -0.295924   1.871001
+# 2016-07-05  -1.067445  0.261680    0.147572    -1.697567
+# 2016-07-06  1.628652   0.616124    0.387144    -0.374426                        
 
-# You can find coefficient value between "A" column and "B" column
-# In this code, it uses pearson coefficient formula
-df2["A"].corr(df2["B"])
+# You select "A" column data and "B" column data,
+# and find correlation between them
+dataframe2["A"].corr(dataframe2["B"])
+# 0.4263502156022492
 
-# You can find covariance value between "B" column and "C" column
-# In this code, it uses pearson coefficient formula
-df2["B"].cov(df2["C"])
+dataframe2["B"].cov(dataframe2["C"])
 
-# You can find covariance value and coefficient value,
+# You can find covariance value and correlation value,
 # in respect to each column and each row
-df2.corr()
+dataframe2.corr()
+#    A         B          C           D
+# A  1.000000  0.426350   0.546656    0.040890
+# B  0.426350  1.000000   0.224085    -0.748110
+# C  0.546656  0.224085   1.000000    -0.217909
+# D  0.040890  -0.748110  -0.217909   1.000000
 
-df2.cov()
+dataframe2.cov()
+#     A          B           C           D
+# A   1.019469   0.310033    0.235794    0.048692
+# B   0.310033   0.518692    0.068945    -0.635448
+# C   0.235794   0.068945    0.182500    -0.109791
+# D   0.048692   -0.635448   -0.109791   1.390975
 
 # When you want to know effect of one variable to other variable,
-# these codes can be useful
+# above codes can be helpful
 
 
 # @
-# pandas provides sort by "index" and "value"
-dates=df2.index
-random_dates=np.random.permutation(dates)
-df2=df2.reindex(index=random_dates,columns=["D","B","C","A"])
-df2
+# pandas provides sorting by "index" and "value"
+index_of_dataframe2=dataframe2.index
+# DatetimeIndex(['2016-07-01', '2016-07-02', '2016-07-03', '2016-07-04',
+#                '2016-07-05', '2016-07-06'],
+#               dtype='datetime64[ns]', freq='D')
 
-# You can sort by index in ascending order
-df2.sort.index(axis=0)
+# We shuffle index values
+suffled_index_value=np.random.permutation(index_of_dataframe2)
+# array(['2016-07-03T00:00:00.000000000', '2016-07-01T00:00:00.000000000',
+#        '2016-07-02T00:00:00.000000000', '2016-07-06T00:00:00.000000000',
+#        '2016-07-05T00:00:00.000000000', '2016-07-04T00:00:00.000000000'],
+#       dtype='datetime64[ns]')
 
-# You can sort by column in ascending order
-df2.sort.index(axis=1)
+# We give new index and column to dataframe2
+dataframe2=dataframe2.reindex(index=suffled_index_value,columns=["D","B","C","A"])
+#              D          B          C          A
+# 2016-07-03   -0.471759  -0.575583  -0.374929  -0.865065
+# 2016-07-01   0.159137   -0.027614  -0.334567  -0.933246
+# 2016-07-02   0.430772   -0.913389  0.636678   -0.249595
+# 2016-07-06   -0.374426  0.616124   0.387144   1.628652
+# 2016-07-05   -1.697567  0.261680   0.147572   -1.067445
+# 2016-07-04   1.871001   -1.255931  -0.295924  -0.578484
 
-# You can sort by index in descending order
-df2.sort.index(axis=0,ascending=False)
+# index(2016-07-01) became ascending
+dataframe2.sort_index(axis=0)
+#               D           B           C           A
+# 2016-07-01    0.159137    -0.027614   -0.334567   -0.933246
+# 2016-07-02    0.430772    -0.913389   0.636678    -0.249595
+# 2016-07-03    -0.471759   -0.575583   -0.374929   -0.865065
+# 2016-07-04    1.871001    -1.255931   -0.295924   -0.578484
+# 2016-07-05    -1.697567   0.261680    0.147572    -1.067445
+# 2016-07-06    -0.374426   0.616124    0.387144    1.628652
 
-# You can sort by column in descending order
-df2.sort.index(axis=1,ascending=False)
+# row data of index became ascending
+dataframe2.sort_index(axis=1)
+#               A           B           C           D
+# 2016-07-03    -0.865065   -0.575583   -0.374929   -0.471759
+# 2016-07-01    -0.933246   -0.027614   -0.334567   0.159137
+# 2016-07-02    -0.249595   -0.913389   0.636678    0.430772
+# 2016-07-06    1.628652    0.616124    0.387144    -0.374426
+# 2016-07-05    -1.067445   0.261680    0.147572    -1.697567
+# 2016-07-04    -0.578484   -1.255931   -0.295924   1.871001
 
-# You can sort by value 
-df2.sort.values(by="D")
+# You can sort index value in descending order
+dataframe2.sort_index(axis=0,ascending=False)
 
-df2.sort.values(by="B")
+# You can sort index row data in descending order
+dataframe2.sort_index(axis=1,ascending=False)
 
-# You will add 2 columns and its values
-df2["E"]=np.random.randint(0,6,size=6)
-df2["F"]=["alpha","beta","gamma","gamma","alpha","gamma"]
+# You can sort by "D" column data
+dataframe2.sort.values(by="D")
+dataframe2.sort.values(by="B")
+
+# You will add 2 columns("E" and "F") and its data
+dataframe2["E"]=np.random.randint(0,6,size=6)
+dataframe2["F"]=["alpha","beta","gamma","gamma","alpha","gamma"]
 
 # You can sort by values from both "E" and "F"
-df2.sort.values(by=["E","F"])
+dataframe2.sort.values(by=["E","F"])
 
 # @
-df2["F"].unique()
+dataframe2["F"].unique()
 
-df2["F"].value_counts()
+dataframe2["F"].value_counts()
 
-df2["F"].isin(["alpha","beta"])
+dataframe2["F"].isin(["alpha","beta"])
 
-df2.loc[df2["F"].isin(["alpha","beta"])]
+dataframe2.loc[dataframe2["F"].isin(["alpha","beta"])]
 
 # @
-df3=pd.DataFrame(np.random.randn(4,3),columns=["b","d","e"],
-                 index=["Seoul","Incheon","Busan","Daegu"])
-df3
+dataframe3=pd.DataFrame(np.random.randn(4,3)\
+                 ,columns=["b","d","e"]\
+                 ,index=["Seoul","Incheon","Busan","Daegu"])
 
 func=lambda x:x.max()-x.min()
 
 # You can use apply()
-df3.apply(func,axis=0)
-df3.apply(func,axis=1)
+dataframe3.apply(func,axis=0)
+dataframe3.apply(func,axis=1)
 
 
 </xmp>
