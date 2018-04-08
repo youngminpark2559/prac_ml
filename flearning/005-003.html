@@ -48,93 +48,193 @@ MathJax.Hub.Config({
    <BODY>
 005-003. analyze and visualize "game of thrones" dataset by matplotlib and pandas
 <xmp>
-%matplotlib nbagg
+%matplotlib inline
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-# This data contains data related to battles
-battles=pd.read_csv("data/game-of-thrones/battles.csv",sep=",")
-deaths=pd.read_csv("data/game-of-thrones/character-deaths.csv",sep=",")
+# This data contains data related to battles_dataframe
+battles_dataframe=pd.read_csv("/media/young/5e7be152-8ed5-483d-a8e8-b3fecfa221dc/code/PythonPractice/game-of-thrones/battles.csv",sep=",")
+deaths_dataframe=pd.read_csv("/media/young/5e7be152-8ed5-483d-a8e8-b3fecfa221dc/code/PythonPractice/game-of-thrones/character-deaths.csv",sep=",")
 
-battles.shape
-battles.colums
-battles.head()
+battles_dataframe.shape
+# (38, 25)
 
-deaths.shape
-deaths.colums
-deaths.head()
+battles_dataframe.columns
+# Index(['name', 'year', 'battle_number', 'attacker_king', 'defender_king',
+#        'attacker_1', 'attacker_2', 'attacker_3', 'attacker_4', 'defender_1',
+#        'defender_2', 'defender_3', 'defender_4', 'attacker_outcome',
+#        'battle_type', 'major_death', 'major_capture', 'attacker_size',
+#        'defender_size', 'attacker_commander', 'defender_commander', 'summer',
+#        'location', 'region', 'note'],
+#       dtype='object')
+
+battles_dataframe.head()
+
+deaths_dataframe.shape
+# (917, 13)
+
+deaths_dataframe.columns
+# Index(['Name', 'Allegiances', 'Death Year', 'Book of Death', 'Death Chapter',
+#        'Book Intro Chapter', 'Gender', 'Nobility', 'GoT', 'CoK', 'SoS', 'FfC',
+#        'DwD'],
+#       dtype='object')
+
+deaths_dataframe.head()
 
 # @
-# You will visualize number of deaths per episode
+# You will visualize number of death per episode
 
-# You select Book of Death column,
-# and get count data,
-# and then sort them
-book_nums_to_death_count=deaths["Book of Death"].value_counts().sort_index()
-book_nums_to_death_count
-# < 1.0 49 means number of deaths in episode 1
-# You will draw line plot,
-# by using plot() on seires
-ax1=book_nums_to_death_count.plot(color="k",marker="o",linestyle="--")
+# You select "Book of Death" column data,
+# and get "Book of Death" column data's count data,
+# 3.0    97
+# 2.0    73
+# 5.0    61
+# 1.0    49
+# 4.0    27
+
+# and then sort them by index
+number_of_death_per_episode_series=deaths_dataframe["Book of Death"].value_counts().sort_index()
+# 1.0    49
+# 2.0    73
+# 3.0    97
+# 4.0    27
+# 5.0    61
+# 1.0 49 means number of deaths_dataframe in episode 1
+
+# You will draw line plot by using plot() on seires
+# You get subplot instance
+ax1=number_of_death_per_episode_series.plot(color="k",marker="o",linestyle="--")
+
 # set_xticks(np.arange(1,6)): |1  2  3  4  5|
 ax1.set_xticks(np.arange(1,6))
 # set_xlim([0,6]): |0  1  2  3  4  5  6|
 ax1.set_xlim([0,6])
 # |0  20  40  60  80  100  120|
 ax1.set_ylim([0,120])
+# img be9013c7-ec05-4e46-b258-71ef58b2228f
 
 # @
 # You will visualize data related to battles
 
-# You will let "name" (of battle) to be index
-battles=battles.set_index(["name"])
-# You get mask representing battles["attacker_size"]+battles["defender_size"]>10000
-large_battles_mask=battles["attacker_size"]+battles["defender_size"]>10000
-# You use boolean mask(large_battles_mask),
-# to extract "attacker_size" column and "defender_size" column
-large_battles=battles.loc[large_battles_mask,["attacker_size","defender_size"]]
-# You draw bar plot with large_battles
-ax2=large_battles.plot(kind="barh",stacked=True,fontsize=8)
+# You will give "name" (of entire index of battles_dataframe)
+battles_dataframe=battles_dataframe.set_index(["name"])
 
+# You get mask(boolean array)
+# You select "attracker_size" column data,
+# and select "defender_size" column data
+# and sum them up,
+# and create mask with condition ">10000"
+large_battles_mask=battles_dataframe["attacker_size"]+battles_dataframe["defender_size"]>10000
 
-# You add attacker_pcts (percent) column
+# You use mask(large_battles_mask) to extract condition satisfied rows
+# from those rows,
+# select "attacker_size" column data and "defender_size" column data
+large_battles_series=battles_dataframe.loc[large_battles_mask,["attacker_size","defender_size"]]
+#                               attacker_size defender_size
+# name        
+# Battle of the Golden Tooth    15000.0       4000.0
+# Battle of Riverrun            15000.0       10000.0
+# Battle of the Green Fork      18000.0       20000.0
+# Battle of the Camps           6000.0        12625.0
+# Battle of Oxcross             6000.0        10000.0
+# Siege of Storm's End          5000.0        20000.0
+# Battle of the Fords           20000.0       10000.0
+# Battle of the Blackwater      21000.0       7250.0
+# Battle of Castle Black        100000.0      1240.0
+# Siege of Winterfell           5000.0        8000.0
+
+# You draw barh plot with large_battles_series
+ax2=large_battles_series.plot(kind="barh",stacked=True,fontsize=8)
+# img 6144bc34-5645-4fb9-a1e6-a114cd602d84
+
+# You add attacker_percentage (percent) column
 # You find attacker_size/(attacker_size+defender_size),
-# and assign result into attacker_pcts column
-large_battles["attacker_pcts"]=\
-    large_battles["attacker_size"]/(large_battles["attacker_size"]+large_battles["defender_size"])
-large_battles["defender_pcts"]=\
-    large_battles["defender_size"]/(large_battles["attacker_size"]+large_battles["defender_size"])
-# You draw bar plot with 2 columns
-ax3=large_battles[["attacker_pcts","defender_pcts"]].plot(kind="barh",stacked=True,fontsize=8)
+# and assign result into attacker_percentage column
+large_battles_series["attacker_percentage"]=\
+    large_battles_series["attacker_size"]/(large_battles_series["attacker_size"]+large_battles_series["defender_size"])
+large_battles_series["defender_percentage"]=\
+    large_battles_series["defender_size"]/(large_battles_series["attacker_size"]+large_battles_series["defender_size"])
 
+# You draw bar plot with 2 columns
+ax3=large_battles_series[["attacker_percentage","defender_percentage"]].plot(kind="barh",stacked=True,fontsize=8)
+# img 9ab54145-850f-4b8f-8f6f-2ce7174e8bdb
+
+# @
 # You will visualize frequency of intervention by each family on battles
 
 # You will bring related columns
 # attacker1,...attacker4,deffender1,...deffender4
-col_names=battles.columns[4:12]
-# You bring col_names,
+columns_of_attacker_and_defender=battles_dataframe.columns[4:12]
+# Index(['attacker_1', 'attacker_2', 'attacker_3', 'attacker_4', 'defender_1',
+#        'defender_2', 'defender_3', 'defender_4'],
+#       dtype='object')
+
+# You bring column data from "columns_of_attacker_and_defender",
 # and replace nan with string "None",
 # and extract value
-house_names=battles[col_names].fillna("None").values
-house_names
-# You will get unique family names
-house_names=np.unique(house_names)
-# You remove string "None",
-# by using boolean mask
-house_names=house_names[house_names!="None"]
-# You create series,
-# by using family name as index,
-# with initializing Series by 0
-houses_to_battle_counts=pd.Series(0,index=house_names)
+family_names=battles_dataframe[columns_of_attacker_and_defender].fillna("None").values
+family_names[:5]
+# array([['Lannister', 'None', 'None', 'None', 'Tully', 'None', 'None',
+#         'None'],
+#        ['Lannister', 'None', 'None', 'None', 'Baratheon', 'None', 'None',
+#         'None'],
+#        ['Lannister', 'None', 'None', 'None', 'Tully', 'None', 'None',
+#         'None'],
+#        ['Stark', 'None', 'None', 'None', 'Lannister', 'None', 'None',
+#         'None'],
+#        ['Stark', 'Tully', 'None', 'None', 'Lannister', 'None', 'None',
+#         'None']], dtype=object)
 
-for col in col_names:
-    houses_to_battle_counts=\
+# You will get unique family names
+duplicate_removed_family_names=np.unique(family_names)
+# array(['Baratheon', 'Blackwood', 'Bolton', 'Bracken', 'Brave Companions',
+#        'Brotherhood without Banners', 'Darry', 'Free folk', 'Frey',
+#        'Giants', 'Glover', 'Greyjoy', 'Karstark', 'Lannister',
+#        'Mallister', 'Mormont', "Night's Watch", 'None', 'Stark', 'Thenns',
+#        'Tully', 'Tyrell'], dtype=object)
+
+# You remove string "None" by using mask(boolean array)
+none_removed_family_names=duplicate_removed_family_names[duplicate_removed_family_names!="None"]
+# array(['Baratheon', 'Blackwood', 'Bolton', 'Bracken', 'Brave Companions',
+#        'Brotherhood without Banners', 'Darry', 'Free folk', 'Frey',
+#        'Giants', 'Glover', 'Greyjoy', 'Karstark', 'Lannister',
+#        'Mallister', 'Mormont', "Night's Watch", 'Stark', 'Thenns',
+#        'Tully', 'Tyrell'], dtype=object)
+
+# You create series by using family name as index,
+# with initializing Series by 0
+family_names_intervented_to_battles_series=pd.Series(0,index=none_removed_family_names)
+# Baratheon                      0
+# Blackwood                      0
+# Bolton                         0
+# Bracken                        0
+# Brave Companions               0
+# Brotherhood without Banners    0
+# Darry                          0
+# Free folk                      0
+# Frey                           0
+# Giants                         0
+# Glover                         0
+# Greyjoy                        0
+# Karstark                       0
+# Lannister                      0
+# Mallister                      0
+# Mormont                        0
+# Night's Watch                  0
+# Stark                          0
+# Thenns                         0
+# Tully                          0
+# Tyrell                         0
+
+for col in columns_of_attacker_and_defender:
+    family_names_intervented_to_battles_series\
         # fill_value=0 means NaN is 0
-        houses_to_battle_counts.add(battles[col].value_counts(),fill_value=0)
+        =family_names_intervented_to_battles_series.add(battles_dataframe[col].value_counts(),fill_value=0)
 # bins=10 means 10 intervals
-ax4=houses_to_battle_counts.hist(bins=10)
+ax4=family_names_intervented_to_battles_series.hist(bins=10)
+# img 3246d2c8-70b9-4007-801c-7022a1364958
 
 </xmp>
    </BODY>
