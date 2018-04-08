@@ -49,15 +49,15 @@ MathJax.Hub.Config({
 006-001. merge series, merge dataframe
 <xmp>
 # You can see one dataset which is composed of mulitple files
-# You can encounter case,
-# you should merge mulitple dataframe from multiple files into one dataframe
+# When you can encounter this case,
+# you should merge mulitple dataframes from multiple files into one dataframe
 
 # Task of merging 2 dataframes into one dataframe can be devided into 2 ways
 # 1. concatenating:
 # You attatch one dataframe onto other dataframe consecutively
 # 1. merging:
 # You first find one column which is commonly contained in 2 dataframes,
-# and then,you merge row based on common column
+# and then, you merge row based on common column
 
 import pandas as pd
 import numpy as np
@@ -65,99 +65,285 @@ import numpy as np
 # @
 # Let's talk about merging dataframe
 
-df1=pd.DataFrame({"key":list("bbacaab"),"data1":range(7)})
-df2=pd.DataFrame({"key":list("abd"),"data2":range(3)})
+dataframe_1=pd.DataFrame({"key":list("bbacaab"),"data1":range(7)})
+#     data1  key
+# 0   0      b
+# 1   1      b
+# 2   2      a
+# 3   3      c
+# 4   4      a
+# 5   5      a
+# 6   6      b
+
+dataframe_2=pd.DataFrame({"key":list("abd"),"data2":range(3)})
+#      data2  key
+# 0    0      a
+# 1    1      b
+# 2    2      d
 
 # Above 2 dataframes have "key" column commonly
-# "key" column has range from a to d
+# "key" column has categoriacal data ranged from a to d
 # You will merge 2 dataframes based on "key" column
-pd.merge(df1,df2,on="key")
-# Since c and d are only contained in df1,
+pd.merge(dataframe_1,dataframe_2,on="key")
+#      data1  key  data2
+# 0    0      b    1
+# 1    1      b    1
+# 2    6      b    1
+# 3    2      a    0
+# 4    4      a    0
+# 5    5      a    0
+# Since c and d are only contained in dataframe_1,
 # rows which contain c or d aren't contained in merged dataframe
-
 # Above merge is similar to inner join
+# img dacefb71-a4ae-42aa-8b74-25f1f71ef2d7
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/dacefb71-a4ae-42aa-8b74-25f1f71ef2d7.png"/><xmp>
 
 # You can use other options to use outter join
 # Following rows will be also contained into merged dataframe
 # 3.0 c NaN
 # NaN d 2.0
-pd.merge(df1,df2,on="key",how="outer")
+pd.merge(dataframe_1,dataframe_2,on="key",how="outer")
+#      data1  key  data2
+# 0    0.0    b    1.0
+# 1    1.0    b    1.0
+# 2    6.0    b    1.0
+# 3    2.0    a    0.0
+# 4    4.0    a    0.0
+# 5    5.0    a    0.0
+# 6    3.0    c    NaN
+# 7    NaN    d    2.0
+# img ee57ed32-e1f7-4241-8331-c3de193dc675
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/ee57ed32-e1f7-4241-8331-c3de193dc675.png"/><xmp>
 
 # You can use left join,
-# which merges based on df1(left, 1st argument)
+# which merges based on dataframe_1(left, 1st argument)
 # You first find row whose key is "b" in "data2",
-# and you attacth value onto merged dataframe
-# data1  key
-# 0      b
-# data2  key
-# 1      b
-# data1  key data2
-# 0      b   1
-pd.merge(df1,df2,on="key",how="left")
-pd.merge(df1,df2,on="key",how="right")
+# and you attatch value onto merged dataframe
+pd.merge(dataframe_1,dataframe_2,on="key",how="left")
+#     data1  key  data2
+# 0   0      b    1.0
+# 1   1      b    1.0
+# 2   2      a    0.0
+# 3   3      c    NaN
+# 4   4      a    0.0
+# 5   5      a    0.0
+# 6   6      b    1.0
+# img 92f95106-8061-4e75-b9ec-96cf0135f327
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/92f95106-8061-4e75-b9ec-96cf0135f327.png"/><xmp>
+
+pd.merge(dataframe_1,dataframe_2,on="key",how="right")
+#      data1  key  data2
+# 0    0.0    b    1
+# 1    1.0    b    1
+# 2    6.0    b    1
+# 3    2.0    a    0
+# 4    4.0    a    0
+# 5    5.0    a    0
+# 6    NaN    d    2
+# img 702bc179-d5ca-4946-9874-3ba382d0bb77
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/702bc179-d5ca-4946-9874-3ba382d0bb77.png"/><xmp>
 
 # @
 # inner(default), outter, left, right
 
 
-df3=pd.DataFrame({"lkey":list("bbacaab"),"data1": range(7)})
-df4=pd.DataFrame({"rkey":list("abd"),"data2": range(3)})
+dataframe_3=pd.DataFrame({"lkey":list("bbacaab"),"data1": range(7)})
+#    data1  lkey
+# 0    0    b
+# 1    1    b
+# 2    2    a
+# 3    3    c
+# 4    4    a
+# 5    5    a
+# 6    6    b
 
+dataframe_4=pd.DataFrame({"rkey":list("abd"),"data2": range(3)})
+#     data2 rkey
+# 0    0    a
+# 1    1    b
+# 2    2    d
 
-pd.merge(df3,df4,left_on="lkey",right_on="rkey")
+pd.merge(dataframe_3,dataframe_4,left_on="lkey",right_on="rkey")
+#      data1  lkey  data2  rkey
+# 0    0      b     1      b
+# 1    1      b     1      b
+# 2    6      b     1      b
+# 3    2      a     0      a
+# 4    4      a     0      a
+# 5    5      a     0      a
+# img 4cea1664-62d0-4774-b1e9-823b326f8639
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/4cea1664-62d0-4774-b1e9-823b326f8639.png"/><xmp>
 
 # @
 # You can merge dataframes based on index value
 
-left1=pd.DataFrame({'key': ['a','b','a','a','b','c'],'value': range(6)})
-right1=pd.DataFrame({'group_val': [3.5,7]},index=['a','b'])
+dataframe_left_1=pd.DataFrame({'key':['a','b','a','a','b','c'],'value': range(6)})
+#     key   value
+# 0    a    0
+# 1    b    1
+# 2    a    2
+# 3    a    3
+# 4    b    4
+# 5    c    5
 
-pd.merge(left1,right1,left_on="key",right_index=True)
+dataframe_right_1=pd.DataFrame({'group_val':[3.5,7]},index=['a','b'])
+#      group_val
+# a    3.5
+# b    7.0
 
-left2=pd.DataFrame([[1.,2.],[3.,4.],[5.,6.]]\
+pd.merge(dataframe_left_1,dataframe_right_1,left_on="key",right_index=True)
+#     key  value group_val
+# 0    a    0    3.5
+# 2    a    2    3.5
+# 3    a    3    3.5
+# 1    b    1    7.0
+# 4    b    4    7.0
+
+dataframe_left_2=pd.DataFrame([[1.,2.],[3.,4.],[5.,6.]]\
                     ,index=['a','c','e']\
                     ,columns=['Seoul','Incheon'])
-right2=pd.DataFrame([[7.,8.],[9.,10.],[11.,12.],[13,14]]\
+#     Seoul    Incheon
+# a    1.0    2.0
+# c    3.0    4.0
+# e    5.0    6.0
+
+dataframe_right_2=pd.DataFrame([[7.,8.],[9.,10.],[11.,12.],[13,14]]\
                     ,index=['b','c','d','e']\
                     ,columns=['Daegu','Ulsan'])
-pd.merge(left2,right2,how="outer",left_index=True,right_index=True)
+#     Daegu    Ulsan
+# b    7.0     8.0
+# c    9.0     10.0
+# d    11.0    12.0
+# e    13.0    14.0
+
+pd.merge(dataframe_left_2,dataframe_right_2,how="outer",left_index=True,right_index=True)
+#      Seoul  Incheon  Daegu  Ulsan
+# a    1.0    2.0      NaN    NaN
+# b    NaN    NaN      7.0    8.0
+# c    3.0    4.0      9.0    10.0
+# d    NaN    NaN      11.0   12.0
+# e    5.0    6.0      13.0   14.0
 
 # @
 # Let's talk about concatenating DataFrame
 
 # You create 3 Serieses
-s1=pd.Series([0,1],index=["a","b"])
-s2=pd.Series([2,3,4],index=["c","d","e"])
-s3=pd.Series([5,6],index=["f","g"])
+series_1=pd.Series([0,1],index=["a","b"])
+# a    0
+# b    1
+
+series_2=pd.Series([2,3,4],index=["c","d","e"])
+# c    2
+# d    3
+# e    4
+
+series_3=pd.Series([5,6],index=["f","g"])
+# f    5
+# g    6
 
 # You concatenate 3 Serieses
-pd.concat([s1,s2,s3])
-# You craete dataframe
-pd.concat([s1,s2,s3],axis=1)
-# You create Series
-s4=pd.concat([s1*5,s3])
-pd.concat([s1,s4],axis=1)
-# You give name for concatenated dataframe's index
-pd.concat([s1,s2,s3],axis=1,keys=["one","two","three"])
+pd.concat([series_1,series_2,series_3])
+# a    0
+# b    1
+# c    2
+# d    3
+# e    4
+# f    5
+# g    6
+# img dec586f3-b22a-42bb-9899-be536113a9ac
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/dec586f3-b22a-42bb-9899-be536113a9ac.png"/><xmp>
 
-# You perform concatenate for dataframe
-df1=pd.DataFrame(np.arange(6).reshape(3,2)\
+# You can craete dataframe
+pd.concat([series_1,series_2,series_3],axis=1)
+#      0      1      2
+# a    0.0    NaN    NaN
+# b    1.0    NaN    NaN
+# c    NaN    2.0    NaN
+# d    NaN    3.0    NaN
+# e    NaN    4.0    NaN
+# f    NaN    NaN    5.0
+# g    NaN    NaN    6.0
+# img d29467c4-eeed-4d46-b237-721f6ab402ba
+</xmp><img src="https://github.com/youngmtool/pracdm/blob/master/flearning/pic/d29467c4-eeed-4d46-b237-721f6ab402ba.png"/><xmp>
+
+# You create Series
+series_4=pd.concat([series_1*5,series_3])
+# a    0
+# b    5
+# f    5
+# g    6
+
+pd.concat([series_1,series_4],axis=1)
+#      0      1
+# a    0.0    0
+# b    1.0    5
+# f    NaN    5
+# g    NaN    6
+
+# You give name for concatenated dataframe's index
+pd.concat([series_1,series_2,series_3],axis=1,keys=["one","two","three"])
+#      one    two    three
+# a    0.0    NaN    NaN
+# b    1.0    NaN    NaN
+# c    NaN    2.0    NaN
+# d    NaN    3.0    NaN
+# e    NaN    4.0    NaN
+# f    NaN    NaN    5.0
+# g    NaN    NaN    6.0
+
+# You perform concatenate with dataframes
+dataframe_1=pd.DataFrame(np.arange(6).reshape(3,2)\
                     ,index=['a','b','c']\
                     ,columns=['one','two'])
-df2=pd.DataFrame(5+np.arange(4).reshape(2,2)\
+#     one   two
+# a    0    1
+# b    2    3
+# c    4    5
+
+dataframe_2=pd.DataFrame(5+np.arange(4).reshape(2,2)\
                     ,index=['a','c']\
                     ,columns=['three','four'])
-pd.concat([df1,df2],axis=1)
+#     three four
+# a    5    6
+# c    7    8
+
+pd.concat([dataframe_1,dataframe_2],axis=1)
+#     one  two  three   four
+# a    0    1    5.0    6.0
+# b    2    3    NaN    NaN
+# c    4    5    7.0    8.0
 
 # @
 # You create dataframes
-df3=pd.DataFrame(np.random.randn(3,4),columns=['a','b','c','d'])
-df4=pd.DataFrame(np.random.randn(2,3),columns=['b','d','a'])
+dataframe_3=pd.DataFrame(np.random.randn(3,4),columns=['a','b','c','d'])
+#      a            b           c           d
+# 0    1.195624    -0.824417    0.244959    0.329864
+# 1    -0.128856   -1.185168    -1.087919   -0.780488
+# 2    -1.392841   -0.302125    1.597788    0.241045
+
+dataframe_4=pd.DataFrame(np.random.randn(2,3),columns=['b','d','a'])
+#      b           d            a
+# 0    0.845702    -0.108371    -0.073878
+# 1    0.952161    -0.012805    0.773525
+
 # You first try this one
-pd.concat([df3,df4])
-# < index will be 0 1 2 0 1
-pd.concat([df3,df4],ignore_index=True)
-# < index will be 0 1 2 3 4
+pd.concat([dataframe_3,dataframe_4])
+#      a           b            c           d
+# 0    1.195624    -0.824417    0.244959    0.329864
+# 1    -0.128856   -1.185168    -1.087919   -0.780488
+# 2    -1.392841   -0.302125    1.597788    0.241045
+# 0    -0.073878   0.845702     NaN         -0.108371
+# 1    0.773525    0.952161     NaN         -0.012805
+# index is 0 1 2 0 1
+
+pd.concat([dataframe_3,dataframe_4],ignore_index=True)
+#      a           b            c           d
+# 0    1.195624    -0.824417    0.244959    0.329864
+# 1    -0.128856   -1.185168    -1.087919   -0.780488
+# 2    -1.392841   -0.302125    1.597788    0.241045
+# 3    -0.073878   0.845702     NaN         -0.108371
+# 4    0.773525    0.952161     NaN         -0.012805
+# index is 0 1 2 3 4
 </xmp>
    </BODY>
 </HTML>
