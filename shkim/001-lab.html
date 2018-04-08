@@ -46,86 +46,104 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-001-lab. basic of tensorflow, node, session, placeholder, constant
+001-lab. node, session, placeholder, constant, rank, shape, tensor
 <xmp>
-</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/7f189664-5ca0-4d6d-8646-bb186b7ed5c4.png"/><xmp>
 import tensorflow as tf
 
 # @
-# Create a constant operation
-# This operation will be added as node on default graph
-hello = tf.constant("Hello, TensorFlow!")
-# start tensorflow session
-sess = tf.Session()
-# run the operation and get result
-print(sess.run(hello))
-# < b'Hello, TensorFlow!'
+# You create constant node
+# This node will be added on default graph(node+edge)
+constant_node=tf.constant("Hi")
+
+# You create Session instance
+sess_instance=tf.Session()
+
+# You graph via sess_instance
+print(sess_instance.run(constant_node))
+# b_placeholder'Hi'
 
 # @
 # Let's talk about more complex computational graph
-# First, we create nodes
-node1 = tf.constant(3.0, tf.float32)
-# tf.float32 implicitly
-node2 = tf.constant(4.0)
-# We create 'add' node
-node3 = tf.add(node1, node2)
-print("node1: ", node1)
-print("node2: ", node2)
-print("node3: ", node3)
-# < node1: Tensor("Const_1:0", shape=(), dtype=float32)
-# < node2: Tensor("Const_2:0", shape=(), dtype=float32)
-# < node3: Tensor("Add:0", shape=(), dtype=float32)
+
+# You craete constant node
+constant_node_1=tf.constant(3.0,tf.float32)
+
+# If you omit tf.float32, it's default
+constant_node_2=tf.constant(4.0)
+
+# You create add node,
+# and pass 2 constant nodes
+operation_node_1=tf.add(constant_node_1,constant_node_2)
+
+print("constant_node_1: ",constant_node_1)
+# constant_node_1: Tensor("Const_1:0",shape=(),dtype=float32)
+
+print("constant_node_2: ",constant_node_2)
+# constant_node_2: Tensor("Const_2:0",shape=(),dtype=float32)
+
+print("operation_node_1: ",operation_node_1)
+# operation_node_1: Tensor("Add:0",shape=(),dtype=float32)
 
 
-# We run tensorflow code in this way by using session
-# We create session obejct
-sess = tf.Session()
-# We run session on nodes
-print("sess.run(node1): ", sess.run(node1))
-print("sess.run(node2): ", sess.run(node2))
-print("sess.run(node3): ", sess.run(node3))
-# < sess.run(node1):  3.0
-# < sess.run(node2):  4.0
-# < sess.run(node3):  7.0
+# You run tensorflow code in this way,
+# with using Session object
+# You create Session instance
+sess_instance=tf.Session()
+
+# You run Session instance holding each node
+print("sess_instance.run(constant_node_1): ",sess_instance.run(constant_node_1))
+# sess_instance.run(constant_node_1):  3.0
+
+print("sess_instance.run(constant_node_2): ",sess_instance.run(constant_node_2))
+# sess_instance.run(constant_node_2):  4.0
+
+print("sess_instance.run(operation_node_1): ",sess_instance.run(operation_node_1))
+# sess_instance.run(operation_node_1):  7.0
 
 # We want to implement following scheme
 # img 7f189664-5ca0-4d6d-8646-bb186b7ed5c4
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/7f189664-5ca0-4d6d-8646-bb186b7ed5c4.png"/><xmp>
 
-# For this, we use placeholder node
+# For this functionality,
+# you can use placeholder node
+a_placeholder=tf.placeholder(tf.float32)
+b_placeholder=tf.placeholder(tf.float32)
 
-a = tf.placeholder(tf.float32)
-b = tf.placeholder(tf.float32)
-# '+' provides shortcut for tf.add(a, b)
-adder_node = a + b  
-# We pass values into placeholder via feed_dict
-print(sess.run(adder_node, feed_dict={a: 3, b: 4.5}))
-print(sess.run(adder_node, feed_dict={a: [1, 3], b: [2, 4]}))
-# < 7.5
-# < [ 3.  7.]
-add_and_triple = adder_node * 3.
-print(sess.run(add_and_triple, feed_dict={a: 3, b:4.5}))
-# < 22.5
+# '+' character provides shortcut,
+# for tf.add(a_placeholder,b_placeholder)
+add_op_node=a_placeholder+b_placeholder
 
+# You pass operation node in 1th argument
+# You pass values into placeholder via feed_dict in 2th argument
+print(sess_instance.run(add_op_node,feed_dict={a_placeholder: 3,b_placeholder: 4.5}))
+# 7.5
+
+print(sess_instance.run(add_op_node,feed_dict={a_placeholder: [1,3],b_placeholder: [2,4]}))
+# array([3., 7.], dtype=float32)
+
+# You create node
+add_then_3times_node=add_op_node*3
+print(sess_instance.run(add_and_triple,feed_dict={a_placeholder: 3,b_placeholder:4.5}))
+# 22.5
 
 # @
 # Let's talk about tensor, rank, shape
 # Rank is dimension of array
 
 # Shape of following array is [3,2]
-# [[1,2], [3,4], [5,6]]
+# [[1,2],[3,4],[5,6]]
 # [5,6] => 2
-# [1,2], [3,4], [5,6] => 3
+# [1,2],[3,4],[5,6] => 3
 
 # Rank 0 tensor; 'scalar' with shape []
 # 3 
 # Rank 1 tensor; 'vector' with shape [3]
-# [1. ,2., 3.]
-# Rank 2 tensor; 'matrix' with shape [2, 3]
-# [[1., 2., 3.], [4., 5., 6.]] 
-# Rank 3 tensor with shape [2, 1, 3]
-# [[[1., 2., 3.]], [[7., 8., 9.]]] 
-# [[[1.0, 2.0, 3.0]], [[7.0, 8.0, 9.0]]]
-
-      </xmp>
-   </BODY>
+# [1. ,2.,3.]
+# Rank 2 tensor; 'matrix' with shape [2,3]
+# [[1.,2.,3.],[4.,5.,6.]] 
+# Rank 3 tensor with shape [2,1,3]
+# [[[1.,2.,3.]],[[7.,8.,9.]]] 
+# [[[1.0,2.0,3.0]],[[7.0,8.0,9.0]]]
+</xmp>
+</BODY>
 </HTML>
