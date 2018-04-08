@@ -56,39 +56,37 @@ import matplotlib.pyplot as plt
 # for reproducibility
 tf.set_random_seed(777)
 
-# train dataset node
-X = [1, 2, 3]
-Y = [1, 2, 3]
+# You create train dataset
+X_of_train_list=[1,2,3]
+Y_of_train_list=[1,2,3]
 
-# Weight node
-W = tf.placeholder(tf.float32)
+# You create weight node
+W_placeholder=tf.placeholder(tf.float32)
 
-# hypothesis function node
-hypothesis = X * W
+hypothesis_function_node=X_of_train_list*W_placeholder
 
-# loss function node
-cost = tf.reduce_mean(tf.square(hypothesis - Y))
+cost_function_node=tf.reduce_mean(tf.square(hypothesis_function_node-Y_of_train_list))
 
-# I create session object
-sess = tf.Session()
+sess_object=tf.Session()
 
-# List holders for weight history and loss history
-W_history = []
-cost_history = []
+W_history_list=[]
+cost_history_list=[]
 
-
-for i in range(-30, 50):
-    # Weight moves between -3 and 5  
-    curr_W = i * 0.1
-    # I run model and get loss
-    curr_cost = sess.run(cost, feed_dict={W: curr_W})
+for i in range(-30,50):
+    # You will move weight between -3 and 5
+    current_W=i*0.1
+    
+    # You run model and get loss
+    current_cost_value=sess_object.run(cost_function_node\
+                    ,feed_dict={W_placeholder:current_W})
+    
     # I append weight history and loss history into each list
-    W_history.append(curr_W)
-    cost_history.append(curr_cost)
+    W_history_list.append(current_W)
+    cost_history_list.append(current_cost_value)
 
-plt.plot(W_history, cost_history)
+plt.plot(W_history_list,cost_history_list)
 plt.show()
-
+# img d93cdbb8-98af-4e92-a71e-ad35a6f6e187
 
 # @
 # lab-03-2-minimizing_cost_gradient_update.py
@@ -96,54 +94,57 @@ plt.show()
 import tensorflow as tf
 tf.set_random_seed(777)
 
-x_data = [1, 2, 3]
-y_data = [1, 2, 3]
+x_train_data_list=[1,2,3]
+y_train_data_list=[1,2,3]
 
-W = tf.Variable(tf.random_normal([1]), name='weight')
+W_placeholder=tf.Variable(tf.random_normal([1]),name='weight')
 
-X = tf.placeholder(tf.float32)
-Y = tf.placeholder(tf.float32)
+X_of_train_list=tf.placeholder(tf.float32)
+Y_of_train_list=tf.placeholder(tf.float32)
 
-hypothesis = X * W
+hypothesis_function_node=X_of_train_list*W_placeholder
 
-cost = tf.reduce_mean(tf.square(hypothesis - Y))
+cost_function_node=tf.reduce_mean(tf.square(hypothesis_function_node-Y_of_train_list))
 
-# We manually implement gradient descent algolithm without using tensorflow method
-learning_rate = 0.1
-gradient = tf.reduce_mean((W * X - Y) * X)
-# I get new Weight
-descent = W - learning_rate * gradient
+# We can manually implement gradient_descent_node weight_update_formular algolithm,
+# without using tensorflow method
+learning_rate=0.1
+gradient_descent_node\
+    =tf.reduce_mean((W_placeholder*X_of_train_list-Y_of_train_list)*X_of_train_list)
+
+# You will get new weight
+weight_update_formular=W_placeholder-learning_rate*gradient_descent_node
 # I need to assign new Weight into update
-update = W.assign(descent)
+updated_weight=W_placeholder.assign(weight_update_formular)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for step in range(21):
-    sess.run(update, feed_dict={X: x_data, Y: y_data})
-    print(step, sess.run(cost, feed_dict={X: x_data, Y: y_data}), sess.run(W))
-# 0 1.93919 [ 1.64462376]
-# 1 0.551591 [ 1.34379935]
-# 2 0.156897 [ 1.18335962]
-# 3 0.0446285 [ 1.09779179]
-# 4 0.0126943 [ 1.05215561]
-# 5 0.00361082 [ 1.0278163]
-# 6 0.00102708 [ 1.01483536]
-# 7 0.000292144 [ 1.00791216]
-# 8 8.30968e-05 [ 1.00421977]
-# 9 2.36361e-05 [ 1.00225055]
-# 10 6.72385e-06 [ 1.00120032]
-# 11 1.91239e-06 [ 1.00064015]
-# 12 5.43968e-07 [ 1.00034142]
-# 13 1.54591e-07 [ 1.00018203]
-# 14 4.39416e-08 [ 1.00009704]
-# 15 1.24913e-08 [ 1.00005174]
-# 16 3.5322e-09 [ 1.00002754]
-# 17 9.99824e-10 [ 1.00001466]
-# 18 2.88878e-10 [ 1.00000787]
-# 19 8.02487e-11 [ 1.00000417]
-# 20 2.34053e-11 [ 1.00000226]
-
+    sess_object.run(updated_weight\
+        ,feed_dict={X_of_train_list:x_train_data_list,Y_of_train_list:y_train_data_list})
+    print("step:",step,"cost_function:",sess_object.run(cost_function_node,feed_dict={X_of_train_list:x_train_data_list,Y_of_train_list:y_train_data_list}),"W_placeholder:",sess_object.run(W_placeholder))
+# step: 0 cost_function: 0.5970871 W_placeholder: [0.6423029]
+# step: 1 cost_function: 0.16983815 W_placeholder: [0.8092282]
+# step: 2 cost_function: 0.048309505 W_placeholder: [0.89825505]
+# step: 3 cost_function: 0.013741341 W_placeholder: [0.94573605]
+# step: 4 cost_function: 0.0039086654 W_placeholder: [0.9710592]
+# step: 5 cost_function: 0.0011117938 W_placeholder: [0.9845649]
+# step: 6 cost_function: 0.00031624394 W_placeholder: [0.99176794]
+# step: 7 cost_function: 8.995309e-05 W_placeholder: [0.9956096]
+# step: 8 cost_function: 2.5587346e-05 W_placeholder: [0.99765843]
+# step: 9 cost_function: 7.278099e-06 W_placeholder: [0.99875116]
+# step: 10 cost_function: 2.0699079e-06 W_placeholder: [0.999334]
+# step: 11 cost_function: 5.8892437e-07 W_placeholder: [0.99964476]
+# step: 12 cost_function: 1.6752881e-07 W_placeholder: [0.9998105]
+# step: 13 cost_function: 4.7689053e-08 W_placeholder: [0.9998989]
+# step: 14 cost_function: 1.3585318e-08 W_placeholder: [0.99994606]
+# step: 15 cost_function: 3.864345e-09 W_placeholder: [0.9999712]
+# step: 16 cost_function: 1.1072577e-09 W_placeholder: [0.9999846]
+# step: 17 cost_function: 3.1215208e-10 W_placeholder: [0.99999183]
+# step: 18 cost_function: 8.887113e-11 W_placeholder: [0.99999565]
+# step: 19 cost_function: 2.4941235e-11 W_placeholder: [0.9999977]
+# step: 20 cost_function: 7.461883e-12 W_placeholder: [0.99999875]
 
 # @
 # lab-03-3-minimizing_cost_tf_optimizer.py
@@ -151,80 +152,83 @@ for step in range(21):
 import tensorflow as tf
 tf.set_random_seed(777)
 
-X = [1, 2, 3]
-Y = [1, 2, 3]
+X_of_train_list=[1,2,3]
+Y_of_train_list=[1,2,3]
 
-W = tf.Variable(5.0)
+W_Variable=tf.Variable(5.0)
 
-hypothesis = X * W
+hypothesis_function_node=X_of_train_list*W_Variable
 
-cost = tf.reduce_mean(tf.square(hypothesis - Y))
+cost_function_node=tf.reduce_mean(tf.square(hypothesis_function_node-Y_of_train_list))
 
 # We use tensorflow method without manually implementing formular
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1)
-train = optimizer.minimize(cost)
+gradient_descent_optimizer=tf.train.GradientDescentOptimizer(learning_rate=0.1)
+to_be_trained_node=gradient_descent_optimizer.minimize(cost_function_node)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for step in range(100):
-    print(step, sess.run(W))
-    sess.run(train)
-# 0 5.0
-# 1 1.26667
-# 2 1.01778
-# 3 1.00119
-# 4 1.00008
-# ...
-# 96 1.0
-# 97 1.0
-# 98 1.0
-# 99 1.0
+    if step%10==0:
+        print("step:",step,"W_Variable:",sess_object.run(W_Variable))
+        sess_object.run(to_be_trained_node)
+# step: 0 W_Variable: 5.0
+# step: 10 W_Variable: 1.2666664
+# step: 20 W_Variable: 1.0177778
+# step: 30 W_Variable: 1.0011852
+# step: 40 W_Variable: 1.000079
+# step: 50 W_Variable: 1.0000052
+# step: 60 W_Variable: 1.0000004
+# step: 70 W_Variable: 1.0
+# step: 80 W_Variable: 1.0
+# step: 90 W_Variable: 1.0
 
 # @
-# lab-03-X-minimizing_cost_tf_gradient.py
+# lab-03-X_of_train_list-minimizing_cost_tf_gradient.py
 
 import tensorflow as tf
 tf.set_random_seed(777)
 
-X = [1, 2, 3]
-Y = [1, 2, 3]
+X_of_train_list=[1,2,3]
+Y_of_train_list=[1,2,3]
 
-W = tf.Variable(5.)
+W_Variable=tf.Variable(5.)
 
-hypothesis = X * W
+hypothesis_function_node=X_of_train_list*W_Variable
 
-gradient = tf.reduce_mean((W * X - Y) * X) * 2
+gradient_descent_node=tf.reduce_mean((W_Variable*X_of_train_list-Y_of_train_list)*X_of_train_list)*2
 
-cost = tf.reduce_mean(tf.square(hypothesis - Y))
+cost_function_node=tf.reduce_mean(tf.square(hypothesis_function_node-Y_of_train_list))
 
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
-train = optimizer.minimize(cost)
+gradient_descent_optimizer=tf.train.GradientDescentOptimizer(learning_rate=0.01)
+to_be_trained_node=gradient_descent_optimizer.minimize(cost_function_node)
 
-# First, I want to find gradient values about cost
-# After getting gradient values, I can edit them
-gvs = optimizer.compute_gradients(cost, [W])
-# And then I can pass edited gvs
-apply_gradients = optimizer.apply_gradients(gvs)
+# First, I want to find gradient_descent_node values about cost_function_node
+# After getting gradient_descent_node values, I can edit them
+gradient_descent_node_value=gradient_descent_optimizer\
+            .compute_gradients(cost_function_node,[W_Variable])
+# And then I can pass edited gvsgradient_descent_node_value
+edited_gradient_descent_node=gradient_descent_optimizer.apply_gradients(gradient_descent_node_value)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for step in range(100):
-    print(step, sess.run([gradient, W, gvs]))
-    sess.run(apply_gradients)
+    if step%10==0:
+        print("step:",step,"(gd,W,gdv)",sess_object.run([gradient_descent_node,W_Variable,gradient_descent_node_value]))
+        sess_object.run(edited_gradient_descent_node)
     
 # # Apply gradients
-# 0 [37.333332, 5.0, [(37.333336, 5.0)]]
-# 1 [33.848888, 4.6266665, [(33.848888, 4.6266665)]]
-# 2 [30.689657, 4.2881775, [(30.689657, 4.2881775)]]
-# 3 [27.825287, 3.9812808, [(27.825287, 3.9812808)]]
-# 4 [25.228262, 3.703028, [(25.228264, 3.703028)]]
+# 0 [37.333332,5.0,[(37.333336,5.0)]]
+# 1 [33.848888,4.6266665,[(33.848888,4.6266665)]]
+# 2 [30.689657,4.2881775,[(30.689657,4.2881775)]]
+# 3 [27.825287,3.9812808,[(27.825287,3.9812808)]]
+# 4 [25.228262,3.703028,[(25.228264,3.703028)]]
 # ...
-# 96 [0.0030694802, 1.0003289, [(0.0030694804, 1.0003289)]]
-# 97 [0.0027837753, 1.0002983, [(0.0027837753, 1.0002983)]]
-# 98 [0.0025234222, 1.0002704, [(0.0025234222, 1.0002704)]]
-# 99 [0.0022875469, 1.0002451, [(0.0022875469, 1.0002451)]]
-      </xmp>
-   </BODY>
+# 96 [0.0030694802,1.0003289,[(0.0030694804,1.0003289)]]
+# 97 [0.0027837753,1.0002983,[(0.0027837753,1.0002983)]]
+# 98 [0.0025234222,1.0002704,[(0.0025234222,1.0002704)]]
+# 99 [0.0022875469,1.0002451,[(0.0022875469,1.0002451)]]
+</xmp>
+</BODY>
 </HTML>
