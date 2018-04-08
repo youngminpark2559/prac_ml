@@ -52,277 +52,283 @@ import pandas as pd
 import numpy as np
 
 # You can create index as 2 dimensional array,
-# then, you will have 2 layers index
-s=pd.Series(np.random.randn(10),
+# then, you will have 2 layered index
+series=pd.Series(np.random.randn(10),
               index=[["a","a","a","b","b","b","c","c","d","d"],
                      [1,2,3,1,2,3,1,2,2,3]])
-# < a  1    0.012741
-# <    2   -0.381692
-# <    3   -1.397882
-# < b  1   -0.827033
-# <    2   -0.713064
-# <    3    1.124109
-# < c  1    0.715226
-# <    2    0.335037
-# < d  2   -0.325940
-# <    3    1.159985                     
+# a  1   -0.513108
+#    2   -0.379450
+#    3   -0.962825
+# b  1   -1.373376
+#    2   -1.239304
+#    3   -0.858371
+# c  1    0.711247
+#    2    1.668837
+# d  2    1.672055
+#    3    0.572363
+# 1th layer index: a,b,c,d
+# 2th layer index: 1,2,3
 
-# Most outter index(1 layer): a,b,c,d
-# 2 layer index: 1,2,3
-
-s.index
-# < MultiIndex(levels=[['a', 'b', 'c', 'd'], [1, 2, 3]],
-# <            labels=[[0, 0, 0, 1, 1, 1, 2, 2, 3, 3], [0, 1, 2, 0, 1, 2, 0, 1, 1, 2]])
+series.index
+# MultiIndex(levels=[['a', 'b', 'c', 'd'], [1, 2, 3]],
+#            labels=[[0, 0, 0, 1, 1, 1, 2, 2, 3, 3], [0, 1, 2, 0, 1, 2, 0, 1, 1, 2]])
 
 # @
-# Let's talk about how to perform layered indexing on layered index
+# Let'series talk about how to perform layered indexing on layered index
 
-# Rule: You should perform layered indexing from most outter index to inner index
-s["b"]
-# < 1   -0.827033
-# < 2   -0.713064
-# < 3    1.124109
-s["b":"c"]
-# < b  1   -0.827033
-# <    2   -0.713064
-# <    3    1.124109
-# < c  1    0.715226
-# <    2    0.335037
-s[("b",3)]
-# < 1.1241092017323921
-s[:,3]
-# < a   -1.397882
-# < b    1.124109
-# < d    1.159985
+# Rule: You should perform layered indexing from 1th index to inner index
+series["b"]
+# 1   -1.373376
+# 2   -1.239304
+# 3   -0.858371
+
+series["b":"c"]
+# b  1   -1.373376
+#    2   -1.239304
+#    3   -0.858371
+# c  1    0.711247
+#    2    1.668837
+
+series[("b",3)]
+# -0.8583708266256991
+
+series[:,3]
+# a   -0.962825
+# b   -0.858371
+# d    0.572363
 
 # Let's create new dataframe
-# index is 2 dimensional array
-# columns is 2 dimensional array
-df=pd.DataFrame(np.arange(12).reshape((4,3)),
-                               index=[["a","a","b","b"],
-                                      [1,2,1,2]],
-                               columns=[["Seoul","Seoul","Busan"],
-                                        ["Green","Red","Green"]])
+# index will be 2 dimensional array
+# columns will be 2 dimensional array
+dataframe=pd.DataFrame(np.arange(12).reshape((4,3))\
+                       ,index=[["a","a","b","b"],
+                               [1,2,1,2]]\
+                       ,columns=[["Seoul","Seoul","Busan"],
+                                 ["Green","Red","Green"]])
+#       Seoul       Busan
+#       Green  Red  Green
+# a  1  0      1    2
+#    2  3      4    5
+# b  1  6      7    8
+#    2  9      10   11                                 
 
-# < 		Seoul	        Busan
-# <         Green	Red	    Green
-# < a	1	0	    1	    2
-# <     2	3	    4	    5
-# < b	1	6	    7	    8
-# <     2	9	    10  	11                                        
-
-# You can give name
-df.index.names=["key1","key2"]
-df.columns.names=["city","color"]
-# < 	    city	Seoul	        Busan
-# <         color	Green	Red	    Green
-# < key1	key2			
-# < a	    1	    0	    1	    2
-# <         2	    3	    4	    5
-# < b	    1	    6	    7	    8
-# <         2	    9	    10  	11
+# You can give name to index and column
+dataframe.index.names=["key1","key2"]
+dataframe.columns.names=["city","color"]
+#      city   Seoul       Busan
+#      color  Green  Red  Green
+# key1 key2            
+# a    1      0      1    2
+#      2      3      4    5
+# b    1      6      7    8
+#      2      9      10   11
 
 # You can perform layered indexing on dataframe
-df["Seoul"]
-# < 	    color   Green	Red
-# < key1	key2		
-# < a	    1	    0	    1
-# <         2	    3	    4
-# < b	    1	    6	    7
-# <         2	    9	    10
+dataframe["Seoul"]
+#      color Green  Red
+# key1 key2        
+# a    1    0      1
+#      2    3      4
+# b    1    6      7
+#      2    9      10
 
-df["Seoul","Green"]
-# < key1  key2
-# < a     1       0
-# <       2       3
-# < b     1       6
-# <       2       9
+dataframe["Seoul","Green"]
+# key1  key2
+# a     1       0
+#       2       3
+# b     1       6
+#       2       9
 
-df.loc["a"]
-# < city	Seoul	Busan
-# < color	Green	Red     Green
-# < key2			
-# < 1	    0	    1	    2
-# < 2	    3	    4	    5
+dataframe.loc["a"]
+# city   Seoul      Busan
+# color  Green Red  Green
+# key2            
+# 1      0     1    2
+# 2      3     4    5
 
-df.loc[("a",1)]
-# < city   color
-# < Seoul  Green    0
-# <        Red      1
-# < Busan  Green    2
+dataframe.loc[("a",1)]
+# city   color
+# Seoul  Green    0
+#        Red      1
+# Busan  Green    2
 
-df.loc["b",("Seoul","Red")]
-# < key2
-# < 1     7
-# < 2    10
+dataframe.loc["b",("Seoul","Red")]
+# key2
+# 1     7
+# 2    10
 
-df.loc[("b",2),"Busan"]
-# < color
-# < Green    11
+dataframe.loc[("b",2),"Busan"]
+# color
+# Green    11
 
-df.loc[("b",1),("Seoul","Green")]
-# < 6
+dataframe.loc[("b",1),("Seoul","Green")]
+# 6
 
 # @
 # You can sort based on layered index
 # level=0 means most outter index key1(a,b,..)
 # level=1 means index key2(1,2,..)
-df.sort_index(axis=0,level=0)
-# < 	    city	Seoul	        Busan
-# <         color	Green	Red     Green
-# < key1	key2			
-# < a	    1	    0	    1	    2
-# <         2	    3	    4	    5
-# < b	    1	    6	    7	    8
-# <         2	    9	    10  	11
-df.sort_index(axis=0,level=1)
-# < 	    city	Seoul	        Busan
-# <         color	Green	Red	    Green
-# < key1	key2			
-# < a	    1	    0	    1	    2
-# < b	    1	    6	    7	    8
-# < a	    2	    3	    4	    5
-# < b	    2	    9	    10  	11
 
+# You select key1,
+# and sort column data
+dataframe.sort_index(axis=0,level=0)
+#      city   Seoul         Busan
+#      color  Green  Red    Green
+# key1 key2            
+# a    1      0      1      2
+#      2      3      4      5
+# b    1      6      7      8
+#      2      9      10     11
+
+# You select key2,
+# and, sort column data
+dataframe.sort_index(axis=0,level=1)
+#      city   Seoul       Busan
+#      color  Green  Red  Green
+# key1 key2            
+# a    1      0      1    2
+# b    1      6      7    8
+# a    2      3      4    5
+# b    2      9      10   11
 
 # You can designate index name for sorting
-df.sort_index(axis=0,level="key2")
-# Above code is same with df.sort_index(axis=0,level=1)
+dataframe.sort_index(axis=0,level="key2")
+# Above code is same with dataframe.sort_index(axis=0,level=1)
 
-# You can perform same task with above task for column by using axis=1
-df.sort_index(axis=1,level=0)
-df.sort_index(axis=1,level=1)
-df.sort_index(axis=1,level="color")
+# You can perform same task with above task,
+# to sort row data
+dataframe.sort_index(axis=1,level=0)
+dataframe.sort_index(axis=1,level=1)
+dataframe.sort_index(axis=1,level="color")
 
 
 # @
 # You can sort by value in layered index
-df.sort_values(by=("Busan","Green"))
+dataframe.sort_values(by=("Busan","Green"))
 
-
-# @
-# < 		Seoul	        Busan
-# <         Green	Red	    Green
-# < a	1	0	    1	    2
-# <     2	3	    4	    5
-# < b	1	6	    7	    8
-# <     2	9	    10  	11
+#         Seoul            Busan
+#         Green    Red     Green
+# a   1    0        1        2
+#     2    3        4        5
+# b   1    6        7        8
+#     2    9        10      11
 
 # You can use statistical method on layered index
 # What you additionally need to do is to use level
-# axis=0 means row direction
+# axis=0 means column data
 # level=0 means key1
-df.sum(axis=0,level=0)
-# < city	Seoul	        Busan
-# < color	Green	Red	    Green
-# < key1			
-# < a	    3	    5	    7
-# < b	    15  	17	    19
+dataframe.sum(axis=0,level=0)
+# city   Seoul         Busan
+# color  Green  Red    Green
+# key1            
+# a      3      5      7
+# b      15     17     19
 
-# You use key2
-df.sum(axis=0,level=1)
-# < city	Seoul	        Busan
-# < color	Green	Red	    Green
-# < key2			
-# < 1	    6	    8	    10
-# < 2	    12  	14	    16
+# You use with key2
+dataframe.sum(axis=0,level=1)
+# city   Seoul         Busan
+# color  Green  Red    Green
+# key2            
+# 1      6      8      10
+# 2      12     14     16
 
-df.mean(axis=1,level="color")
-# < 	    color	Green	Red
-# < key1	key2		
-# < a	    1	    1	    1
-# <         2	    4	    4
-# < b	    1	    7	    7
-# <         2	    10	    10
+dataframe.mean(axis=1,level="color")
+#      color Green Red
+# key1 key2          
+# a    1    1      1
+#      2    4      4
+# b    1    7      7
+#      2    10     10
 
 # @
-df2=pd.DataFrame({'a': range(7),'b': range(7,0,-1),
+dataframe_2=pd.DataFrame({'a': range(7),'b': range(7,0,-1),
                     'c': ['one','one','one','two','two','two','two'],
                     'd': [0,1,2,0,1,2,3]})
-# < 	    city	Seoul	        Busan
-# <         color	Green	Red	    Green
-# < key1	key2			
-# < a	    1	    0	    1	    2
-# <         2	    3	    4	    5
-# < b	    1	    6	    7	    8
-# <         2	    9	    10  	11                    
+#      a    b    c      d
+# 0    0    7    one    0
+# 1    1    6    one    1
+# 2    2    5    one    2
+# 3    3    4    two    0
+# 4    4    3    two    1
+# 5    5    2    two    2
+# 6    6    1    two    3
 
-# You can change "c","d" value columns into "c","d" index columns
-df3=df2.set_index(["c","d"])
-# < 		a	b
-# < c	d		
-# < one	0	0	7
-# <     1	1	6
-# <     2	2	5
-# < two	0	3	4
-# <     1	4	3
-# <     2	5	2
-# <     3	6	1
+# You can change "c","d" column index into "c","d" row index name
+dataframe_3=dataframe_2.set_index(["c","d"])
+#             a    b
+# c      d        
+# one    0    0    7
+#        1    1    6
+#        2    2    5
+# two    0    3    4
+#        1    4    3
+#        2    5    2
+#        3    6    1
 
-# You sustain changed columns (c and d)
-df2.set_index(["c","d"],drop=False)
-# < 		a	b	c	d
-# < c	d				
-# < one	0	0	7	one	0
-# <     1	1	6	one	1
-# <     2	2	5	one	2
-# < two	0	3	4	two	0
-# <     1	4	3	two	1
-# <     2	5	2	two	2
-# <     3	6	1	two	3
+# You can sustain changed columns (c and d) from above
+dataframe_2.set_index(["c","d"],drop=False)
+#             a    b    c      d
+# c      d                
+# one    0    0    7    one    0
+#        1    1    6    one    1
+#        2    2    5    one    2
+# two    0    3    4    two    0
+#        1    4    3    two    1
+#        2    5    2    two    2
+#        3    6    1    two    3
 
-# You makes all index column as value column,
-# with creating integer index
-df3.reset_index()
-# < 	c	d	a	b
-# < 0	one	0	0	7
-# < 1	one	1	1	6
-# < 2	one	2	2	5
-# < 3	two	0	3	4
-# < 4	two	1	4	3
-# < 5	two	2	5	2
-# < 6	two	3	6	1
+# You can creat integer index
+dataframe_3.reset_index()
+#      c      d    a    b
+# 0    one    0    0    7
+# 1    one    1    1    6
+# 2    one    2    2    5
+# 3    two    0    3    4
+# 4    two    1    4    3
+# 5    two    2    5    2
+# 6    two    3    6    1
 
 # @
 # You can reshape dataframe
 
-df4=pd.DataFrame(np.arange(6).reshape((2,3)),
+dataframe_4=pd.DataFrame(np.arange(6).reshape((2,3)),
                    index=['Seoul','Busan'],
                    columns=['one','two','three'])
-# <	        one	two	three
-# <Seoul	0	1	2
-# <Busan	3	4	5                   
+#          one  two  three
+# Seoul    0    1    2
+# Busan    3    4    5               
 
 # You give name to index and column
-df4.index.name="city"
-df4.columns.name="number"
-# < number	one	two	three
-# < city			
-# < Seoul	0	1	2
-# < Busan	3	4	5
+dataframe_4.index.name="city"
+dataframe_4.columns.name="number"
+# number   one  two  three
+# city            
+# Seoul    0    1    2
+# Busan    3    4    5
 
 # ​You can use stack()
 # You make "one two three" as sub index of city
-df5=df4.stack()
-# < city   number
-# < Seoul  one       0
-# <        two       1
-# <        three     2
-# < Busan  one       3
-# <        two       4
-# <        three     5
-# You should distinguish between stack(), set_index()
+dataframe_5=dataframe_4.stack()
+# city   number
+# Seoul  one       0
+#        two       1
+#        three     2
+# Busan  one       3
+#        two       4
+#        three     5
+
+# You should distinguish between stack() and set_index()
 
 # You elevate most sub index into column
-df5.unstack()
-# < number	one	two	three
-# < city			
-# < Seoul	0	1	2
-# < Busan	3	4	5
- 
+dataframe_5.unstack()
+# number   one  two  three
+# city            
+# Seoul    0    1    2
+# Busan    3    4    5
+
 # You elevate most upper index into column
-df5.unstack(level=0)
-df5.unstack(level="city")
+dataframe_5.unstack(level=0)
+dataframe_5.unstack(level="city")
 
 # @
 s1=pd.Series([0,1,2,3],index=['a','b','c','d'])
@@ -333,7 +339,7 @@ s3.unstack()
 
 # @
 # More complex case
-df6=pd.DataFrame({"left":df5,"right":df5+5},
+df6=pd.DataFrame({"left":dataframe_5,"right":dataframe_5+5},
                    columns=["left","right"])
 df6.columns.name="side"
 
