@@ -51,15 +51,20 @@ MathJax.Hub.Config({
 # @
 # lab-05-2-logistic_regression_diabetes.py
 
-# Loss function of H(x) = Wx + b is convex shape, where we can use gradient descent algorithm
-# Loss function of $$$H(x) = \frac{1}{1+e^{-W^{T}X}}$$$ is not smooth convex shape,
-# so we can't directly use gradient descent algorithm due to local minima
+# Loss function of linear hypothesis function, H(x)=Wx+b,
+# is convex shape, where you can use gradient descent algorithm
 
-# So, we'd better change loss function of $$$H(x) = \frac{1}{1+e^{-W^{T}X}}$$$ by using log
-# $$$Loss(W) = \frac{1}{m} \sum L(H(x), y)$$$
-# We define L(H(x), y) as following
-# $$$L(H(x), y) = -log(H(x))$$$ when y=1
-# $$$L(H(x), y) = -log(1-H(x))$$$ when y=0
+# Loss function of logistic regression hypothesis function,
+# $$$H(x)=\frac{1}{1+e^{-W^{T}X}}$$$, is not smooth convex shape,
+# so, you can't directly use gradient descent algorithm due to local minima
+
+# So, you'd better change loss function of logistic regression,
+# $$$H(x)=\frac{1}{1+e^{-W^{T}X}}$$$ by using log
+
+# $$$LossFunction(W)=\frac{1}{m} \sum Loss(H(x),y)$$$
+# We will define L(H(x),y) as following
+# $$$Loss(H(x),y)=-log(H(x))$$$ when y=1
+# $$$Loss(H(x),y)=-log(1-H(x))$$$ when y=0
 
 # In other words,
 # when label y=1, if prediction $$$H(x)=1 \rightarrow loss \approx 0$$$
@@ -68,17 +73,17 @@ MathJax.Hub.Config({
 # when label y=0, if prediction $$$H(x)=0 \rightarrow loss \approx 0$$$
 # when label y=0, if prediction $$$H(x)=1 \rightarrow loss \approx \infty$$$
 
-# We can merge above 2 terms
-# $$$L(H(x), y) = -y\log{(H(x))} - (1-y)\log{(1-H(x))}$$$
+# You can merge above 2 formular
+# $$$Loss(H(x),y)=-y\log{(H(x))}-(1-y)\log{(1-H(x))}$$$
 
-# Therefore, we can get final form of loss function
-# $$$Loss(W) = \frac{1}{m} \sum L(H(x), y)$$$
-# $$$Loss(W) = \frac{1}{m} \sum (-y\log{(H(x))} - (1-y)\log{(1-H(x))})$$$
-# $$$Loss(W) = -\frac{1}{m} \sum (y\log{(H(x))} + (1-y)\log{(1-H(x))})$$$
+# Therefore, you can get final form of loss function
+# $$$LossFunction(W)=\frac{1}{m} \sum Loss(H(x),y)$$$
+# $$$LossFunction(W)=\frac{1}{m} \sum (-y\log{(H(x))} - (1-y)\log{(1-H(x))})$$$
+# $$$LossFunction(W)=-\frac{1}{m} \sum (y\log{(H(x))} + (1-y)\log{(1-H(x))})$$$
 
-# We can apply gradient descent algorithm on above loss function
-# We can update new Weight by using gradient descent algorithm
-# $$$W := W -\alpha \frac{\partial}{\partial{W}} Loss(W)$$$
+# You can apply gradient descent algorithm on above loss function
+# You can update new weight by using gradient descent algorithm
+# $$$W := W -\alpha \frac{\partial}{\partial{W}} LossFunction(W)$$$
 
 
 </xmp>
