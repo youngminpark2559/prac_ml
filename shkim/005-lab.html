@@ -48,113 +48,128 @@ MathJax.Hub.Config({
    <BODY>
 005-lab. implement logistic regression(classification) with tensorflow
 <xmp>
-# To define hypothesis function of logistic regression(classification),
-# we use sigmoid function
-$$$H(X) = \frac{1}{1+e^{-W^{T}X}}$$$
+# To define hypothesis_function_for_logistic_regression function of logistic regression(classification),
+# you use sigmoid function
+$$$H(X_placeholder)=\frac{1}{1+e^{-W_variable^{T}X_placeholder}}$$$
 
-# Loss function of logistic regression, whose shape becomes convex with combined graph
-$$$Loss(W) = -\frac{1}{m} \sum y\log{(H(x))} + (1-y)(\log{(1-H(x))})$$$
-# We can update Weight by using gradient descent algorithm
-$$$W := W - \alpha \frac{\partial}{\partial{W}} Loss(W)$$$
+# Loss function of logistic regression,
+# whose shape becomes convex with combined graph
+$$$LossFunction(W_variable)=-\frac{1}{m} \sum y\log{(H(x))} + (1-y)(\log{(1-H(x))})$$$
 
-@
+# You can update weight by using gradient descent algorithm
+$$$W_variable := W_variable - \alpha \frac{\partial}{\partial{W_variable}} LossFunction(W_variable)$$$
+
+# @
 # Lab 5 Logistic Regression Classifier
 import tensorflow as tf
 tf.set_random_seed(777)
-# study time $$$x_{1}$$$
-# study time $$$x_{2}$$$
-x_data = [[1, 2],
-          [2, 3],
-          [3, 1],
-          [4, 3],
-          [5, 3],
-          [6, 2]]
-# y is pass or fail
-y_data = [[0],
-          [0],
-          [0],
-          [1],
-          [1],
-          [1]]
 
-# Placeholder nodes
+# $$$x_{1}$$$ is your study time
+# $$$x_{2}$$$ is your study time
+x_train_data=[[1,2],
+              [2,3],
+              [3,1],
+              [4,3],
+              [5,3],
+              [6,2]]
+
+# y is pass or fail
+y_train_data=[[0],
+              [0],
+              [0],
+              [1],
+              [1],
+              [1]]
+
 # None: Many instances
 # 2: number of features
-X = tf.placeholder(tf.float32, shape=[None, 2])
+X_placeholder=tf.placeholder(tf.float32,shape=[None,2])
+
 # None: Many instances
 # 1: number of label
-Y = tf.placeholder(tf.float32, shape=[None, 1])
+Y_placeholder=tf.placeholder(tf.float32,shape=[None,1])
 
-# Parameter nodes
 # XW=H(X)
 # [n,2][?,?]=[n,1]
 # [?,?]=[2,1]
-W = tf.Variable(tf.random_normal([2, 1]), name='weight')
-# Shape of b is same with number of column of y
-b = tf.Variable(tf.random_normal([1]), name='bias')
+W_variable=tf.Variable(tf.random_normal([2,1]),name='weight')
+
+# [1] is from [None,1] of y
+b_variable=tf.Variable(tf.random_normal([1]),name='bias')
 
 # Hypothesis function of logistic regression is sigmoid function:
-# hypothesis = tf.div(1., 1. + tf.exp(tf.matmul(X, W)))
-hypothesis = tf.sigmoid(tf.matmul(X, W) + b)
+# hypothesis_function_for_logistic_regression=tf.div(1.,1. + tf.exp(tf.matmul(X_placeholder,W_variable)))
+hypothesis_function_for_logistic_regression=tf.sigmoid(tf.matmul(X_placeholder,W_variable)+b_variable)
 
-# loss function
-cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) * tf.log(1 - hypothesis))
-# We apply gradient descent algorithm on loss function
-# to find optimized parameters W and b of hypothesis function
-train = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost)
+cost_function_for_logistic_regression=-tf.reduce_mean(Y_placeholder*tf.log(hypothesis_function_for_logistic_regression)+(1-Y_placeholder)*tf.log(1-hypothesis_function_for_logistic_regression))
 
-# If prediction(hypothesis) is obtained as 0.8, it can be said as pass(1)
-# If prediction(hypothesis) is obtained as 0.2, it can be said as fail(0)
+# You apply gradient descent algorithm on loss function,
+# to find optimized parameters(W_variable and b_variable of hypothesis_function_for_logistic_regression)
+to_be_trained_node=tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost_function_for_logistic_regression)
+
+# If prediction(hypothesis_function_for_logistic_regression) is obtained,
+# with 0.8, it can be said as pass(1)
+# If prediction(hypothesis_function_for_logistic_regression) is obtained,
+# with 0.2, it can be said as fail(0)
 # Standard borderline can be 0.5
-# predicted is either 1.0 or 0.0
-predicted = tf.cast(hypothesis > 0.5, dtype=tf.float32)
-# tf.equal(predicted, Y): true or false
+# Prediction is either 1.0 or 0.0
+prediction_1_or_0_node=tf.cast(hypothesis_function_for_logistic_regression>0.5,dtype=tf.float32)
 
-accuracy = tf.reduce_mean(tf.cast(tf.equal(predicted, Y), dtype=tf.float32))
+# tf.equal(prediction_1_or_0_node,Y_placeholder): true or false
+accuracy_node=tf.reduce_mean(tf.cast(tf.equal(prediction_1_or_0_node,Y_placeholder),dtype=tf.float32))
 
-# Open session stream
-with tf.Session() as sess:
-    Initialize TensorFlow variables(W, b)
-    sess.run(tf.global_variables_initializer())
+with tf.Session() as sess_object:
+    # You initialize variables(W_variable, b_variable)
+    sess_object.run(tf.global_variables_initializer())
 
     for step in range(10001):
-        cost_val, _ = sess.run([cost, train], feed_dict={X: x_data, Y: y_data})
-        if step % 200 == 0:
-            print(step, cost_val)
+        cost_value,_=sess_object.run([cost_function_for_logistic_regression,to_be_trained_node]\
+        ,feed_dict={X_placeholder:x_train_data,Y_placeholder:y_train_data})
+        if step%500==0:
+            print(step,cost_value)
 
-    # Pass data for test and get accuracy report
-    h, c, a = sess.run([hypothesis, predicted, accuracy], feed_dict={X: x_data, Y: y_data})
-    print("\nHypothesis:\n", h, "\nCorrect (Y):\n", c, "\nAccuracy:\n", a)
+    # Pass data for test and get accuracy_node report
+    hypo,pred,acc=sess_object.run([hypothesis_function_for_logistic_regression,prediction_1_or_0_node,accuracy_node],feed_dict={X_placeholder: x_train_data,Y_placeholder: y_train_data})
+    print("\nHypothesis:\n",hypo,"\nCorrect (Y_placeholder):\n",pred,"\nAccuracy:\n",acc)
 
-# 0 1.73078
-# 200 0.571512
-# 400 0.507414
-# 600 0.471824
-# 800 0.447585
-# ...
-# 9200 0.159066
-# 9400 0.15656
-# 9600 0.154132
-# 9800 0.151778
-# 10000 0.149496
+# 0 1.7307831
+# 500 0.48754045
+# 1000 0.42857102
+# 1500 0.3909233
+# 2000 0.35999322
+# 2500 0.33312955
+# 3000 0.30948094
+# 3500 0.28856295
+# 4000 0.26999974
+# 4500 0.2534715
+# 5000 0.23870271
+# 5500 0.22545676
+# 6000 0.21353154
+# 6500 0.20275463
+# 7000 0.19297929
+# 7500 0.18408062
+# 8000 0.17595188
+# 8500 0.16850185
+# 9000 0.16165249
+# 9500 0.15533638
+# 10000 0.1494956
 
 # Hypothesis:
-#  [[ 0.03074029]
-#  [ 0.15884677]
-#  [ 0.30486736]
-#  [ 0.78138196]
-#  [ 0.93957496]
-#  [ 0.98016882]]
-# Correct (Y):  
-#  [[ 0.]
-#  [ 0.]
-#  [ 0.]
-#  [ 1.]
-#  [ 1.]
-#  [ 1.]]
+#  [[0.03074028]
+#  [0.15884677]
+#  [0.30486736]
+#  [0.7813819 ]
+#  [0.93957496]
+#  [0.9801688 ]] 
+# Correct (Y_placeholder):
+#  [[0.]
+#  [0.]
+#  [0.]
+#  [1.]
+#  [1.]
+#  [1.]] 
 # Accuracy:
-# 1.0
-
+#  1.0
     
 # @
 # lab-05-2-logistic_regression_diabetes.py
@@ -169,66 +184,55 @@ tf.set_random_seed(777)
 # -0.0588235	0.839196	0.0491803	0	0	-0.305514	-0.492741	-0.633333	0
 # -0.882353	-0.105528	0.0819672	-0.535354	-0.777778	-0.162444	-0.923997	0	1
 
-xy = np.loadtxt('data-03-diabetes.csv', delimiter=',', dtype=np.float32)
-# Select entire row, select 0:-1 column
-x_data = xy[:, 0:-1]
-# Select entire row, select [-1] column
-y_data = xy[:, [-1]]
+xy_train_data=np.loadtxt('data-03-diabetes.csv',delimiter=',',dtype=np.float32)
 
-print(x_data.shape, y_data.shape)
+# You select entire row, select 0:-1 column
+x_train_data=xy_train_data[:,0:-1]
 
-# None: many instances
-# 8: number of features of x_data
-X = tf.placeholder(tf.float32, shape=[None, 8])
-# None 
-# 1
-Y = tf.placeholder(tf.float32, shape=[None, 1])
+# You select entire row, select [-1] column
+y_train_data=xy_train_data[:,[-1]]
 
-# XW = H(X)
+x_train_data.shape,y_train_data.shape
+# ((759, 8), (759, 1))
+
+# [n,8]
+X_placeholder=tf.placeholder(tf.float32,shape=[None,8])
+
+# [n,1]
+Y_placeholder=tf.placeholder(tf.float32,shape=[None,1])
+
+# XW=H(X)
 # [n,8][?,?]=[n,1]
 # [?,?]=[8,1]
-W = tf.Variable(tf.random_normal([8, 1]), name='weight')
-b = tf.Variable(tf.random_normal([1]), name='bias')
+W_variable=tf.Variable(tf.random_normal([8,1]),name='weight')
 
-hypothesis = tf.sigmoid(tf.matmul(X, W) + b)
+# [1] from [n,1]
+b_variable=tf.Variable(tf.random_normal([1]),name='bias')
 
-# Loss function
-cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) * tf.log(1 - hypothesis))
+hypothesis_function_for_logistic_regression=tf.sigmoid(tf.matmul(X_placeholder,W_variable)+b_variable)
 
-train = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost)
+cost_function_for_logistic_regression=-tf.reduce_mean(Y_placeholder*tf.log(hypothesis_function_for_logistic_regression)+(1-Y_placeholder)*tf.log(1-hypothesis_function_for_logistic_regression))
 
-predicted = tf.cast(hypothesis > 0.5, dtype=tf.float32)
-accuracy = tf.reduce_mean(tf.cast(tf.equal(predicted, Y), dtype=tf.float32))
+to_be_trained_node=tf.train.GradientDescentOptimizer(learning_rate=0.01)\
+    .minimize(cost_function_for_logistic_regression)
 
-with tf.Session() as sess:
-    # Initialize TensorFlow variables
-    sess.run(tf.global_variables_initializer())
+prediction_1_or_0_node=tf.cast(hypothesis_function_for_logistic_regression>0.5,dtype=tf.float32)
+accuracy_node=tf.reduce_mean(tf.cast(tf.equal(prediction_1_or_0_node,Y_placeholder),dtype=tf.float32))
+
+with tf.Session() as sess_object:
+    sess_object.run(tf.global_variables_initializer())
 
     for step in range(10001):
-        cost_val, _ = sess.run([cost, train], feed_dict={X: x_data, Y: y_data})
-        if step % 200 == 0:
-            print(step, cost_val)
+        cost_value,_=sess_object.run([cost_function_for_logistic_regression,to_be_trained_node]\
+        ,feed_dict={X_placeholder:x_train_data,Y_placeholder:y_train_data})
+        if step%500==0:
+            print("step:",step,"cost_value:",cost_value)
 
-    # Accuracy report
-    h, c, a = sess.run([hypothesis, predicted, accuracy], feed_dict={X: x_data, Y: y_data})
-    print("\nHypothesis:\n", h, "\nCorrect (Y):\n", c, "\nAccuracy:\n", a)
-
-# 0 0.82794
-# 200 0.755181
-# 400 0.726355
-# 600 0.705179
-# 800 0.686631
-# ...
-# 9600 0.492056
-# 9800 0.491396
-# 10000 0.490767
-# ...
-#  [ 1.]
-#  [ 1.]
-#  [ 1.]]
-# Accuracy:
-# 0.762846
-
+    # You create accuracy report
+    hypo,pred,acc\
+    =sess_object.run([hypothesis_function_for_logistic_regression,prediction_1_or_0_node,accuracy_node]\
+    ,feed_dict={X_placeholder:x_train_data,Y_placeholder:y_train_data})
+    print("\nHypothesis:\n",hypo,"\nCorrect (Y_placeholder):\n",pred,"\nAccuracy:\n",acc)
 
 </xmp>
    </BODY>
