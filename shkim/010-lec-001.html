@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -46,152 +46,169 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-010-lec-001. hidden layer, deep nn, issue of backpropagation with sigmoid, vanishing gradient, sigmoid and relu
+010-lec-001. hidden layer,deep nn,issue of backpropagation with sigmoid,vanishing gradient,sigmoid and relu
 <xmp>
-W1=tf.Variable(tf.random_uniform([2,5], -1.0, 1.0))
-W2=tf.Variable(tf.random_uniform([5,4], -1.0, 1.0))
-W3=tf.Variable(tf.random_uniform([4,1], -1.0, 1.0))
-    
-b1=tf.Variable(tf.zeros([5]), name="Bias1")
-b2=tf.Variable(tf.zeros([4]), name="Bias2")
-b3=tf.Variable(tf.zeros([1]), name="Bias3")
 
-% Hypothesis function
-L2=tf.sigmoid(tf.matmul(X, W1)+b1)
-L3=tf.sigmoid(tf.matmul(L2, W2)+b2)
-hypothesis=tf.sigmoid(tf.matmul(L3,W3)+b3)
+W1_variable_node=tf.Variable(tf.random_uniform([2,5],-1.0,1.0))
+W2_variable_node=tf.Variable(tf.random_uniform([5,4],-1.0,1.0))
+W3_variable_node=tf.Variable(tf.random_uniform([4,1],-1.0,1.0))
+    
+b1_variable_node=tf.Variable(tf.zeros([5]),name="Bias1")
+b2_variable_node=tf.Variable(tf.zeros([4]),name="Bias2")
+b3_variable_node=tf.Variable(tf.zeros([1]),name="Bias3")
+
+L2_hypothesis_f_node=tf.sigmoid(tf.matmul(X,W1_variable_node)+b1_variable_node)
+L3_hypothesis_f_node=tf.sigmoid(tf.matmul(L2_hypothesis_f_node,W2_variable_node)+b2_variable_node)
+hypothesis_f_node=tf.sigmoid(tf.matmul(L3_hypothesis_f_node,W3_variable_node)+b3_variable_node)
    
-@
-Let's build 9 layers
-We only should be careful on first and last shape of weight
-% W1=tf.Variable(tf.random_uniform([2,5],-1.0,1.0), name='Weight1')
-% W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
-Shape of weight in hidden layer can be defined whatever you want
+# @
+# Let's build 9 layers
+# We only should need to be careful,
+# on first and last shape of weight
+# First layer's weight has shape of [2,5]
+# W1_variable_node=tf.Variable(tf.random_uniform([2,5],-1.0,1.0),name='Weight1')
 
-W1=tf.Variable(tf.random_uniform([2,5],-1.0,1.0), name='Weight1')
+# First layer's weight has shape of [5,1]
+# W11_variable_node=tf.Variable(tf.random_uniform([5,1],-1.0,1.0),name='Weight11')
 
-W2=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight2')
-W3=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight3')
-W4=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight4')
-W5=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight5')
-W6=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight6')
-W7=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight7')
-W8=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight8')
-W9=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight9')
-W10=tf.Variable(tf.random_uniform([5,5],-1.0,1.0), name='Weight10')
+# Shape of weight in hidden layer,
+# located between first layer and last layer,
+# can be defined whatever you want
 
-W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
+# [n,2][?,?]=[n,5]
+W1_variable_node=tf.Variable(tf.random_uniform([2,5],-1.0,1.0),name='Weight1')
+
+# [n,5][?,?]=[n,what you want]
+W2_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight2')
+W3_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight3')
+W4_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight4')
+W5_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight5')
+W6_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight6')
+W7_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight7')
+W8_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight8')
+W9_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight9')
+W10_variable_node=tf.Variable(tf.random_uniform([5,5],-1.0,1.0),name='Weight10')
+
+# [n,5][?,?]=[n,1]
+# [?,?]=[5,1]
+W11_variable_node=tf.Variable(tf.random_uniform([5,1],-1.0,1.0),name='Weight11')
     
-b1=tf.Variable(tf.zeros([5]), name='Bias1')    
-b2=tf.Variable(tf.zeros([5]), name='Bias2')    
-b3=tf.Variable(tf.zeros([5]), name='Bias3')    
-b4=tf.Variable(tf.zeros([5]), name='Bias4')    
-b5=tf.Variable(tf.zeros([5]), name='Bias5')    
-b6=tf.Variable(tf.zeros([5]), name='Bias6')    
-b7=tf.Variable(tf.zeros([5]), name='Bias7')    
-b8=tf.Variable(tf.zeros([5]), name='Bias8')    
-b9=tf.Variable(tf.zeros([5]), name='Bias9')    
-b10=tf.Variable(tf.zeros([5]), name='Bias10')    
+b1_variable_node=tf.Variable(tf.zeros([5]),name='Bias1')    
+b2_variable_node=tf.Variable(tf.zeros([5]),name='Bias2')    
+b3_variable_node=tf.Variable(tf.zeros([5]),name='Bias3')    
+b4_variable_node=tf.Variable(tf.zeros([5]),name='Bias4')    
+b5_variable_node=tf.Variable(tf.zeros([5]),name='Bias5')    
+b6_variable_node=tf.Variable(tf.zeros([5]),name='Bias6')    
+b7_variable_node=tf.Variable(tf.zeros([5]),name='Bias7')    
+b8_variable_node=tf.Variable(tf.zeros([5]),name='Bias8')    
+b9_variable_node=tf.Variable(tf.zeros([5]),name='Bias9')    
+b10_variable_node=tf.Variable(tf.zeros([5]),name='Bias10')    
 
-Last shape of bias should be 1 from [5,1]
-% W11=tf.Variable(tf.random_uniform([5,1],-1.0,1.0), name='Weight11')
-b11=tf.Variable(tf.zeros([1]), name='Bias11')    
+# Last shape of bias should be 1 from [5,1]
+# W11_variable_node=tf.Variable(tf.random_uniform([5,1],-1.0,1.0),name='Weight11')
+b11_variable_node=tf.Variable(tf.zeros([1]),name='Bias11')    
 
-Then, we should connect them
-Each L is hypothesis function in each layer
-XW=H(X)
-L1   L2 L3 L4 L5 L6 L7 L8 L9   L10
-L1=tf.sigmoid(tf.matmul(X,W1)+b1)
-L2=tf.sigmoid(tf.matmul(L1,W2)+b2)
-L3=tf.sigmoid(tf.matmul(L2,W3)+b3)
-L4=tf.sigmoid(tf.matmul(L3,W4)+b4)
-L5=tf.sigmoid(tf.matmul(L4,W5)+b5)
-L6=tf.sigmoid(tf.matmul(L5,W6)+b6)
-L7=tf.sigmoid(tf.matmul(L6,W7)+b7)
-L8=tf.sigmoid(tf.matmul(L7,W8)+b8)
-L9=tf.sigmoid(tf.matmul(L8,W9)+b9)
-L10=tf.sigmoid(tf.matmul(L9,W10)+b10)
+# Then, you should connect them
+# Each L is hypothesis_f_node function in each layer
+# XW=H(X)
+# L1_hypothesis_f_node   L2_hypothesis_f_node L3_hypothesis_f_node L4_hypothesis_f_node L5_hypothesis_f_node L6_hypothesis_f_node L7_hypothesis_f_node L8_hypothesis_f_node L9_hypothesis_f_node   L10_hypothesis_f_node
+L1_hypothesis_f_node=tf.sigmoid(tf.matmul(X,W1_variable_node)+b1_variable_node)
+L2_hypothesis_f_node=tf.sigmoid(tf.matmul(L1_hypothesis_f_node,W2_variable_node)+b2_variable_node)
+L3_hypothesis_f_node=tf.sigmoid(tf.matmul(L2_hypothesis_f_node,W3_variable_node)+b3_variable_node)
+L4_hypothesis_f_node=tf.sigmoid(tf.matmul(L3_hypothesis_f_node,W4_variable_node)+b4_variable_node)
+L5_hypothesis_f_node=tf.sigmoid(tf.matmul(L4_hypothesis_f_node,W5_variable_node)+b5_variable_node)
+L6_hypothesis_f_node=tf.sigmoid(tf.matmul(L5_hypothesis_f_node,W6_variable_node)+b6_variable_node)
+L7_hypothesis_f_node=tf.sigmoid(tf.matmul(L6_hypothesis_f_node,W7_variable_node)+b7_variable_node)
+L8_hypothesis_f_node=tf.sigmoid(tf.matmul(L7_hypothesis_f_node,W8_variable_node)+b8_variable_node)
+L9_hypothesis_f_node=tf.sigmoid(tf.matmul(L8_hypothesis_f_node,W9_variable_node)+b9_variable_node)
+L10_hypothesis_f_node=tf.sigmoid(tf.matmul(L9_hypothesis_f_node,W10_variable_node)+b10_variable_node)
 
-hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+hypothesis_f_node=tf.sigmoid(tf.matmul(L10_hypothesis_f_node,W11_variable_node)+b11_variable_node)    
     
-@
-If you want to use tensorboard, you should give them name when you build layer
-So, you can replace above code with following one
+# @
+# If you want to use tensorboard,
+# you should give them name when you build layers
+# So, you can replace above codes with following one
 with tf.name_scope('layer1') as scope:
-    L1=tf.sigmoid(tf.matmul(X,W1)+b1)
+    L1_hypothesis_f_node=tf.sigmoid(tf.matmul(X,W1_variable_node)+b1_variable_node)
 with tf.name_scope('layer2') as scope:
-    L2=tf.sigmoid(tf.matmul(L1,W2)+b2)
+    L2_hypothesis_f_node=tf.sigmoid(tf.matmul(L1_hypothesis_f_node,W2_variable_node)+b2_variable_node)
 with tf.name_scope('layer3') as scope:
-    L3=tf.sigmoid(tf.matmul(L2,W3)+b3)
+    L3_hypothesis_f_node=tf.sigmoid(tf.matmul(L2_hypothesis_f_node,W3_variable_node)+b3_variable_node)
 with tf.name_scope('layer4') as scope:
-    L4=tf.sigmoid(tf.matmul(L3,W4)+b4)
+    L4_hypothesis_f_node=tf.sigmoid(tf.matmul(L3_hypothesis_f_node,W4_variable_node)+b4_variable_node)
 with tf.name_scope('layer5') as scope:
-    L5=tf.sigmoid(tf.matmul(L4,W5)+b5)
+    L5_hypothesis_f_node=tf.sigmoid(tf.matmul(L4_hypothesis_f_node,W5_variable_node)+b5_variable_node)
 with tf.name_scope('layer6') as scope:
-    L6=tf.sigmoid(tf.matmul(L5,W6)+b6)
+    L6_hypothesis_f_node=tf.sigmoid(tf.matmul(L5_hypothesis_f_node,W6_variable_node)+b6_variable_node)
 with tf.name_scope('layer7') as scope:
-    L7=tf.sigmoid(tf.matmul(L6,W7)+b7)
+    L7_hypothesis_f_node=tf.sigmoid(tf.matmul(L6_hypothesis_f_node,W7_variable_node)+b7_variable_node)
 with tf.name_scope('layer8') as scope:
-    L8=tf.sigmoid(tf.matmul(L7,W8)+b8)
+    L8_hypothesis_f_node=tf.sigmoid(tf.matmul(L7_hypothesis_f_node,W8_variable_node)+b8_variable_node)
 with tf.name_scope('layer9') as scope:
-    L9=tf.sigmoid(tf.matmul(L8,W9)+b9)
+    L9_hypothesis_f_node=tf.sigmoid(tf.matmul(L8_hypothesis_f_node,W9_variable_node)+b9_variable_node)
 with tf.name_scope('layer10') as scope:
-    L10=tf.sigmoid(tf.matmul(L9,W10)+b10)
+    L10_hypothesis_f_node=tf.sigmoid(tf.matmul(L9_hypothesis_f_node,W10_variable_node)+b10_variable_node)
 
 with tf.name_scope('lat') as scope:
-    hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+    hypothesis_f_node=tf.sigmoid(tf.matmul(L10_hypothesis_f_node,W11_variable_node)+b11_variable_node)    
 
-@
-When you perform backpropagation, if some defferentiation is given after sigmoid,
-you will get near 0 when you perform chainrule because sigmoid function outputs value between 0 and 1
+# @
+# When you perform backpropagation,
+# if some defferentiation is given after sigmoid,
+# you will get near 0,
+# when you perform chainrule,
+# because sigmoid function outputs value between 0 and 1
 
-That is, the more you use layers, the more frequently above issue occurs
+# That is, the more you use layers,
+# the more frequently above issue occurs
 
-This issue is called 'vanishing gradient'
+# This issue is called 'vanishing gradient'
 
-@
-To resolve this issue, we use relu(rectified linear unit) function instead of sigmoid function
-So, in nn, we use relu than sigmoid
-L1=tf.sigmoid(tf.matmul(X,W1)+b1)
-L1=tf.nn.relu(tf.matmul(X,W1)+b1)
+# @
+# To resolve this issue,
+# you use relu(rectified linear unit) function,
+# instead of sigmoid function
+# So, in nn, you use relu than sigmoid
+# L1_hypothesis_f_node=tf.sigmoid(tf.matmul(X,W1_variable_node)+b1_variable_node)
+# L1_hypothesis_f_node=tf.nn.relu(tf.matmul(X,W1_variable_node)+b1_variable_node)
 
-@
-Let's apply relu function on layers
+# @
+# Let's apply relu function on layers
 with tf.name_scope('layer1') as scope:
-    L1=tf.nn.relu(tf.matmul(X,W1)+b1)
+    L1_hypothesis_f_node=tf.nn.relu(tf.matmul(X,W1_variable_node)+b1_variable_node)
 with tf.name_scope('layer2') as scope:
-    L2=tf.nn.relu(tf.matmul(L1,W2)+b2)
+    L2_hypothesis_f_node=tf.nn.relu(tf.matmul(L1_hypothesis_f_node,W2_variable_node)+b2_variable_node)
 with tf.name_scope('layer3') as scope:
-    L3=tf.nn.relu(tf.matmul(L2,W3)+b3)
+    L3_hypothesis_f_node=tf.nn.relu(tf.matmul(L2_hypothesis_f_node,W3_variable_node)+b3_variable_node)
 with tf.name_scope('layer4') as scope:
-    L4=tf.nn.relu(tf.matmul(L3,W4)+b4)
+    L4_hypothesis_f_node=tf.nn.relu(tf.matmul(L3_hypothesis_f_node,W4_variable_node)+b4_variable_node)
 with tf.name_scope('layer5') as scope:
-    L5=tf.nn.relu(tf.matmul(L4,W5)+b5)
+    L5_hypothesis_f_node=tf.nn.relu(tf.matmul(L4_hypothesis_f_node,W5_variable_node)+b5_variable_node)
 with tf.name_scope('layer6') as scope:
-    L6=tf.nn.relu(tf.matmul(L5,W6)+b6)
+    L6_hypothesis_f_node=tf.nn.relu(tf.matmul(L5_hypothesis_f_node,W6_variable_node)+b6_variable_node)
 with tf.name_scope('layer7') as scope:
-    L7=tf.nn.relu(tf.matmul(L6,W7)+b7)
+    L7_hypothesis_f_node=tf.nn.relu(tf.matmul(L6_hypothesis_f_node,W7_variable_node)+b7_variable_node)
 with tf.name_scope('layer8') as scope:
-    L8=tf.nn.relu(tf.matmul(L7,W8)+b8)
+    L8_hypothesis_f_node=tf.nn.relu(tf.matmul(L7_hypothesis_f_node,W8_variable_node)+b8_variable_node)
 with tf.name_scope('layer9') as scope:
-    L9=tf.nn.relu(tf.matmul(L8,W9)+b9)
+    L9_hypothesis_f_node=tf.nn.relu(tf.matmul(L8_hypothesis_f_node,W9_variable_node)+b9_variable_node)
 with tf.name_scope('layer10') as scope:
-    L10=tf.nn.relu(tf.matmul(L9,W10)+b10)
+    L10_hypothesis_f_node=tf.nn.relu(tf.matmul(L9_hypothesis_f_node,W10_variable_node)+b10_variable_node)
 
-Note that we use sigmoid on last layer
-because value of last layer should be between 0 and 1
+# Note that you should use sigmoid on last layer
+# because value of last layer should be between 0 and 1
 with tf.name_scope('lat') as scope:
-    hypothesis=tf.sigmoid(tf.matmul(L10,W11)+b11)    
+    hypothesis_f_node=tf.sigmoid(tf.matmul(L10_hypothesis_f_node,W11_variable_node)+b11_variable_node)    
 
-
-@
-There are other activation functions
-Sigmoid
-tanh
-ReLU
-Leaky ReLu
-Maxout
-ELU    
+# @
+# There are other activation functions
+# Sigmoid
+# tanh
+# ReLU
+# Leaky ReLu
+# Maxout
+# ELU    
       </xmp>
    </BODY>
 </HTML>
