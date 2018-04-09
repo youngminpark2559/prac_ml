@@ -46,11 +46,10 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-004-lec. linear regression with multiple variables
+004-lec. linear regression with multiple variables(x1,x2,..)
 <xmp>
-# When you have multiple features and one label
-
-# For example, I want to predict score of final exam from 3 scores
+# When you have multiple features and one label,
+# for example, I want to predict score of final exam from 3 scores,
 # $$$x_{1}$$$(quiz 1)   $$$x_{2}$$$(quiz 2)   $$$x_{3}$$$(midterm 1)   Y(score of final exam)
 # 73               80                75                152
 # 93               88                93                185
@@ -58,20 +57,22 @@ MathJax.Hub.Config({
 # 96               98                100               196
 # 73               66                70                142
 
-# hypothesis function
-# $$$H(x_{1}, x_{2}, x_{3}) = w_{1}x_{1} + w_{2}x_{2} + w_{3}x_{3} + b$$$
+# hypothesis function will be following formular
+# $$$H(x_{1},x_{2},x_{3})=w_{1}x_{1} + w_{2}x_{2} + w_{3}x_{3} + b$$$
 
-# loss function
-# $$$loss(W, b) = \frac{1}{m} \sum\limits_{i=1}^{m} (H(x_{1}^{(i)}, x_{2}^{(i)}, x_{3}^{(i)}) - y^{(i)})^{2}$$$
+# loss function will be following formular
+# $$$lossfunction(W,b)=\frac{1}{m} \sum\limits_{i=1}^{m} (H(x_{1}^{(i)},x_{2}^{(i)},x_{3}^{(i)}) - y^{(i)})^{2}$$$
 
 # @
-# The more we have features, wx term becomes too longer
-# $$$H(x_{1}, x_{2}, x_{3}, ..., x_{n}) = w_{1}x_{1} + w_{2}x_{2} + ... + w_{n}x_{n} + b$$$
+# The more you have features, wx term becomes too longer like following
+# $$$H(x_{1},x_{2},x_{3},...,x_{n})=w_{1}x_{1} + w_{2}x_{2} + ... + w_{n}x_{n} + b$$$
 
-# To conviniently represent it, we can use matrix multiplication
-# Note order is important when you find shape of weight matrix later
-# $$$\begin{bmatrix} x_{1}&x_{2}&...&x_{n} \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ ... \\ w_{n} \end{bmatrix} = x_{1}w_{1} + x_{2}w_{2} + ... + x_{n}w_{n}$$$
-# Therefore, we can denote like XW = H(X)
+# To conviniently represent wx term,
+# you can use matrix multiplication
+# Note order of following formular is important,
+# when you find shape of weight matrix later
+# $$$\begin{bmatrix} x_{1}&x_{2}&...&x_{n} \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ ... \\ w_{n} \end{bmatrix}=x_{1}w_{1} + x_{2}w_{2} + ... + x_{n}w_{n}$$$
+# Therefore, you can denote like XW=H(X)
 
 #	   $$$x_{1}$$$(feature 1)   $$$x_{1}$$$(feature 2)       $$$x_{1}$$$(feature 3)   Y(score of final exam)
 # instance1 73                    80                    75                       152
@@ -81,51 +82,54 @@ MathJax.Hub.Config({
 # instance5 73                    66                    70                       142
 
 # hypothesis function
-# $$$H(x_{1}, x_{2}, x_{3}) = w_{1}x_{1} + w_{2}x_{2} + w_{3}x_{3} + b$$$
+# $$$H(x_{1},x_{2},x_{3})=w_{1}x_{1} + w_{2}x_{2} + w_{3}x_{3} + b$$$
 
-# We can calculate each prediction one by one
-# $$$\begin{bmatrix} 73&80&75 \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ w_{3} \end{bmatrix} = 73w_{1} + 80w_{2} + 75w_{3}$$$
+# You can calculate each prediction one by one
+# $$$\begin{bmatrix} 73&80&75 \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ w_{3} \end{bmatrix}=73w_{1} + 80w_{2} + 75w_{3}$$$
 
 # But this way is inefficient
-# So, we can use matrix multiplication again
-# row : instance
-# XW = H(X)
-# $$$\begin{bmatrix} x_{11}&x_{12}&x_{13} \\ x_{21}&x_{22}&x_{23} \\ x_{31}&x_{32}&x_{33} \\ x_{41}&x_{42}&x_{43} \\ x_{51}&x_{52}&x_{53} \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ w_{n} \end{bmatrix} = \begin{bmatrix} x_{11}w_{1}&x_{12}w_{2}&x_{13}w_{3} \\ x_{21}w_{1}&x_{22}w_{2}&x_{23}w_{3} \\ x_{31}w_{1}&x_{32}w_{2}&x_{33}w_{3} \\ x_{41}w_{1}&x_{42}w_{2}&x_{43}w_{3} \\ x_{51}w_{1}&x_{52}w_{2}&x_{53}w_{3} \end{bmatrix}$$$
+# So, you can use matrix multiplication again
+# row: instance
+# XW=H(X)
+# $$$\begin{bmatrix} x_{11}&x_{12}&x_{13} \\ x_{21}&x_{22}&x_{23} \\ x_{31}&x_{32}&x_{33} \\ x_{41}&x_{42}&x_{43} \\ x_{51}&x_{52}&x_{53} \end{bmatrix} \cdot \begin{bmatrix} w_{1} \\ w_{2} \\ w_{n} \end{bmatrix}=\begin{bmatrix} x_{11}w_{1}&x_{12}w_{2}&x_{13}w_{3} \\ x_{21}w_{1}&x_{22}w_{2}&x_{23}w_{3} \\ x_{31}w_{1}&x_{32}w_{2}&x_{33}w_{3} \\ x_{41}w_{1}&x_{42}w_{2}&x_{43}w_{3} \\ x_{51}w_{1}&x_{52}w_{2}&x_{53}w_{3} \end{bmatrix}$$$
+
 # We know x value and w value
-# XW = H(X)
+# XW=H(X)
 
 # @
-# XW = H(X)
-# Shapes of H(X) and X are given
-# H(X) : [5, 1]
+# XW=H(X)
+# Shapes of H(X) and X are given value
+# Shape of H(X): [5,1]
 # 5: instance
 # 1: number of label Y
-# X: [5,3]
+
+# Shape of X: [5,3]
 # 5: instance
 # 3: number of feature
 
-# We should decide shape of W
-# $$$[5,3]\cdot [?,?] = [5,1]$$$
-# $$$[?,?] = [3,1]$$$
-# Shape of W is decided by number of feature X and number of label Y
+# You should decide shape of W
+# XW=H(X)
+# $$$[5,3]\cdot [?,?]=[5,1]$$$
+# $$$[?,?]=[3,1]$$$
+# Shape of W can be decided by number of feature X and number of label Y
 
 # @
 # Generally, number of instance is n
-# In numpy, n is denoted by -1
-# In tensorflow, n is denoted by None
-# XW = H(X)
-# $$$[n,3] \cdot [3,1] = [n,1]$$$
+# In numpy, n can be denoted by -1
+# In tensorflow, n can be denoted by None
+# XW=H(X)
+# $$$[n,3] \cdot [3,1]=[n,1]$$$
 
 
 # @
 # Let's talk about case that number of label y is 2
-# $$$[n,3] \cdot [?,?] = [n,2]$$$
-# $$$[?,?] = [3,2]$$$
+# $$$[n,3] \cdot [?,?]=[n,2]$$$
+# $$$[?,?]=[3,2]$$$
 
 # @
 # Note following order
-# In function notation: H(x) = Wx + b
-# In linear algebra notation: XW = H(X)
-      </xmp>
-   </BODY>
+# In function notation, we write: H(x)=Wx+b
+# In linear algebra notation, we write: XW=H(X)
+</xmp>
+</BODY>
 </HTML>
