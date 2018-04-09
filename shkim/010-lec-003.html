@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -46,40 +46,39 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-010-lec-003. dropout, ensemble
+010-lec-003. dropout,ensemble
 <xmp>
 </xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/128abf2d-2b66-49ff-a7a8-bc8557c15cdb.png"/><xmp>
 
-@
-many layers -> error in train dataset lower
-many layers -> error in test dataset high
-That is, the more we have layers, we can have higher chance of overfitting
+# @
+# many layers can cause error in train dataset lower
+# many layers can cause error in test dataset high
+# That is, the more you have layers, you can have higher chance of overfitting
 
-As I said before, to resolve overfitting,
-1. more train dataset
-1. ruduce number of feautre
-1. regularization
+# As I said before, to resolve overfitting,
+# 1. You need to have more train dataset
+# 1. You need to reduce number of feautre
+# 1. Youo need to perform regularization
 $$$cost + \lambda\sum W^{2}$$$
 l2regularization=0.001*tf.reduce_sum(tf.squre(W))
 
-@
-dropout
-When training, we randomly cut serveral nodes
-When servicing and testing, we connect all nodes
+# @
+# dropout
+# When training, you can randomly cut serveral nodes
+# When servicing and testing, you should connect all nodes
 
-dropout_rate=tf.placeholder("float")
-_L1=tf.nn.relu(tf.add(tf.matmul(X, W1), B1))
-L1=tf.nn.dropout(_L1, dropout_rate)
+dropout_rate_placeholder_node=tf.placeholder("float")
+_L1_hypothesis_f=tf.nn.relu(tf.add(tf.matmul(X,W1),B1))
+L1_hypothesis_f=tf.nn.dropout(_L1_hypothesis_f,dropout_rate_placeholder_node)
 
-When training, dropout_rate:0.7 which means join 70% nodes
-sess.run(optimizer, feed_dict={X:batch_xs, Y:batch_ys, dropout_rate: 0.7})
+# When training, dropout_rate_placeholder_node:0.7 means 70% nodes
+sess.run(optimizer,feed_dict={X:batch_xs,Y:batch_ys,dropout_rate_placeholder_node:0.7})
 
-When testing, dropout_rate:1 which means join all nodes
-print('Accuracy: ', accuracy.eval({X:mnist.test.images, Y:mnist.test.labels, dropout_rate:1}))
+# When testing, dropout_rate_placeholder_node:1 means all nodes
+print('Accuracy:',accuracy.eval({X:mnist.test.images,Y:mnist.test.labels,dropout_rate_placeholder_node:1}))
 
-
-@
-ensemble increases 2% to 4% in precision
+# @
+# ensemble increases 2% to 4% in precision
 
 
       </xmp>
