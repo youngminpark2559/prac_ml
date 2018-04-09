@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -51,17 +51,23 @@ MathJax.Hub.Config({
 @
 learning rate is step size in gradient descent algorithm
 Too big learning rate can cause overshooting
-Too small learning rate can cause too long learning time or local minimum
+Too small learning rate can cause too long learning time or falling into local minimum
 
 Proper starting value of learning rate is 0.01
 
 @
-Even with good learning rate, overshooting can be occurred, if loss function shapes wide width and short height
+Even with good learning rate, overshooting can be occurred,
+when loss function shapes ellipse with wide width and short height
 In this case, we need to normalize data
-There are 2 ways for that(zero-centered data, normalized data)
+There are 2 ways for normalizing data(zero-centered data, normalized data)
 
 Standardization(one of normalization techniques):
 $$$x_{j}^{'} = \frac{x_{j}-\mu_{j}}{\sigma_{j}}$$$
+$$$x_{j}^{'}$$$: normalized data
+$$$x_{j}$$$: unnormalized data
+$$$\mu_{j}$$$: mean of data
+$$$\sigma_{j}$$$: standard deviation of data
+
 X_std[:,0] = (X[:,0] - X[:,0].mean() / X[:,0].std())
 
 @
@@ -69,9 +75,10 @@ Solutions for overfitting
 1. More training data
 1. Reduce number of features
 1. Regularization
+
 i: training set
 $$$\lambda$$$: regularization strength
-LossFunction = $$$\frac{1}{N} \sum\limits_{i} D(S(Wx + b), L_{i}) + \lambda \sum W^{2}$$$
+LossFunction = $$$\frac{1}{N} \sum\limits_{i} D(S(Wx + b), Loss_{i}) + \lambda \sum W^{2}$$$
 
 Regularization term in tf:
 l2regularization = 0.001 * tf.reduce_sum(tf.square(W))
