@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -49,23 +49,24 @@ MathJax.Hub.Config({
 007-lec-002. training dataset, test dataset, validation dataset, online learing
 <xmp>
 @
-How do you evaluate predicting model?
+How can you evaluate your predicting model?
 
 We train predicting model with training dataset
-And if we let model to predict with training dataset, model must show 100% correct accuracy
+And if we let model to predict with training dataset,
+model must show 100% correct accuracy
 This is not good way to evaluate model
 
 @
 So, generally, we devide entire dataset into training dataset and test dataset
 
 More specifically, training dataset can be devided into trainging dataset
-and validation dataset for tuning $\alpha$ and $\lambda$
+and validation dataset for tuning learning rate $$$\alpha$$$ and regularization strength $$$\lambda$$$
 
 @
 There is 'online learing' method
 Suppose we have too big dataset
 We devided it into small size dataset
-And we pass each small size dataset into moodel
+And we pass each small size dataset into model
 Point is result of training should remain in model
 
    
