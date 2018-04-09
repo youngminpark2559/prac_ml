@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -46,7 +46,7 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-006-lab-002. one hot encoding, fancy softmax classification
+006-lab-002. one hot encoding,fancy softmax classification
 <xmp>
 @
 lab-06-2-softmax_zoo_classifier.py
@@ -60,113 +60,237 @@ tf.set_random_seed(777)
 # 0,0,1,0,0,1,1,1,1,0,0,1,0,1,0,0,3
 
 # Model will predict animal type basedd on various features
-xy = np.loadtxt('data-04-zoo.csv', delimiter=',', dtype=np.float32)
-x_data = xy[:, 0:-1]
-y_data = xy[:, [-1]]
-print(x_data.shape, y_data.shape)
+xy_train_data=np.loadtxt('data-04-zoo.csv',delimiter=',',dtype=np.float32)
+x_train_data=xy_train_data[:,0:-1]
+y_train_data=xy_train_data[:,[-1]]
+x_train_data.shape,y_train_data.shape
+# ((101, 16), (101, 1))
 
 # 0 ~ 6
-nb_classes = 7  
+nb_classes=7
+
 # [n,16]
-X = tf.placeholder(tf.float32, [None, 16])
+X_placeholder=tf.placeholder(tf.float32,[None,16])
+
 # [n,1]
-# We have to convert 0-6 classes into one hot encoding
-Y = tf.placeholder(tf.int32, [None, 1])
-# We use tf.one_hot()
-Y_one_hot = tf.one_hot(Y, nb_classes)
+# you have to convert 0-6 classes into one hot encoding
+Y_placeholder=tf.placeholder(tf.int32,[None,1])
+
+# you use tf.one_hot()
+Y_one_hot=tf.one_hot(Y_placeholder,nb_classes)
 
 # Note
-# We have y_data like this form [[0],[3],...,[0]], this is 2 dimension, shape=(?,1)
-# When we convert y_data into one hot encoding, shape becomes like this 3 dimension, shape=(?,1,17)
+# you have y_train_data like this form [[0],[3],...,[0]],
+# y_train_data[:10]
+# array([[0.],
+#        [0.],
+#        [3.],
+#        [0.],
+#        [0.],
+#        [0.],
+#        [0.],
+#        [3.],
+#        [3.],
+#        [0.]], dtype=float32),
+# this is 2 dimension, shape=(?,1)
+# When you convert y_train_data into one hot encoding,
+# shape becomes like this 3 dimension, shape=(?,1,7)
 # [[[1 0 0 0 0 0 0]],
 # [[0 0 0 1 0 0 0]],
 # ...,
 # [[1 0 0 0 0 0 0]]]
-# But, we want this shape=(?,7)
-# To achieve this, we use reshape()
+# But, you want shape=(?,7) not (?,1,7) with 3 dimension
+# To achieve this, you can use reshape()
 
-print("one_hot", Y_one_hot)
-# Y_one_hot: raw one
-# 2nd argument: shape we want
-# -1=None
-# In conclusion, (-1, 7)
-# Before reshape()
+print("one_hot",Y_one_hot)
+# Y_one_hot: raw one hoot
+# 1th argument of reshape(): what you want to reshape
+# 2th argument of reshape(): shape you want
+# -1 means None
+# In conclusion, (-1,7)
+
+# Before reshape(),
+# shape is (?,1,7)
 # [[[1 0 0 0 0 0 0]],
 # [[0 0 0 1 0 0 0]],
 # ...,
 # [[1 0 0 0 0 0 0]]]
-# After reshape()
+
+# After reshape(),
+# shape is (-1,7)
 # [[1 0 0 0 0 0 0],
 # [0 0 0 1 0 0 0],
 # ...,
 # [1 0 0 0 0 0 0]]
-Y_one_hot = tf.reshape(Y_one_hot, [-1, nb_classes])
-print("reshape", Y_one_hot)
 
-# [n,16][?,?]=[n,7]
-# [?,?]=[16,7]
-W = tf.Variable(tf.random_normal([16, nb_classes]), name='weight')
-b = tf.Variable(tf.random_normal([nb_classes]), name='bias')
+# Shape we want is [-1,7]
+reshaped_Y_one_hot=tf.reshape(Y_one_hot,[-1,nb_classes])
+print("reshaped_Y_one_hot:",reshaped_Y_one_hot)
 
-logits = tf.matmul(X, W) + b
-hypothesis = tf.nn.softmax(logits)
+# [n,16][?,?]=[n,nb_classes]
+# [?,?]=[16,nb_classes]
+W_variable=tf.Variable(tf.random_normal([16,nb_classes]),name='weight')
+b_variable=tf.Variable(tf.random_normal([nb_classes]),name='bias')
 
-# loss function(cross entropy function)
-# We will use tf.nn.softmax_cross_entropy_with_logits()
-# logits = tf.matmul(X,W)+b
-# hypothesis = tf.nn.softmax(logits)
-cost_i = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y_one_hot)
-# This is final form of loss function
-# This is identical with cost = tf.reduce_mean(-tf.reduce_sum(Y*tf.log(hypothesis), axis=1))
-cost = tf.reduce_mean(cost_i)
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(cost)
+logits=tf.matmul(X_placeholder,W_variable)+b_variable
+h_f_softmax_for_multinomial_classification=tf.nn.softmax(logits)
 
-prediction = tf.argmax(hypothesis, 1)
-correct_prediction = tf.equal(prediction, tf.argmax(Y_one_hot, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# loss_value function(cross entropy function)
+# you will use tf.nn.softmax_cross_entropy_with_logits(),
+# to find loss_value value
+cost_value=tf.nn.softmax_cross_entropy_with_logits(logits=logits,labels=reshaped_Y_one_hot)
 
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
+# This is identical,
+# with cost_function=tf.reduce_mean(-tf.reduce_sum(Y_placeholder*tf.log(h_f_softmax_for_multinomial_classification),axis=1))
+cost_function=tf.reduce_mean(cost_value)
+
+gradient_descent_optimizer=tf.train.GradientDescentOptimizer(learning_rate=0.1)\
+    .minimize(cost_function)
+
+prediction_value_from_argmax=tf.argmax(h_f_softmax_for_multinomial_classification,1)
+
+compare_prediction_and_label=tf.equal(prediction_value_from_argmax,tf.argmax(reshaped_Y_one_hot,1))
+
+accuracy=tf.reduce_mean(tf.cast(compare_prediction_and_label,tf.float32))
+
+with tf.Session() as sess_object:
+    sess_object.run(tf.global_variables_initializer())
     for step in range(2000):
-        sess.run(optimizer, feed_dict={X: x_data, Y: y_data})
-        if step % 100 == 0:
-            loss, acc = sess.run([cost, accuracy], feed_dict={
-                                 X: x_data, Y: y_data})
-            print("Step: {:5}\tLoss: {:.3f}\tAcc: {:.2%}".format(
-                step, loss, acc))
+        sess_object.run(gradient_descent_optimizer,feed_dict={X_placeholder:x_train_data,Y_placeholder:y_train_data})
+        if step%100==0:
+            lossval,accval=sess_object.run([cost_function,accuracy],feed_dict={X_placeholder:x_train_data,Y_placeholder:y_train_data})
+            print("step:",step,"cost_value:",lossval,"accuracy:",accval)
 
-# Let's see if we can predict well
-pred = sess.run(prediction, feed_dict={X: x_data})
-# flatten(): [[1],[0]] -> [1,0]
+    # Let's see if you can predict well
+    prediction_from_test=sess_object.run(prediction_value_from_argmax\
+        ,feed_dict={X_placeholder:x_train_data})
+    
+    # flatten(): [[1],[0]] -> [1,0]
+    for prediction,ylabel in zip(prediction_from_test,y_train_data.flatten()):
+        print("[{}] Prediction: {} Y_placeholder: {}"\
+            .format(prediction==int(ylabel),prediction,int(ylabel)))
 
-for p, y in zip(pred, y_data.flatten()):
-    print("[{}] Prediction: {} True Y: {}".format(p == int(y), p, int(y)))
-
-# Step:     0 Loss: 5.106 Acc: 37.62%
-# Step:   100 Loss: 0.800 Acc: 79.21%
-# Step:   200 Loss: 0.486 Acc: 88.12%
-# Step:   300 Loss: 0.349 Acc: 90.10%
-# Step:   400 Loss: 0.272 Acc: 94.06%
-# Step:   500 Loss: 0.222 Acc: 95.05%
-# Step:   600 Loss: 0.187 Acc: 97.03%
-# Step:   700 Loss: 0.161 Acc: 97.03%
-# Step:   800 Loss: 0.140 Acc: 97.03%
-# Step:   900 Loss: 0.124 Acc: 97.03%
-# Step:  1000 Loss: 0.111 Acc: 97.03%
-# Step:  1100 Loss: 0.101 Acc: 99.01%
-# Step:  1200 Loss: 0.092 Acc: 100.00%
-# Step:  1300 Loss: 0.084 Acc: 100.00%
-# ...
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 3 True Y: 3
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 0 True Y: 0
-# [True] Prediction: 3 True Y: 3
-# [True] Prediction: 3 True Y: 3
-# [True] Prediction: 0 True Y: 0
+# step: 0 cost_value: 5.0335717 accuracy: 0.15841584
+# step: 100 cost_value: 0.70060694 accuracy: 0.8019802
+# step: 200 cost_value: 0.44047153 accuracy: 0.84158415
+# step: 300 cost_value: 0.32050115 accuracy: 0.9207921
+# step: 400 cost_value: 0.25219414 accuracy: 0.9306931
+# step: 500 cost_value: 0.20821169 accuracy: 0.95049506
+# step: 600 cost_value: 0.17746367 accuracy: 0.96039605
+# step: 700 cost_value: 0.15468208 accuracy: 0.980198
+# step: 800 cost_value: 0.13707595 accuracy: 0.980198
+# step: 900 cost_value: 0.12303669 accuracy: 0.990099
+# step: 1000 cost_value: 0.1115707 accuracy: 0.990099
+# step: 1100 cost_value: 0.10202818 accuracy: 0.990099
+# step: 1200 cost_value: 0.09396435 accuracy: 0.990099
+# step: 1300 cost_value: 0.08706301 accuracy: 1.0
+# step: 1400 cost_value: 0.08109256 accuracy: 1.0
+# step: 1500 cost_value: 0.075879246 accuracy: 1.0
+# step: 1600 cost_value: 0.071289755 accuracy: 1.0
+# step: 1700 cost_value: 0.067220226 accuracy: 1.0
+# step: 1800 cost_value: 0.063588396 accuracy: 1.0
+# step: 1900 cost_value: 0.060328294 accuracy: 1.0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 4 Y_placeholder: 4
+# [True] Prediction: 4 Y_placeholder: 4
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 4 Y_placeholder: 4
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 2 Y_placeholder: 2
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 2 Y_placeholder: 2
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 2 Y_placeholder: 2
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 4 Y_placeholder: 4
+# [True] Prediction: 2 Y_placeholder: 2
+# [True] Prediction: 2 Y_placeholder: 2
+# [True] Prediction: 3 Y_placeholder: 3
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 1 Y_placeholder: 1
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 5 Y_placeholder: 5
+# [True] Prediction: 0 Y_placeholder: 0
+# [True] Prediction: 6 Y_placeholder: 6
+# [True] Prediction: 1 Y_placeholder: 1
    
 </xmp>
    </BODY>
