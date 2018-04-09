@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -59,92 +59,101 @@ tf.set_random_seed(777)
 
 # Check out https://www.tensorflow.org/get_started/mnist/beginners for
 # more information about the mnist dataset
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-nb_classes = 10
+nb_classes=10
 
-# shape of image = [None, 28 * 28 = 784]
-X = tf.placeholder(tf.float32, [None, 784])
+# shape of image=[None,28*28=784]
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+
 # 10 classes
-Y = tf.placeholder(tf.float32, [None, nb_classes])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,nb_classes])
 
 # XW=H(X)
 # [n,784][?,?]=[n,10]
 # [?,?]=[784,10]
-W = tf.Variable(tf.random_normal([784, nb_classes]))
-b = tf.Variable(tf.random_normal([nb_classes]))
+W_variable_node=tf.Variable(tf.random_normal([784,nb_classes]))
+b_variable_node=tf.Variable(tf.random_normal([nb_classes]))
 
-# Hypothesis function(softmax function)
-hypothesis = tf.nn.softmax(tf.matmul(X, W) + b)
+hypothesis_f_softmax_node=tf.nn.softmax(tf.matmul(X_placeholder_node,W_variable_node)+b_variable_node)
 
 # Loss function(cross entropy function)
-cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(hypothesis), axis=1))
+cost_f_cross_entropy_node\
+    =tf.reduce_mean(-tf.reduce_sum(Y_placeholder_node*tf.log(hypothesis_f_softmax_node),axis=1))
 
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(cost)
+gradient_descent_optimizer\
+    =tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(cost_f_cross_entropy_node)
 
-# Test model
-is_correct = tf.equal(tf.arg_max(hypothesis, 1), tf.arg_max(Y, 1))
-# Calculate accuracy
-accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+compare_prediction_after_argmax_and_label_node\
+    =tf.equal(tf.arg_max(hypothesis_f_softmax_node,1),tf.arg_max(Y_placeholder_node,1))
+
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_after_argmax_and_label_node,tf.float32))
 
 # 1 epoch: finishing entire train dataset 1 time
-training_epochs = 15
-# Entire dataset: 1000
-# batch size: 100
-# 100*10: 1 epoch
-batch_size = 100
+training_epochs=15
+# If entire dataset: 1000
+# If batch size: 100
+# 100batches*10iteration: 1 epoch
 
-with tf.Session() as sess:
-    # Initialize TensorFlow variables
-    sess.run(tf.global_variables_initializer())
-    # Training cycle
+batch_size=100
+
+with tf.Session() as sess_object:
+    sess_object.run(tf.global_variables_initializer())
+    
     for epoch in range(training_epochs):
-        avg_cost = 0
-        total_batch = int(mnist.train.num_examples / batch_size)
+        average_of_cost_value=0
+        number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-        for i in range(total_batch):
-            batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-            c, _ = sess.run([cost, optimizer], feed_dict={
-                            X: batch_xs, Y: batch_ys})
-            avg_cost += c / total_batch
+        for i in range(number_of_total_batch):
+            batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+            cost_value,_=sess_object.run([cost_f_cross_entropy_node,gradient_descent_optimizer]\
+                ,feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys})
+            average_of_cost_value+=cost_value/number_of_total_batch
 
-        print('Epoch:', '%04d' % (epoch + 1),
-              'cost =', '{:.9f}'.format(avg_cost))
+        print('Epoch:','%04d' % (epoch+1),
+              'cost_f_cross_entropy_node =','{:.9f}'.format(average_of_cost_value))
 
     print("Learning finished")
 
-# Test the model using test sets
-print("Accuracy: ", accuracy.eval(session=sess, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels}))
+    # You test model by test dataset
+    print("Accuracy: ",accuracy_node.eval(session=sess_object\
+        ,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
 
-# Get one number image randomly and let model to predict it
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1]}))
+    # You extract one number image randomly,
+    # and let model to predict it
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label: ",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction: ",sess_object.run(tf.argmax(hypothesis_f_softmax_node,1)\
+        ,feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
 
-plt.imshow(
-    mnist.test.images[r:r + 1].reshape(28, 28),
-    cmap='Greys',
-    interpolation='nearest')
-plt.show()
+    plt.imshow(\
+        mnist.test.images[one_random_number:one_random_number+1].reshape(28,28)\
+        ,cmap='Greys'\
+        ,interpolation='nearest')
+    plt.show()
 
-# Epoch: 0001 cost = 2.868104637
-# Epoch: 0002 cost = 1.134684615
-# Epoch: 0003 cost = 0.908220728
-# Epoch: 0004 cost = 0.794199896
-# Epoch: 0005 cost = 0.721815854
-# Epoch: 0006 cost = 0.670184430
-# Epoch: 0007 cost = 0.630576546
-# Epoch: 0008 cost = 0.598888191
-# Epoch: 0009 cost = 0.573027079
-# Epoch: 0010 cost = 0.550497213
-# Epoch: 0011 cost = 0.532001859
-# Epoch: 0012 cost = 0.515517795
-# Epoch: 0013 cost = 0.501175288
-# Epoch: 0014 cost = 0.488425370
-# Epoch: 0015 cost = 0.476968593
+# Epoch: 0001 cost_f_cross_entropy_node = 2.670718651
+# Epoch: 0002 cost_f_cross_entropy_node = 1.082772191
+# Epoch: 0003 cost_f_cross_entropy_node = 0.862386612
+# Epoch: 0004 cost_f_cross_entropy_node = 0.754031007
+# Epoch: 0005 cost_f_cross_entropy_node = 0.685360860
+# Epoch: 0006 cost_f_cross_entropy_node = 0.636394402
+# Epoch: 0007 cost_f_cross_entropy_node = 0.599627148
+# Epoch: 0008 cost_f_cross_entropy_node = 0.570170825
+# Epoch: 0009 cost_f_cross_entropy_node = 0.545899281
+# Epoch: 0010 cost_f_cross_entropy_node = 0.525418256
+# Epoch: 0011 cost_f_cross_entropy_node = 0.508938166
+# Epoch: 0012 cost_f_cross_entropy_node = 0.493855055
+# Epoch: 0013 cost_f_cross_entropy_node = 0.480763114
+# Epoch: 0014 cost_f_cross_entropy_node = 0.468656181
+# Epoch: 0015 cost_f_cross_entropy_node = 0.458692090
 # Learning finished
-# Accuracy:  0.888
+# Accuracy:  0.8919
+# Label:  [3]
+# Prediction:  [3]
+# img bb37faf8-abca-4532-aab1-997c6970641e.png
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/bb37faf8-abca-4532-aab1-997c6970641e.png"/><xmp>
+
 </xmp>
    </BODY>
 </HTML>
