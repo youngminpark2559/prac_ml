@@ -5,51 +5,51 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size:23px;
  
- margin-top: 50px;
-    margin-bottom: 50px;
-    margin-right: 80px;
-    margin-left: 80px;
+ margin-top:50px;
+    margin-bottom:50px;
+    margin-right:80px;
+    margin-left:80px;
     
-    padding-top: 50px;
-    padding-bottom: 50px;
-    padding-right: 80px;
-    padding-left: 80px;
+    padding-top:50px;
+    padding-bottom:50px;
+    padding-right:80px;
+    padding-left:80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-    "HTML-CSS" : {
-        availableFonts : ["STIX"],
-        preferredFont : "STIX",
-        webFont : "STIX-Web",
-        imageFont : null
+    "HTML-CSS" :{
+        availableFonts :["STIX"],
+        preferredFont :"STIX",
+        webFont :"STIX-Web",
+        imageFont :null
     }
 });
 </script>
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
-        HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
-               equationNumbers: { autoNumber: "AMS" } },
-        extensions: ["tex2jax.js"],
-        jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
-                   displayMath: [ ['$$$$','$$$$'] ],
-                   processEscapes: true },
-        "HTML-CSS": { availableFonts: ["TeX"],
-                      linebreaks: { automatic: true } }
+        HTML:["input/TeX","output/HTML-CSS"],
+        TeX:{ extensions:["AMSmath.js","AMSsymbols.js"],
+               equationNumbers:{ autoNumber:"AMS" } },
+        extensions:["tex2jax.js"],
+        jax:["input/TeX","output/HTML-CSS"],
+        tex2jax:{ inlineMath:[ ['$$$','$$$'] ],
+                   displayMath:[ ['$$$$','$$$$'] ],
+                   processEscapes:true },
+        "HTML-CSS":{ availableFonts:["TeX"],
+                      linebreaks:{ automatic:true } }
     });
 </script>
    </HEAD>
    <BODY>
-010-lab. nn, relu, xavier, dropout, adam optimizer
+010-lab. nn,relu,xavier,dropout,adam adam_optimizer_node
 <xmp>
-@
-DeepLearningZeroToAll/lab-10-1-mnist_softmax.py
+# @
+# DeepLearningZeroToAll/lab-10-1-mnist_softmax.py
 
 import tensorflow as tf
 import random
@@ -57,77 +57,80 @@ import matplotlib.pyplot as plt
 from tensorflow.examples.tutorials.mnist import input_data
 tf.set_random_seed(777)
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-learning_rate = 0.001
-# I run entire dataset 15 times
-training_epochs = 15
-# Piece of entire dataset
-batch_size = 100
+learning_rate=0.001
+training_epochs=15
+batch_size=100
 
 # input data [n,784]
-X = tf.placeholder(tf.float32, [None, 784])
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
 # output data [n,10]
-Y = tf.placeholder(tf.float32, [None, 10])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-# [n,784][?,?]=[n,10], [?,?]=[784,10]
-W = tf.Variable(tf.random_normal([784, 10]))
+# [n,784][?,?]=[n,10],[?,?]=[784,10]
+W_variable_node=tf.Variable(tf.random_normal([784,10]))
+
 # [10] from output data [n,10]
-b = tf.Variable(tf.random_normal([10]))
+b_variable_node=tf.Variable(tf.random_normal([10]))
 
-hypothesis = tf.matmul(X, W) + b
+hypothesis_f_node=tf.matmul(X_placeholder_node,W_variable_node)+b_variable_node
 
-# I use softmax function
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+# You use softmax function as cost_f_node function
+cost_f_node\
+    =tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node\
+        =tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+    accuracy_node\
+        =tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(accuracy_node,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1]}))
+    # Get one and predict
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
 
-plt.imshow(mnist.test.images[r:r + 1].
-          reshape(28, 28), cmap='Greys', interpolation='nearest')
-plt.show()
-# Epoch: 0001 cost = 5.888845987
-# Epoch: 0002 cost = 1.860620173
-# Epoch: 0003 cost = 1.159035648
-# Epoch: 0004 cost = 0.892340870
-# Epoch: 0005 cost = 0.751155428
-# Epoch: 0006 cost = 0.662484806
-# Epoch: 0007 cost = 0.601544010
-# Epoch: 0008 cost = 0.556526115
-# Epoch: 0009 cost = 0.521186961
-# Epoch: 0010 cost = 0.493068354
-# Epoch: 0011 cost = 0.469686249
-# Epoch: 0012 cost = 0.449967254
-# Epoch: 0013 cost = 0.433519321
-# Epoch: 0014 cost = 0.419000337
-# Epoch: 0015 cost = 0.406490815
+    plt.imshow(mnist.test.images[one_random_number:one_random_number+1]\
+        .reshape(28,28),cmap='Greys',interpolation='nearest')
+    plt.show()
+# Epoch:0001 cost_f_node=5.888845987
+# Epoch:0002 cost_f_node=1.860620173
+# Epoch:0003 cost_f_node=1.159035648
+# Epoch:0004 cost_f_node=0.892340870
+# Epoch:0005 cost_f_node=0.751155428
+# Epoch:0006 cost_f_node=0.662484806
+# Epoch:0007 cost_f_node=0.601544010
+# Epoch:0008 cost_f_node=0.556526115
+# Epoch:0009 cost_f_node=0.521186961
+# Epoch:0010 cost_f_node=0.493068354
+# Epoch:0011 cost_f_node=0.469686249
+# Epoch:0012 cost_f_node=0.449967254
+# Epoch:0013 cost_f_node=0.433519321
+# Epoch:0014 cost_f_node=0.419000337
+# Epoch:0015 cost_f_node=0.406490815
 # Learning Finished!
-# Accuracy: 0.9035
+# Accuracy:0.9035
 
 
 DeepLearningZeroToAll/lab-10-2-mnist_nn.py
@@ -140,94 +143,75 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 tf.set_random_seed(777)
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-learning_rate = 0.001
-training_epochs = 15
-batch_size = 100
+learning_rate=0.001
+training_epochs=15
+batch_size=100
 
 # [n,784]
-X = tf.placeholder(tf.float32, [None, 784])
-# [n, 10]
-Y = tf.placeholder(tf.float32, [None, 10])
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+# [n,10]
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-# 784inputs layer1 256outputs
-# [n,784][?,?]=[n,256], [?,?]=[784,256]
-W1 = tf.Variable(tf.random_normal([784, 256]))
+# 784inputs (layer1) 256outputs
+# [n,784][?,?]=[n,256],[?,?]=[784,256]
+W1_variable_node=tf.Variable(tf.random_normal([784,256]))
 # [256] from [n,256]
-b1 = tf.Variable(tf.random_normal([256]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
+b1_variable_node=tf.Variable(tf.random_normal([256]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
 
 # 256inputs layer2 256outputs
-# [n,256][?,?]=[n,256], [?,?]=[256,256]
-W2 = tf.Variable(tf.random_normal([256, 256]))
-b2 = tf.Variable(tf.random_normal([256]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
+# [n,256][?,?]=[n,256],[?,?]=[256,256]
+W2_variable_node=tf.Variable(tf.random_normal([256,256]))
+b2_variable_node=tf.Variable(tf.random_normal([256]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
 
 # 256inputs layer3 10outputs
-W3 = tf.Variable(tf.random_normal([256, 10]))
-b3 = tf.Variable(tf.random_normal([10]))
-hypothesis = tf.matmul(L2, W3) + b3
+W3_variable_node=tf.Variable(tf.random_normal([256,10]))
+b3_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node
 
 # loss function
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-# optimizer
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+# adam_optimizer_node
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
 
 # initialize
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 # train my model
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+    accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+          X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(
-    tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1]}))
+    # Get one and predict
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(
+        tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
-# plt.show()
+    # plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+    #           reshape(28,28),cmap='Greys',interpolation='nearest')
+    # plt.show()
 
-'''
-Epoch: 0001 cost = 141.207671860
-Epoch: 0002 cost = 38.788445864
-Epoch: 0003 cost = 23.977515479
-Epoch: 0004 cost = 16.315132428
-Epoch: 0005 cost = 11.702554882
-Epoch: 0006 cost = 8.573139748
-Epoch: 0007 cost = 6.370995680
-Epoch: 0008 cost = 4.537178684
-Epoch: 0009 cost = 3.216900532
-Epoch: 0010 cost = 2.329708954
-Epoch: 0011 cost = 1.715552875
-Epoch: 0012 cost = 1.189857912
-Epoch: 0013 cost = 0.820965160
-Epoch: 0014 cost = 0.624131458
-Epoch: 0015 cost = 0.454633765
-Learning Finished!
-Accuracy: 0.9455
-'''
 
 # @
 # lab-10-3-mnist_nn_xavier.py
@@ -239,83 +223,112 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 tf.set_random_seed(777)
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-learning_rate = 0.001
-training_epochs = 15
-batch_size = 100
+learning_rate=0.001
+training_epochs=15
+batch_size=100
 
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
+# [n,784]
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
 
-# I initialize weight by xavier initialization
-# When you run this mode,
-# you will see low loss at first rather than normal dist for weight initialization
-W1 = tf.get_variable("W1", shape=[784, 256], initializer=tf.contrib.layers.xavier_initializer())
-b1 = tf.Variable(tf.random_normal([256]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
+# [n,10]
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-W2 = tf.get_variable("W2", shape=[256, 256], initializer=tf.contrib.layers.xavier_initializer())
-b2 = tf.Variable(tf.random_normal([256]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
+# You will initialize weight by xavier initialization
+# You will see low loss at first,
+# than when you use normal dist for weight initialization
+# [n,784][?,?]=[n,256](output data's shape in hidden layer)
+# [n,10](output data's shape in very last layer)
+# [?,?]=[784,256]
+W1_variable_node=tf.get_variable("W1_variable_node"\
+    ,shape=[784,256]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
 
-W3 = tf.get_variable("W3", shape=[256, 10], initializer=tf.contrib.layers.xavier_initializer())
-b3 = tf.Variable(tf.random_normal([10]))
-hypothesis = tf.matmul(L2, W3) + b3
+# [256] is from [n,256]    
+b1_variable_node=tf.Variable(tf.random_normal([256]))
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+W2_variable_node=tf.get_variable("W2_variable_node"\
+    ,shape=[256,256]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([256]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+
+# layer 3 will be last layer
+# input from layer 2 is [n,256]
+# output from layer 3 should be [n,10]
+# [n,256][?,?]=[n,10]
+# [?,?]=256,10
+W3_variable_node=tf.get_variable("W3_variable_node"\
+    ,shape=[256,10]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+
+# [10] is from [n,10]    
+b3_variable_node=tf.Variable(tf.random_normal([10]))
+
+hypothesis_f_node=tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node
+
+cost_f_node\
+    =tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(\
+        logits=hypothesis_f_node\
+        ,labels=Y_placeholder_node))
+
+adam_optimizer_node\
+    =tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+    accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(accuracy_node\
+        ,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(
-    tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1]}))
+    # Get one and predict
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(
+        tf.argmax(hypothesis_f_node,1)\
+        ,feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
-# plt.show()
+    # plt.imshow(mnist.test.images[one_random_number:one_random_number+1]\
+    #   .reshape(28,28),cmap='Greys',interpolation='nearest')
+    # plt.show()
 
-# Epoch: 0001 cost = 0.301498963
-# Epoch: 0002 cost = 0.107252513
-# Epoch: 0003 cost = 0.064888892
-# Epoch: 0004 cost = 0.044463030
-# Epoch: 0005 cost = 0.029951642
-# Epoch: 0006 cost = 0.020663404
-# Epoch: 0007 cost = 0.015853033
-# Epoch: 0008 cost = 0.011764387
-# Epoch: 0009 cost = 0.008598264
-# Epoch: 0010 cost = 0.007383116
-# Epoch: 0011 cost = 0.006839140
-# Epoch: 0012 cost = 0.004672963
-# Epoch: 0013 cost = 0.003979437
-# Epoch: 0014 cost = 0.002714260
-# Epoch: 0015 cost = 0.004707661
+# Epoch:0001 cost_f_node=0.301498963
+# Epoch:0002 cost_f_node=0.107252513
+# Epoch:0003 cost_f_node=0.064888892
+# Epoch:0004 cost_f_node=0.044463030
+# Epoch:0005 cost_f_node=0.029951642
+# Epoch:0006 cost_f_node=0.020663404
+# Epoch:0007 cost_f_node=0.015853033
+# Epoch:0008 cost_f_node=0.011764387
+# Epoch:0009 cost_f_node=0.008598264
+# Epoch:0010 cost_f_node=0.007383116
+# Epoch:0011 cost_f_node=0.006839140
+# Epoch:0012 cost_f_node=0.004672963
+# Epoch:0013 cost_f_node=0.003979437
+# Epoch:0014 cost_f_node=0.002714260
+# Epoch:0015 cost_f_node=0.004707661
 # Learning Finished!
-# Accuracy: 0.9783
+# Accuracy:0.9783
 
 
 # @
@@ -329,91 +342,135 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 tf.set_random_seed(777)
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-learning_rate = 0.001
-training_epochs = 15
-batch_size = 100
+learning_rate=0.001
+training_epochs=15
+batch_size=100
 
-# We will try deep and wide nn with xavier initialization
-# deeper: number of layer from 3 to 5
-# wider: 256 to 784
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
+# You will try deep and wide neural network with xavier initialization
+# deeper:number of layer will be 5 from 3
+# wider:number of node in one hidden layer will be 512 from 256
 
-W1 = tf.get_variable("W1", shape=[784, 512], initializer=tf.contrib.layers.xavier_initializer())
-b1 = tf.Variable(tf.random_normal([512]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
+# In 1st layer, input data will be [n,784]
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
 
-W2 = tf.get_variable("W2", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b2 = tf.Variable(tf.random_normal([512]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
+# In last layer, outptu data will be [n,10]
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-W3 = tf.get_variable("W3", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b3 = tf.Variable(tf.random_normal([512]))
-L3 = tf.nn.relu(tf.matmul(L2, W3) + b3)
+# In 1st layer, input data shape is [n,784]
+# In 1st layer, you want to determine output data shape is [n,512]
+# [n,784][?,?]=[n,512]
+# [?,?]=[784,512]
+W1_variable_node=tf.get_variable("W1_variable_node"\
+    ,shape=[784,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
 
-W4 = tf.get_variable("W4", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b4 = tf.Variable(tf.random_normal([512]))
-L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
+# [512] is from [n,512]
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
 
-W5 = tf.get_variable("W5", shape=[512, 10], initializer=tf.contrib.layers.xavier_initializer())
-b5 = tf.Variable(tf.random_normal([10]))
-hypothesis = tf.matmul(L4, W5) + b5
+# In layer2, input data shape is [n,512]
+# In layer2, you want to determine output data shape is [n,512]
+# [n,512][?,?]=[n,512]
+# [?,?]=[512,512]
+W2_variable_node=tf.get_variable("W2_variable_node"\
+    ,shape=[512,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+# [512] is from [n,512]
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+# In layer3, input data shape is [n,512]
+# In layer3, you want to determine output data shape is [n,512]
+# [n,512][?,?]=[n,512]
+# [?,?]=[512,512]
+W3_variable_node=tf.get_variable("W3_variable_node"\
+    ,shape=[512,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+# [512] is from [n,512]
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=tf.nn.relu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+# In layer4, input data shape is [n,512]
+# In layer4, you want to determine output data shape is [n,512]
+# [n,512][?,?]=[n,512]
+# [?,?]=[512,512]
+W4_variable_node=tf.get_variable("W4_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+
+# [512] is from [n,512]
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=tf.nn.relu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+
+# In layer5, input data shape is [n,512]
+# In layer5, you should determine output data shape is [n,10]
+# [n,512][?,?]=[n,10]
+# [?,?]=[512,10]
+W5_variable_node=tf.get_variable("W5_variable_node"\
+    ,shape=[512,10]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+
+# [10] is from [n,10]
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
+
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(\
+    logits=hypothesis_f_node\
+    ,labels=Y_placeholder_node))
+
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+    accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(accuracy_node\
+        ,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(
-    tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1]}))
+    # Get one and predict
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(\
+        tf.argmax(hypothesis_f_node,1)\
+        ,feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
-# plt.show()
+    # plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+    #           reshape(28,28),cmap='Greys',interpolation='nearest')
+    # plt.show()
 
-# Epoch: 0001 cost = 0.266061549
-# Epoch: 0002 cost = 0.080796588
-# Epoch: 0003 cost = 0.049075800
-# Epoch: 0004 cost = 0.034772298
-# Epoch: 0005 cost = 0.024780529
-# Epoch: 0006 cost = 0.017072763
-# Epoch: 0007 cost = 0.014031383
-# Epoch: 0008 cost = 0.013763446
-# Epoch: 0009 cost = 0.009164047
-# Epoch: 0010 cost = 0.008291388
-# Epoch: 0011 cost = 0.007319742
-# Epoch: 0012 cost = 0.006434021
-# Epoch: 0013 cost = 0.005684378
-# Epoch: 0014 cost = 0.004781207
-# Epoch: 0015 cost = 0.004342310
+# Epoch:0001 cost_f_node=0.266061549
+# Epoch:0002 cost_f_node=0.080796588
+# Epoch:0003 cost_f_node=0.049075800
+# Epoch:0004 cost_f_node=0.034772298
+# Epoch:0005 cost_f_node=0.024780529
+# Epoch:0006 cost_f_node=0.017072763
+# Epoch:0007 cost_f_node=0.014031383
+# Epoch:0008 cost_f_node=0.013763446
+# Epoch:0009 cost_f_node=0.009164047
+# Epoch:0010 cost_f_node=0.008291388
+# Epoch:0011 cost_f_node=0.007319742
+# Epoch:0012 cost_f_node=0.006434021
+# Epoch:0013 cost_f_node=0.005684378
+# Epoch:0014 cost_f_node=0.004781207
+# Epoch:0015 cost_f_node=0.004342310
 # Learning Finished!
-# Accuracy: 0.9742
+# Accuracy:0.9742
 
 # @
 # lab-10-5-mnist_nn_dropout.py
@@ -426,152 +483,199 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 tf.set_random_seed(777)
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-learning_rate = 0.001
-training_epochs = 15
-batch_size = 100
+learning_rate=0.001
+training_epochs=15
+batch_size=100
 
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-# dropout (keep_prob) rate  0.7 on training, but should be 1 for testing
-keep_prob = tf.placeholder(tf.float32)
+drop_out_placeholder_node=tf.placeholder(tf.float32)
 
-W1 = tf.get_variable("W1", shape=[784, 512],initializer=tf.contrib.layers.xavier_initializer())
-b1 = tf.Variable(tf.random_normal([512]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
+W1_variable_node=tf.get_variable(\
+    "W1_variable_node"\
+    ,shape=[784,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
 
-# 'softmax'+'xavier initialization'+'deep and wide nn'+'dropout'
-L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
+# "softmax hypothesis function"
+# +"xavier initialization"
+# +"deep and wide neural network"
+# +"dropout"
+layer1_cost_f_node=tf.nn.dropout(layer1_cost_f_node,keep_prob=drop_out_placeholder_node)
 
-W2 = tf.get_variable("W2", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b2 = tf.Variable(tf.random_normal([512]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
-L2 = tf.nn.dropout(L2, keep_prob=keep_prob)
+W2_variable_node=tf.get_variable(\
+    "W2_variable_node"\
+    ,shape=[512,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+layer2_cost_f_node=tf.nn.dropout(layer2_cost_f_node,keep_prob=drop_out_placeholder_node)
 
-W3 = tf.get_variable("W3", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b3 = tf.Variable(tf.random_normal([512]))
-L3 = tf.nn.relu(tf.matmul(L2, W3) + b3)
-L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
+W3_variable_node=tf.get_variable(\
+    "W3_variable_node"\
+    ,shape=[512,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=tf.nn.relu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
+layer3_cost_f_node=tf.nn.dropout(layer3_cost_f_node,keep_prob=drop_out_placeholder_node)
 
-W4 = tf.get_variable("W4", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b4 = tf.Variable(tf.random_normal([512]))
-L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
-L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
+W4_variable_node=tf.get_variable(\
+    "W4_variable_node"\
+    ,shape=[512,512]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=tf.nn.relu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+layer4_cost_f_node=tf.nn.dropout(layer4_cost_f_node,keep_prob=drop_out_placeholder_node)
 
-W5 = tf.get_variable("W5", shape=[512, 10], initializer=tf.contrib.layers.xavier_initializer())
-b5 = tf.Variable(tf.random_normal([10]))
-hypothesis = tf.matmul(L4, W5) + b5
+W5_variable_node=tf.get_variable(\
+    "W5_variable_node"\
+    ,shape=[512,10]\
+    ,initializer=tf.contrib.layers.xavier_initializer())
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+cost_f_node=tf.reduce_mean(\
+    tf.nn.softmax_cross_entropy_with_logits(\
+        logits=hypothesis_f_node\
+        ,labels=Y_placeholder_node))
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+adam_optimizer_node=tf.train.AdamOptimizer(\
+    learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys, keep_prob: 0.7}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={\
+            X_placeholder_node:batch_xs\
+            ,Y_placeholder_node:batch_ys\
+            ,drop_out_placeholder_node:0.7}
+        cost_value,_=sess_object.run(\
+            [cost_f_node,adam_optimizer_node]\
+            ,feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels, keep_prob: 1}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node=tf.equal(\
+        tf.argmax(hypothesis_f_node,1)\
+        ,tf.argmax(Y_placeholder_node,1))
+    accuracy_node=tf.reduce_mean(\
+        tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(\
+        accuracy_node\
+        ,feed_dict={\
+            X_placeholder_node:mnist.test.images\
+            ,Y_placeholder_node:mnist.test.labels\
+            ,drop_out_placeholder_node:1}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1], keep_prob: 1}))
+    # Get one and predict
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(\
+        tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(\
+        tf.argmax(hypothesis_f_node,1)\
+        ,feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1],keep_prob:1}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
-# plt.show()
+    # plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+    #           reshape(28,28),cmap='Greys',interpolation='nearest')
+    # plt.show()
 
-# Epoch: 0001 cost = 0.447322626
-# Epoch: 0002 cost = 0.157285590
-# Epoch: 0003 cost = 0.121884535
-# Epoch: 0004 cost = 0.098128681
-# Epoch: 0005 cost = 0.082901778
-# Epoch: 0006 cost = 0.075337573
-# Epoch: 0007 cost = 0.069752543
-# Epoch: 0008 cost = 0.060884363
-# Epoch: 0009 cost = 0.055276413
-# Epoch: 0010 cost = 0.054631256
-# Epoch: 0011 cost = 0.049675195
-# Epoch: 0012 cost = 0.049125314
-# Epoch: 0013 cost = 0.047231930
-# Epoch: 0014 cost = 0.041290121
-# Epoch: 0015 cost = 0.043621063
+# Epoch:0001 cost_f_node=0.447322626
+# Epoch:0002 cost_f_node=0.157285590
+# Epoch:0003 cost_f_node=0.121884535
+# Epoch:0004 cost_f_node=0.098128681
+# Epoch:0005 cost_f_node=0.082901778
+# Epoch:0006 cost_f_node=0.075337573
+# Epoch:0007 cost_f_node=0.069752543
+# Epoch:0008 cost_f_node=0.060884363
+# Epoch:0009 cost_f_node=0.055276413
+# Epoch:0010 cost_f_node=0.054631256
+# Epoch:0011 cost_f_node=0.049675195
+# Epoch:0012 cost_f_node=0.049125314
+# Epoch:0013 cost_f_node=0.047231930
+# Epoch:0014 cost_f_node=0.041290121
+# Epoch:0015 cost_f_node=0.043621063
 # Learning Finished!
-# Accuracy: 0.9804
+# Accuracy:0.9804
 
 
 
-lab-10-6-mnist_nn_batchnorm.ipynb
+# lab-10-6-mnist_nn_batchnorm.ipynb
 
-Lab: Batchnormalization Layer
-What is a batchnormalization layer?
-It is a layer that normalize the output before the activation layer. The original paper was proposed by Sergey Ioffe in 2015.
 
-Batch Normalization Layer looks like this: bn
+# Batchnormalization layer is layer,
+# that normalize output before the activation layer
+# The original paper was proposed by Sergey Ioffe in 2015
 
-Why batchnormalization?
-The distribution of each layer's input changes because the weights of the previous layer change as we update weights by the gradient descent. This is called a covariance shift, which makes the network training difficult.
+# Batch Normalization Layer looks like this:
 
-For example, if the activation layer is a relu layer and the input of the activation layer is shifted to less than zeros, no weights will be activated!
+# Why batchnormalization?
+# Distribution of each layer's input changes,
+# because weights of previous layer change,
+# as you update weights by gradient descent
+# This is called covariance shift,
+# which makes neural network training difficult
 
-One thing also worth mentioning is that $$$\gamma$$$ and $$$\beta$$$ parameters in $$$ y = \gamma \hat{x} + \beta $$$ are also trainable.
+# For example, if activation layer is relu layer,
+# and input of activation layer is shifted to less than zeros,
+# no weights will be activated
 
-What it means is that if we don't need the batchnormalization, its parameters will be updated such that it offsets the normalization step.
+# One thing also worth mentioning is,
+# that $$$\gamma$$$ and $$$\beta$$$ parameters in $$$ y=\gamma \hat{x}+\beta $$$,
+# are also trainable.
 
-For example, assume that
+# What it means is,
+# that if you don't need batchnormalization,
+# its parameters will be updated such that it offsets normalization step
 
-$$$\begin{align}
-\gamma = \sqrt{\sigma^2_B + \epsilon}\\
-\beta = \mu_B
-\end{align}$$$
-then
+# For example, assume that
 
-$$$ y_i = \gamma \hat{x_i} + \beta = x_i $$$
-Also note that $$$\mu$$$ and $$$\sigma$$$ are computed using moving averages during the training step. However, during the test time, the computed $$$\mu$$$ and $$$\sigma$$$ will be used as fixed
+# $$$\begin{align}
+# \gamma=\sqrt{\sigmoid_function^2_B+\epsilon}\\
+# \beta=\mu_B
+# \end{align}$$$
+# then,
+# $$$ y_i=\gamma \hat{x_i}+\beta=x_i $$$
+# Also note that $$$\mu$$$ and $$$\sigmoid_function$$$ are computed,
+# by using moving averages during training step
+# However, during test time,
+# the computed $$$\mu$$$ and $$$\sigmoid_function$$$ will be used as fixed
 
-Conclusion
-Always use the batch normalization!
-Enough Talk: how to implement in Tensorflow
-1. Load Library
-We use the famous MNIST data
-In [1]:
+# Conclusion
+# Always use batch normalization!
+
+# How to implement batch normalization in Tensorflow
+# 1. Load Library
+# You will use famous MNIST data for this learning
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.examples.tutorials.mnist import input_data
 %matplotlib inline
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-Extracting MNIST_data/train-images-idx3-ubyte.gz
-Extracting MNIST_data/train-labels-idx1-ubyte.gz
-Extracting MNIST_data/t10k-images-idx3-ubyte.gz
-Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
-In [2]:
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 mnist.train.images.shape
-Out[2]:
-(55000, 784)
-2. Define Model & Solver Class
-Object-Oriented-Programming allows to define multiple model easily
-Why do we separate model and solver classes?
-We can just swap out the model class in the Solver class when we need a different network architecture
-Usually we need one solver class
-In [3]:
+# (55000,784)
+
+# 2. Define Model & Solver Class
+# Object-Oriented-Programming allows us to define multiple models easily
+# Why do you separate models and solver classes?
+# You can just swap out model class in Solver class,
+# when you need different network architecture
+# Usually, you need one solver class
+
 class Model:
     """Network Model Class
     
@@ -580,103 +684,103 @@ class Model:
     
     Attributes
     ----------
-    X : tf.float32
+    X_placeholder_node :tf.float32
         This is a tensorflow placeholder for MNIST images
-        Expected shape is [None, 784]
+        Expected shape is [None,784]
         
-    y : tf.float32
+    y :tf.float32
         This is a tensorflow placeholder for MNIST labels (one hot encoded)
-        Expected shape is [None, 10]
+        Expected shape is [None,10]
         
-    mode : tf.bool
+    mode :tf.bool
         This is used for the batch normalization
         It's `True` at training time and `False` at test time
         
-    loss : tf.float32
+    loss :tf.float32
         The loss function is a softmax cross entropy
         
     train_op
         This is simply the training op that minimizes the loss
         
-    accuracy : tf.float32
-        The accuracy operation
+    accuracy_node :tf.float32
+        The accuracy_node operation
         
     
     Examples
     ----------
-    >>> model = Model("Batch Norm", 32, 10)
+    >>> model=Model("Batch Norm",32,10)
 
     """
-    def __init__(self, name, input_dim, output_dim, hidden_dims=[32, 32], use_batchnorm=True, activation_fn=tf.nn.relu, optimizer=tf.train.AdamOptimizer, lr=0.01):
+    def __init__(self,name,input_dim,output_dim,hidden_dims=[32,32],use_batchnorm=True,activation_fn=tf.nn.relu,adam_optimizer_node=tf.train.AdamOptimizer,lr=0.01):
         """ Constructor
         
         Parameters
         --------
-        name : str
+        name :str
             The name of this network
             The entire network will be created under `tf.variable_scope(name)`
             
-        input_dim : int
+        input_dim :int
             The input dimension
-            In this example, 784
+            In this example,784
         
-        output_dim : int
+        output_dim :int
             The number of output labels
             There are 10 labels
             
-        hidden_dims : list (default: [32, 32])
-            len(hidden_dims) = number of layers
+        hidden_dims :list (default:[32,32])
+            len(hidden_dims)=number of layers
             each element is the number of hidden units
             
-        use_batchnorm : bool (default: True)
-            If true, it will create the batchnormalization layer
+        use_batchnorm :bool (default:True)
+            If true,it will create the batchnormalization layer
             
-        activation_fn : TF functions (default: tf.nn.relu)
+        activation_fn :TF functions (default:tf.nn.relu)
             Activation Function
             
-        optimizer : TF optimizer (default: tf.train.AdamOptimizer)
+        adam_optimizer_node :TF adam_optimizer_node (default:tf.train.AdamOptimizer)
             Optimizer Function
             
-        lr : float (default: 0.01)
+        lr :float (default:0.01)
             Learning rate
         
         """
         with tf.variable_scope(name):
             # Placeholders are defined
-            self.X = tf.placeholder(tf.float32, [None, input_dim], name='X')
-            self.y = tf.placeholder(tf.float32, [None, output_dim], name='y')
-            self.mode = tf.placeholder(tf.bool, name='train_mode')            
+            self.X_placeholder_node=tf.placeholder(tf.float32,[None,input_dim],name='X_placeholder_node')
+            self.y=tf.placeholder(tf.float32,[None,output_dim],name='y')
+            self.mode=tf.placeholder(tf.bool,name='train_mode_node')            
             
             # Loop over hidden layers
-            net = self.X
-            for i, h_dim in enumerate(hidden_dims):
+            net=self.X_placeholder_node
+            for i,h_dim in enumerate(hidden_dims):
                 with tf.variable_scope('layer{}'.format(i)):
-                    net = tf.layers.dense(net, h_dim)
+                    net=tf.layers.dense(net,h_dim)
                     
                     if use_batchnorm:
-                        net = tf.layers.batch_normalization(net, training=self.mode)
+                        net=tf.layers.batch_normalization(net,training=self.mode)
                         
-                    net = activation_fn(net)
+                    net=activation_fn(net)
             
             # Attach fully connected layers
-            net = tf.contrib.layers.flatten(net)
-            net = tf.layers.dense(net, output_dim)
+            net=tf.contrib.layers.flatten(net)
+            net=tf.layers.dense(net,output_dim)
             
-            self.loss = tf.nn.softmax_cross_entropy_with_logits(logits=net, labels=self.y)
-            self.loss = tf.reduce_mean(self.loss, name='loss')    
+            self.loss=tf.nn.softmax_cross_entropy_with_logits(logits=net,labels=self.y)
+            self.loss=tf.reduce_mean(self.loss,name='loss')    
             
             # When using the batchnormalization layers,
             # it is necessary to manually add the update operations
             # because the moving averages are not included in the graph            
-            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope=name)
-            with tf.control_dependencies(update_ops):                     
-                self.train_op = optimizer(lr).minimize(self.loss)
+            update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS,scope=name)
+            with tf.control_dependencies(update_ops):                    
+                self.train_op=adam_optimizer_node(lr).minimize(self.loss)
             
             # Accuracy etc 
-            softmax = tf.nn.softmax(net, name='softmax')
-            self.accuracy = tf.equal(tf.argmax(softmax, 1), tf.argmax(self.y, 1))
-            self.accuracy = tf.reduce_mean(tf.cast(self.accuracy, tf.float32))
-In [4]:
+            softmax=tf.nn.softmax(net,name='softmax')
+            self.accuracy_node=tf.equal(tf.argmax(softmax,1),tf.argmax(self.y,1))
+            self.accuracy_node=tf.reduce_mean(tf.cast(self.accuracy_node,tf.float32))
+
 class Solver:
     """Solver class
     
@@ -684,193 +788,191 @@ class Solver:
     
     Attributes
     ----------
-    model : Model class
-    sess : TF session
+    model :Model class
+    sess_object :TF session
         
     Methods
     ----------
-    train(X, y)
+    train(X_placeholder_node,y)
         Run the train_op and Returns the loss
         
-    evalulate(X, y, batch_size=None)
+    evalulate(X_placeholder_node,y,batch_size=None)
         Returns "Loss" and "Accuracy"
-        If batch_size is given, it's computed using batch_size
+        If batch_size is given,it's computed using batch_size
         because most GPU memories cannot handle the entire training data at once
             
     Example
     ----------
-    >>> sess = tf.InteractiveSession()
-    >>> model = Model("BatchNorm", 32, 10)
-    >>> solver = Solver(sess, model)
+    >>> sess_object=tf.InteractiveSession()
+    >>> model=Model("BatchNorm",32,10)
+    >>> solver=Solver(sess_object,model)
     
     # Train
-    >>> solver.train(X, y)
+    >>> solver.train(X_placeholder_node,y)
     
     # Evaluate
-    >>> solver.evaluate(X, y)
+    >>> solver.evaluate(X_placeholder_node,y)
     """
-    def __init__(self, sess, model):
-        self.model = model
-        self.sess = sess
+    def __init__(self,sess_object,model):
+        self.model=model
+        self.sess_object=sess_object
         
-    def train(self, X, y):
-        feed = {
-            self.model.X: X,
-            self.model.y: y,
-            self.model.mode: True
+    def train(self,X_placeholder_node,y):
+        feed={
+            self.model.X_placeholder_node:X_placeholder_node,
+            self.model.y:y,
+            self.model.mode:True
         }
-        train_op = self.model.train_op
-        loss = self.model.loss
+        train_op=self.model.train_op
+        loss=self.model.loss
         
-        return self.sess.run([train_op, loss], feed_dict=feed)
+        return self.sess_object.run([train_op,loss],feed_dict=feed)
     
-    def evaluate(self, X, y, batch_size=None):
+    def evaluate(self,X_placeholder_node,y,batch_size=None):
         if batch_size:
-            N = X.shape[0]
+            N=X_placeholder_node.shape[0]
             
-            total_loss = 0
-            total_acc = 0
+            total_loss=0
+            total_acc=0
             
-            for i in range(0, N, batch_size):
-                X_batch = X[i:i + batch_size]
-                y_batch = y[i:i + batch_size]
+            for i in range(0,N,batch_size):
+                X_batch=X_placeholder_node[i:i+batch_size]
+                y_batch=y[i:i+batch_size]
                 
-                feed = {
-                    self.model.X: X_batch,
-                    self.model.y: y_batch,
-                    self.model.mode: False
+                feed={
+                    self.model.X_placeholder_node:X_batch,
+                    self.model.y:y_batch,
+                    self.model.mode:False
                 }
                 
-                loss = self.model.loss
-                accuracy = self.model.accuracy
+                loss=self.model.loss
+                accuracy_node=self.model.accuracy_node
                 
-                step_loss, step_acc = self.sess.run([loss, accuracy], feed_dict=feed)
+                step_loss,step_acc=self.sess_object.run([loss,accuracy_node],feed_dict=feed)
                 
-                total_loss += step_loss * X_batch.shape[0]
-                total_acc += step_acc * X_batch.shape[0]
+                total_loss+=step_loss*X_batch.shape[0]
+                total_acc+=step_acc*X_batch.shape[0]
             
             total_loss /= N
             total_acc /= N
             
-            return total_loss, total_acc
+            return total_loss,total_acc
             
             
         else:
-            feed = {
-                self.model.X: X,
-                self.model.y: y,
-                self.model.mode: False
+            feed={
+                self.model.X_placeholder_node:X_placeholder_node,
+                self.model.y:y,
+                self.model.mode:False
             }
             
-            loss = self.model.loss            
-            accuracy = self.model.accuracy
+            loss=self.model.loss            
+            accuracy_node=self.model.accuracy_node
 
-            return self.sess.run([loss, accuracy], feed_dict=feed)
-3. Instantiate Model/Solver classes
-In [5]:
-input_dim = 784
-output_dim = 10
-N = 55000
+            return self.sess_object.run([loss,accuracy_node],feed_dict=feed)
+
+# 3. Instantiate Model/Solver classes
+input_dim=784
+output_dim=10
+N=55000
 
 tf.reset_default_graph()
-sess = tf.InteractiveSession()
+sess_object=tf.InteractiveSession()
 
-# We create two models: one with the batch norm and other without
-bn = Model('batchnorm', input_dim, output_dim, use_batchnorm=True)
-nn = Model('no_norm', input_dim, output_dim, use_batchnorm=False)
+# You create two models:
+# one with batch norm and other without
+bn=Model('batchnorm',input_dim,output_dim,use_batchnorm=True)
+nn=Model('no_norm',input_dim,output_dim,use_batchnorm=False)
 
-# We create two solvers: to train both models at the same time for comparison
-# Usually we only need one solver class
-bn_solver = Solver(sess, bn)
-nn_solver = Solver(sess, nn)
-In [6]:
-epoch_n = 10
-batch_size = 32
+# You create two solvers:
+# to train both models at the same time for comparison
+# Usually you only need one solver class
+bn_solver=Solver(sess_object,bn)
+nn_solver=Solver(sess_object,nn)
+epoch_n=10
+batch_size=32
 
 # Save Losses and Accuracies every epoch
-# We are going to plot them later
-train_losses = []
-train_accs = []
+# You are going to plot them later
+train_losses=[]
+train_accs=[]
 
-valid_losses = []
-valid_accs = []
-4. Run the train step
-In [7]:
-init = tf.global_variables_initializer()
-sess.run(init)
+valid_losses=[]
+valid_accs=[]
+
+# 4. Run the train step
+init=tf.global_variables_initializer()
+sess_object.run(init)
 
 for epoch in range(epoch_n):
     for _ in range(N//batch_size):
-        X_batch, y_batch = mnist.train.next_batch(batch_size)
+        X_batch,y_batch=mnist.train.next_batch(batch_size)
         
-        _, bn_loss = bn_solver.train(X_batch, y_batch)
-        _, nn_loss = nn_solver.train(X_batch, y_batch)       
+        _,bn_loss=bn_solver.train(X_batch,y_batch)
+        _,nn_loss=nn_solver.train(X_batch,y_batch)       
     
-    b_loss, b_acc = bn_solver.evaluate(mnist.train.images, mnist.train.labels, batch_size)
-    n_loss, n_acc = nn_solver.evaluate(mnist.train.images, mnist.train.labels, batch_size)
+    b_loss,b_acc=bn_solver.evaluate(mnist.train.images,mnist.train.labels,batch_size)
+    n_loss,n_acc=nn_solver.evaluate(mnist.train.images,mnist.train.labels,batch_size)
     
     # Save train losses/acc
-    train_losses.append([b_loss, n_loss])
-    train_accs.append([b_acc, n_acc])
-    print(f'[Epoch {epoch}-TRAIN] Batchnorm Loss(Acc): {b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc): {n_loss:.5f}({n_acc:.2%})')
+    train_losses.append([b_loss,n_loss])
+    train_accs.append([b_acc,n_acc])
+    print(f'[Epoch {epoch}-TRAIN] Batchnorm Loss(Acc):{b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc):{n_loss:.5f}({n_acc:.2%})')
     
-    b_loss, b_acc = bn_solver.evaluate(mnist.validation.images, mnist.validation.labels)
-    n_loss, n_acc = nn_solver.evaluate(mnist.validation.images, mnist.validation.labels)
+    b_loss,b_acc=bn_solver.evaluate(mnist.validation.images,mnist.validation.labels)
+    n_loss,n_acc=nn_solver.evaluate(mnist.validation.images,mnist.validation.labels)
     
     # Save valid losses/acc
-    valid_losses.append([b_loss, n_loss])
-    valid_accs.append([b_acc, n_acc])
-    print(f'[Epoch {epoch}-VALID] Batchnorm Loss(Acc): {b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc): {n_loss:.5f}({n_acc:.2%})')
+    valid_losses.append([b_loss,n_loss])
+    valid_accs.append([b_acc,n_acc])
+    print(f'[Epoch {epoch}-VALID] Batchnorm Loss(Acc):{b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc):{n_loss:.5f}({n_acc:.2%})')
     print()
-[Epoch 0-TRAIN] Batchnorm Loss(Acc): 0.18456(94.19%) vs No Batchnorm Loss(Acc): 0.31917(91.01%)
-[Epoch 0-VALID] Batchnorm Loss(Acc): 0.19054(94.10%) vs No Batchnorm Loss(Acc): 0.31920(91.00%)
+# [Epoch 0-TRAIN] Batchnorm Loss(Acc):0.18456(94.19%) vs No Batchnorm Loss(Acc):0.31917(91.01%)
+# [Epoch 0-VALID] Batchnorm Loss(Acc):0.19054(94.10%) vs No Batchnorm Loss(Acc):0.31920(91.00%)
 
-[Epoch 1-TRAIN] Batchnorm Loss(Acc): 0.10349(96.78%) vs No Batchnorm Loss(Acc): 0.16142(95.34%)
-[Epoch 1-VALID] Batchnorm Loss(Acc): 0.11720(96.48%) vs No Batchnorm Loss(Acc): 0.18348(94.96%)
+# [Epoch 1-TRAIN] Batchnorm Loss(Acc):0.10349(96.78%) vs No Batchnorm Loss(Acc):0.16142(95.34%)
+# [Epoch 1-VALID] Batchnorm Loss(Acc):0.11720(96.48%) vs No Batchnorm Loss(Acc):0.18348(94.96%)
 
-[Epoch 2-TRAIN] Batchnorm Loss(Acc): 0.11239(96.43%) vs No Batchnorm Loss(Acc): 0.17737(94.79%)
-[Epoch 2-VALID] Batchnorm Loss(Acc): 0.12829(96.30%) vs No Batchnorm Loss(Acc): 0.20401(94.34%)
+# [Epoch 2-TRAIN] Batchnorm Loss(Acc):0.11239(96.43%) vs No Batchnorm Loss(Acc):0.17737(94.79%)
+# [Epoch 2-VALID] Batchnorm Loss(Acc):0.12829(96.30%) vs No Batchnorm Loss(Acc):0.20401(94.34%)
 
-[Epoch 3-TRAIN] Batchnorm Loss(Acc): 0.07526(97.69%) vs No Batchnorm Loss(Acc): 0.15240(95.65%)
-[Epoch 3-VALID] Batchnorm Loss(Acc): 0.09549(97.12%) vs No Batchnorm Loss(Acc): 0.20025(95.16%)
+# [Epoch 3-TRAIN] Batchnorm Loss(Acc):0.07526(97.69%) vs No Batchnorm Loss(Acc):0.15240(95.65%)
+# [Epoch 3-VALID] Batchnorm Loss(Acc):0.09549(97.12%) vs No Batchnorm Loss(Acc):0.20025(95.16%)
 
-[Epoch 4-TRAIN] Batchnorm Loss(Acc): 0.07339(97.68%) vs No Batchnorm Loss(Acc): 0.15641(95.53%)
-[Epoch 4-VALID] Batchnorm Loss(Acc): 0.10588(96.96%) vs No Batchnorm Loss(Acc): 0.19816(94.86%)
+# [Epoch 4-TRAIN] Batchnorm Loss(Acc):0.07339(97.68%) vs No Batchnorm Loss(Acc):0.15641(95.53%)
+# [Epoch 4-VALID] Batchnorm Loss(Acc):0.10588(96.96%) vs No Batchnorm Loss(Acc):0.19816(94.86%)
 
-[Epoch 5-TRAIN] Batchnorm Loss(Acc): 0.08164(97.38%) vs No Batchnorm Loss(Acc): 0.15969(95.67%)
-[Epoch 5-VALID] Batchnorm Loss(Acc): 0.11476(96.52%) vs No Batchnorm Loss(Acc): 0.22123(95.10%)
+# [Epoch 5-TRAIN] Batchnorm Loss(Acc):0.08164(97.38%) vs No Batchnorm Loss(Acc):0.15969(95.67%)
+# [Epoch 5-VALID] Batchnorm Loss(Acc):0.11476(96.52%) vs No Batchnorm Loss(Acc):0.22123(95.10%)
 
-[Epoch 6-TRAIN] Batchnorm Loss(Acc): 0.05879(98.10%) vs No Batchnorm Loss(Acc): 0.18191(94.92%)
-[Epoch 6-VALID] Batchnorm Loss(Acc): 0.09402(97.30%) vs No Batchnorm Loss(Acc): 0.25907(94.50%)
+# [Epoch 6-TRAIN] Batchnorm Loss(Acc):0.05879(98.10%) vs No Batchnorm Loss(Acc):0.18191(94.92%)
+# [Epoch 6-VALID] Batchnorm Loss(Acc):0.09402(97.30%) vs No Batchnorm Loss(Acc):0.25907(94.50%)
 
-[Epoch 7-TRAIN] Batchnorm Loss(Acc): 0.05014(98.38%) vs No Batchnorm Loss(Acc): 0.23831(93.59%)
-[Epoch 7-VALID] Batchnorm Loss(Acc): 0.08446(97.58%) vs No Batchnorm Loss(Acc): 0.28310(93.46%)
+# [Epoch 7-TRAIN] Batchnorm Loss(Acc):0.05014(98.38%) vs No Batchnorm Loss(Acc):0.23831(93.59%)
+# [Epoch 7-VALID] Batchnorm Loss(Acc):0.08446(97.58%) vs No Batchnorm Loss(Acc):0.28310(93.46%)
 
-[Epoch 8-TRAIN] Batchnorm Loss(Acc): 0.04956(98.41%) vs No Batchnorm Loss(Acc): 0.12616(96.48%)
-[Epoch 8-VALID] Batchnorm Loss(Acc): 0.08479(97.48%) vs No Batchnorm Loss(Acc): 0.18636(95.44%)
+# [Epoch 8-TRAIN] Batchnorm Loss(Acc):0.04956(98.41%) vs No Batchnorm Loss(Acc):0.12616(96.48%)
+# [Epoch 8-VALID] Batchnorm Loss(Acc):0.08479(97.48%) vs No Batchnorm Loss(Acc):0.18636(95.44%)
 
-[Epoch 9-TRAIN] Batchnorm Loss(Acc): 0.04351(98.61%) vs No Batchnorm Loss(Acc): 0.12277(96.54%)
-[Epoch 9-VALID] Batchnorm Loss(Acc): 0.08275(97.66%) vs No Batchnorm Loss(Acc): 0.19641(95.74%)
+# [Epoch 9-TRAIN] Batchnorm Loss(Acc):0.04351(98.61%) vs No Batchnorm Loss(Acc):0.12277(96.54%)
+# [Epoch 9-VALID] Batchnorm Loss(Acc):0.08275(97.66%) vs No Batchnorm Loss(Acc):0.19641(95.74%)
 
-5. Performance Comparison
-With the batchnormalization, the loss is lower and it's more accurate too!
-In [8]:
-bn_solver.evaluate(mnist.test.images, mnist.test.labels)
-Out[8]:
-[0.089340471, 0.97370011]
-In [9]:
-nn_solver.evaluate(mnist.test.images, mnist.test.labels)
-Out[9]:
-[0.20733583, 0.95130014]
-In [10]:
-def plot_compare(loss_list: list, ylim=None, title=None) -> None:
+# 5. Performance Comparison
+# With batchnormalization,
+# the loss is lower and it's more accurate too!
+bn_solver.evaluate(mnist.test.images,mnist.test.labels)
+# [0.089340471,0.97370011]
+nn_solver.evaluate(mnist.test.images,mnist.test.labels)
+# [0.20733583,0.95130014]
+
+def plot_compare(loss_list:list,ylim=None,title=None) -> None:
     
-    bn = [i[0] for i in loss_list]
-    nn = [i[1] for i in loss_list]
+    bn=[i[0] for i in loss_list]
+    nn=[i[1] for i in loss_list]
     
-    plt.figure(figsize=(15, 10))
-    plt.plot(bn, label='With BN')
-    plt.plot(nn, label='Without BN')
+    plt.figure(figsize=(15,10))
+    plt.plot(bn,label='With BN')
+    plt.plot(nn,label='Without BN')
     if ylim:
         plt.ylim(ylim)
         
@@ -879,24 +981,18 @@ def plot_compare(loss_list: list, ylim=None, title=None) -> None:
     plt.legend()
     plt.grid('on')
     plt.show()
-In [11]:
-plot_compare(train_losses, title='Training Loss at Epoch')
 
-In [12]:
-plot_compare(train_accs, [0, 1.0], title="Training Acc at Epoch")
-
-In [13]:
-plot_compare(valid_losses, title='Validation Loss at Epoch')
-
-In [14]:
-plot_compare(valid_accs, [0, 1.], title='Validation Acc at Epoch')
+plot_compare(train_losses,title='Training Loss at Epoch')
+plot_compare(train_accs,[0,1.0],title="Training Acc at Epoch")
+plot_compare(valid_losses,title='Validation Loss at Epoch')
+plot_compare(valid_accs,[0,1.],title='Validation Acc at Epoch')
 
 
-
-DeepLearningZeroToAll/lab-10-7-mnist_nn_higher_level_API.py
+# @
+# DeepLearningZeroToAll/lab-10-7-mnist_nn_higher_level_API.py
 
 # Lab 10 MNIST and High-level TF API
-from tensorflow.contrib.layers import fully_connected, batch_norm, dropout
+from tensorflow.contrib.layers import fully_connected,batch_norm,dropout
 from tensorflow.contrib.framework import arg_scope
 import tensorflow as tf
 import random
@@ -906,114 +1002,118 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 tf.set_random_seed(777)  # reproducibility
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-# Check out https://www.tensorflow.org/get_started/mnist/beginners for
-# more information about the mnist dataset
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-# parameters
-learning_rate = 0.01  # we can use large learning rate using Batch Normalization
-training_epochs = 15
-batch_size = 100
-keep_prob = 0.7
+# You can use large learning rate,
+# by using Batch Normalization
+learning_rate=0.01  
+training_epochs=15
+batch_size=100
+drop_out_placeholder_node=0.7
 
-# input place holders
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
-train_mode = tf.placeholder(tf.bool, name='train_mode')
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+train_mode_node=tf.placeholder(tf.bool,name='train_mode_node')
 
-# layer output size
-hidden_output_size = 512
-final_output_size = 10
+# You will specify layer's output size
+hidden_output_size=512
+final_output_size=10
 
-xavier_init = tf.contrib.layers.xavier_initializer()
-bn_params = {
-    'is_training': train_mode,
-    'decay': 0.9,
-    'updates_collections': None
+xavier_initialization_node=tf.contrib.layers.xavier_initializer()
+
+batch_normalization_parameters={
+    'is_training':train_mode_node,
+    'decay':0.9,
+    'updates_collections':None
 }
 
-# We can build short code using 'arg_scope' to avoid duplicate code
-# same function with different arguments
+# You can build short code by using 'arg_scope',
+# to avoid duplicate code,
+# which is same function with different arguments
 with arg_scope([fully_connected],
                activation_fn=tf.nn.relu,
-               weights_initializer=xavier_init,
+               weights_initializer=xavier_initialization_node,
                biases_initializer=None,
                normalizer_fn=batch_norm,
-               normalizer_params=bn_params
+               normalizer_params=batch_normalization_parameters
                ):
-    hidden_layer1 = fully_connected(X, hidden_output_size, scope="h1")
-    h1_drop = dropout(hidden_layer1, keep_prob, is_training=train_mode)
-    hidden_layer2 = fully_connected(h1_drop, hidden_output_size, scope="h2")
-    h2_drop = dropout(hidden_layer2, keep_prob, is_training=train_mode)
-    hidden_layer3 = fully_connected(h2_drop, hidden_output_size, scope="h3")
-    h3_drop = dropout(hidden_layer3, keep_prob, is_training=train_mode)
-    hidden_layer4 = fully_connected(h3_drop, hidden_output_size, scope="h4")
-    h4_drop = dropout(hidden_layer4, keep_prob, is_training=train_mode)
-    hypothesis = fully_connected(h4_drop, final_output_size, activation_fn=None, scope="hypothesis")
+    hidden_layer1=fully_connected(X_placeholder_node,hidden_output_size,scope="h1")
+    h1_drop=dropout(hidden_layer1,drop_out_placeholder_node,is_training=train_mode_node)
+    hidden_layer2=fully_connected(h1_drop,hidden_output_size,scope="h2")
+    h2_drop=dropout(hidden_layer2,drop_out_placeholder_node,is_training=train_mode_node)
+    hidden_layer3=fully_connected(h2_drop,hidden_output_size,scope="h3")
+    h3_drop=dropout(hidden_layer3,drop_out_placeholder_node,is_training=train_mode_node)
+    hidden_layer4=fully_connected(h3_drop,hidden_output_size,scope="h4")
+    h4_drop=dropout(hidden_layer4,drop_out_placeholder_node,is_training=train_mode_node)
+    hypothesis_f_node=fully_connected(h4_drop,final_output_size,activation_fn=None,scope="hypothesis_f_node")
 
+# You will define cost_f_node and loss function and adam_optimizer_node
+cost_f_node=tf.reduce_mean(\
+    tf.nn.softmax_cross_entropy_with_logits(
+        logits=hypothesis_f_node\
+        ,labels=Y_placeholder_node))
 
-# define cost/loss & optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-    logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
 
-# initialize
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
-# train my model
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict_train = {X: batch_xs, Y: batch_ys, train_mode: True}
-        feed_dict_cost = {X: batch_xs, Y: batch_ys, train_mode: False}
-        opt = sess.run(optimizer, feed_dict=feed_dict_train)
-        c = sess.run(cost, feed_dict=feed_dict_cost)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict_train={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,train_mode_node:True}
+        feed_dict_cost={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,train_mode_node:False}
+        opt=sess_object.run(adam_optimizer_node,feed_dict=feed_dict_train)
+        cost_value=sess_object.run(cost_f_node,feed_dict=feed_dict_cost)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print("[Epoch: {:>4}] cost = {:>.9}".format(epoch + 1, avg_cost))
-    #print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print("[Epoch:{:>4}] cost_f_node={:>.9}".format(epoch+1,average_of_cost))
+    #print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
-print('Learning Finished!')
+    print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels, train_mode: False}))
+    # Test model and check accuracy_node
+    compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+    accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+    print('Accuracy:',sess_object.run(\
+        accuracy_node\
+        ,feed_dict={\
+            X_placeholder_node:mnist.test.images\
+            ,Y_placeholder_node:mnist.test.labels\
+            ,train_mode_node:False}))
 
-# Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(
-    tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1], train_mode: False}))
+    one_random_number=random.randint(0,mnist.test.num_examples-1)
+    print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+    print("Prediction:",sess_object.run(
+        tf.argmax(hypothesis_f_node,1)\
+        ,feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]\
+            ,train_mode_node:False}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
-# plt.show()
+    # plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+    #           reshape(28,28),cmap='Greys',interpolation='nearest')
+    # plt.show()
 
-'''
-[Epoch:    1] cost = 0.519417209
-[Epoch:    2] cost = 0.432551052
-[Epoch:    3] cost = 0.404978843
-[Epoch:    4] cost = 0.392039919
-[Epoch:    5] cost = 0.382165317
-[Epoch:    6] cost = 0.377987834
-[Epoch:    7] cost = 0.372577601
-[Epoch:    8] cost = 0.367208552
-[Epoch:    9] cost = 0.365525589
-[Epoch:   10] cost = 0.361964276
-[Epoch:   11] cost = 0.359540287
-[Epoch:   12] cost = 0.356423751
-[Epoch:   13] cost = 0.354478216
-[Epoch:   14] cost = 0.353212552
-[Epoch:   15] cost = 0.35230893
-Learning Finished!
-Accuracy: 0.9826
-'''
+# [Epoch:   1] cost_f_node=0.519417209
+# [Epoch:   2] cost_f_node=0.432551052
+# [Epoch:   3] cost_f_node=0.404978843
+# [Epoch:   4] cost_f_node=0.392039919
+# [Epoch:   5] cost_f_node=0.382165317
+# [Epoch:   6] cost_f_node=0.377987834
+# [Epoch:   7] cost_f_node=0.372577601
+# [Epoch:   8] cost_f_node=0.367208552
+# [Epoch:   9] cost_f_node=0.365525589
+# [Epoch:  10] cost_f_node=0.361964276
+# [Epoch:  11] cost_f_node=0.359540287
+# [Epoch:  12] cost_f_node=0.356423751
+# [Epoch:  13] cost_f_node=0.354478216
+# [Epoch:  14] cost_f_node=0.353212552
+# [Epoch:  15] cost_f_node=0.35230893
+# Learning Finished!
+# Accuracy:0.9826
+
 
 DeepLearningZeroToAll/lab-10-8-mnist_nn_selu(wip).py
 
@@ -1023,7 +1123,7 @@ DeepLearningZeroToAll/lab-10-8-mnist_nn_selu(wip).py
 import tensorflow as tf
 import random
 # import matplotlib.pyplot as plt
-# -*- coding: utf-8 -*-
+# -*- coding:utf-8 -*-
 '''
 Tensorflow Implementation of the Scaled ELU function and Dropout
 '''
@@ -1044,153 +1144,152 @@ tf.set_random_seed(777)  # reproducibility
 
 def selu(x):
     with ops.name_scope('elu') as scope:
-        alpha = 1.6732632423543772848170429916717
-        scale = 1.0507009873554804934193349852946
-        return scale*tf.where(x>=0.0, x, alpha*tf.nn.elu(x))
+        alpha=1.6732632423543772848170429916717
+        scale=1.0507009873554804934193349852946
+        return scale*tf.where(x>=0.0,x,alpha*tf.nn.elu(x))
 
-
-def dropout_selu(x, keep_prob, alpha= -1.7580993408473766, fixedPointMean=0.0, fixedPointVar=1.0,
-                 noise_shape=None, seed=None, name=None, training=False):
+def dropout_selu(x,keep_prob,alpha=-1.7580993408473766,fixedPointMean=0.0,fixedPointVar=1.0,
+                 noise_shape=None,seed=None,name=None,training=False):
     """Dropout to a value with rescaling."""
 
-    def dropout_selu_impl(x, rate, alpha, noise_shape, seed, name):
-        keep_prob = 1.0 - rate
-        x = ops.convert_to_tensor(x, name="x")
-        if isinstance(keep_prob, numbers.Real) and not 0 < keep_prob <= 1:
+    def dropout_selu_impl(x,rate,alpha,noise_shape,seed,name):
+        keep_prob=1.0-rate
+        x=ops.convert_to_tensor(x,name="x")
+        if isinstance(keep_prob,numbers.Real) and not 0<keep_prob<= 1:
             raise ValueError("keep_prob must be a scalar tensor or a float in the "
-                                             "range (0, 1], got %g" % keep_prob)
-        keep_prob = ops.convert_to_tensor(keep_prob, dtype=x.dtype, name="keep_prob")
+                                             "range (0,1],got %g"%keep_prob)
+        keep_prob=ops.convert_to_tensor(keep_prob,dtype=x.dtype,name="keep_prob")
         keep_prob.get_shape().assert_is_compatible_with(tensor_shape.scalar())
 
-        alpha = ops.convert_to_tensor(alpha, dtype=x.dtype, name="alpha")
+        alpha=ops.convert_to_tensor(alpha,dtype=x.dtype,name="alpha")
         keep_prob.get_shape().assert_is_compatible_with(tensor_shape.scalar())
 
-        if tensor_util.constant_value(keep_prob) == 1:
+        if tensor_util.constant_value(keep_prob)==1:
             return x
 
-        noise_shape = noise_shape if noise_shape is not None else array_ops.shape(x)
-        random_tensor = keep_prob
-        random_tensor += random_ops.random_uniform(noise_shape, seed=seed, dtype=x.dtype)
-        binary_tensor = math_ops.floor(random_tensor)
-        ret = x * binary_tensor + alpha * (1-binary_tensor)
+        noise_shape=noise_shape if noise_shape is not None else array_ops.shape(x)
+        random_tensor=keep_prob
+        random_tensor+=random_ops.random_uniform(noise_shape,seed=seed,dtype=x.dtype)
+        binary_tensor=math_ops.floor(random_tensor)
+        ret=x*binary_tensor+alpha*(1-binary_tensor)
 
-        a = tf.sqrt(fixedPointVar / (keep_prob *((1-keep_prob) * tf.pow(alpha-fixedPointMean,2) + fixedPointVar)))
+        a=tf.sqrt(fixedPointVar/(keep_prob *((1-keep_prob)*tf.pow(alpha-fixedPointMean,2)+fixedPointVar)))
 
-        b = fixedPointMean - a * (keep_prob * fixedPointMean + (1 - keep_prob) * alpha)
-        ret = a * ret + b
+        b_variable_node=fixedPointMean-a*(keep_prob*fixedPointMean+(1-keep_prob)*alpha)
+        ret=a*ret+b_variable_node
         ret.set_shape(x.get_shape())
         return ret
 
-    with ops.name_scope(name, "dropout", [x]) as name:
+    with ops.name_scope(name,"dropout",[x]) as name:
         return utils.smart_cond(training,
-                                lambda: dropout_selu_impl(x, keep_prob, alpha, noise_shape, seed, name),
-                                lambda: array_ops.identity(x))
+                                lambda:dropout_selu_impl(x,keep_prob,alpha,noise_shape,seed,name),
+                                lambda:array_ops.identity(x))
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 # Check out https://www.tensorflow.org/get_started/mnist/beginners for
 # more information about the mnist dataset
 
 # parameters
-learning_rate = 0.001
-training_epochs = 50
-batch_size = 100
+learning_rate=0.001
+training_epochs=50
+batch_size=100
 
 # input place holders
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-# dropout (keep_prob) rate  0.7 on training, but should be 1 for testing
-keep_prob = tf.placeholder(tf.float32)
+# dropout (keep_prob) rate  0.7 on training,but should be 1 for testing
+keep_prob=tf.placeholder(tf.float32)
 
 # weights & bias for nn layers
 # http://stackoverflow.com/questions/33640581/how-to-do-xavier-initialization-on-tensorflow
-W1 = tf.get_variable("W1", shape=[784, 512],
+W1_variable_node=tf.get_variable("W1_variable_node",shape=[784,512],
                      initializer=tf.contrib.layers.xavier_initializer())
-b1 = tf.Variable(tf.random_normal([512]))
-L1 = selu(tf.matmul(X, W1) + b1)
-L1 = dropout_selu(L1, keep_prob=keep_prob)
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=selu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+layer1_cost_f_node=dropout_selu(layer1_cost_f_node,keep_prob=keep_prob)
 
-W2 = tf.get_variable("W2", shape=[512, 512],
+W2_variable_node=tf.get_variable("W2_variable_node",shape=[512,512],
                      initializer=tf.contrib.layers.xavier_initializer())
-b2 = tf.Variable(tf.random_normal([512]))
-L2 = selu(tf.matmul(L1, W2) + b2)
-L2 = dropout_selu(L2, keep_prob=keep_prob)
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=selu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+layer2_cost_f_node=dropout_selu(layer2_cost_f_node,keep_prob=keep_prob)
 
-W3 = tf.get_variable("W3", shape=[512, 512],
+W3_variable_node=tf.get_variable("W3_variable_node",shape=[512,512],
                      initializer=tf.contrib.layers.xavier_initializer())
-b3 = tf.Variable(tf.random_normal([512]))
-L3 = selu(tf.matmul(L2, W3) + b3)
-L3 = dropout_selu(L3, keep_prob=keep_prob)
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=selu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
+layer3_cost_f_node=dropout_selu(layer3_cost_f_node,keep_prob=keep_prob)
 
-W4 = tf.get_variable("W4", shape=[512, 512],
+W4_variable_node=tf.get_variable("W4_variable_node",shape=[512,512],
                      initializer=tf.contrib.layers.xavier_initializer())
-b4 = tf.Variable(tf.random_normal([512]))
-L4 = selu(tf.matmul(L3, W4) + b4)
-L4 = dropout_selu(L4, keep_prob=keep_prob)
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=selu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+layer4_cost_f_node=dropout_selu(layer4_cost_f_node,keep_prob=keep_prob)
 
-W5 = tf.get_variable("W5", shape=[512, 10],
+W5_variable_node=tf.get_variable("W5_variable_node",shape=[512,10],
                      initializer=tf.contrib.layers.xavier_initializer())
-b5 = tf.Variable(tf.random_normal([10]))
-hypothesis = tf.matmul(L4, W5) + b5
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
 
-# define cost/loss & optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-    logits=hypothesis, labels=Y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+# define cost_f_node/loss & adam_optimizer_node
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+    logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
 
 # initialize
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
 
 # train my model
 for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(mnist.train.num_examples / batch_size)
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
 
-    for i in range(total_batch):
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        feed_dict = {X: batch_xs, Y: batch_ys, keep_prob: 0.7}
-        c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
-        avg_cost += c / total_batch
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,keep_prob:0.7}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
 
-    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
 
 print('Learning Finished!')
 
-# Test model and check accuracy
-correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels, keep_prob: 1}))
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels,keep_prob:1}))
 
 # Get one and predict
-r = random.randint(0, mnist.test.num_examples - 1)
-print("Label: ", sess.run(tf.argmax(mnist.test.labels[r:r + 1], 1)))
-print("Prediction: ", sess.run(
-    tf.argmax(hypothesis, 1), feed_dict={X: mnist.test.images[r:r + 1], keep_prob: 1}))
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1],keep_prob:1}))
 
-# plt.imshow(mnist.test.images[r:r + 1].
-#           reshape(28, 28), cmap='Greys', interpolation='nearest')
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
 # plt.show()
 
 '''
-Epoch: 0001 cost = 0.447322626
-Epoch: 0002 cost = 0.157285590
-Epoch: 0003 cost = 0.121884535
-Epoch: 0004 cost = 0.098128681
-Epoch: 0005 cost = 0.082901778
-Epoch: 0006 cost = 0.075337573
-Epoch: 0007 cost = 0.069752543
-Epoch: 0008 cost = 0.060884363
-Epoch: 0009 cost = 0.055276413
-Epoch: 0010 cost = 0.054631256
-Epoch: 0011 cost = 0.049675195
-Epoch: 0012 cost = 0.049125314
-Epoch: 0013 cost = 0.047231930
-Epoch: 0014 cost = 0.041290121
-Epoch: 0015 cost = 0.043621063
+Epoch:0001 cost_f_node=0.447322626
+Epoch:0002 cost_f_node=0.157285590
+Epoch:0003 cost_f_node=0.121884535
+Epoch:0004 cost_f_node=0.098128681
+Epoch:0005 cost_f_node=0.082901778
+Epoch:0006 cost_f_node=0.075337573
+Epoch:0007 cost_f_node=0.069752543
+Epoch:0008 cost_f_node=0.060884363
+Epoch:0009 cost_f_node=0.055276413
+Epoch:0010 cost_f_node=0.054631256
+Epoch:0011 cost_f_node=0.049675195
+Epoch:0012 cost_f_node=0.049125314
+Epoch:0013 cost_f_node=0.047231930
+Epoch:0014 cost_f_node=0.041290121
+Epoch:0015 cost_f_node=0.043621063
 Learning Finished!
-Accuracy: 0.9804
+Accuracy:0.9804
 '''
 
 
@@ -1202,79 +1301,1357 @@ import tensorflow as tf
 tf.set_random_seed(777)
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
 
-X = tf.placeholder(tf.float32, [None, 784])
-Y = tf.placeholder(tf.float32, [None, 10])
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
 
-w1 = tf.Variable(tf.truncated_normal([784, 30]))
-b1 = tf.Variable(tf.truncated_normal([1, 30]))
-w2 = tf.Variable(tf.truncated_normal([30, 10]))
-b2 = tf.Variable(tf.truncated_normal([1, 10]))
+w1_variable_node=tf.Variable(tf.truncated_normal([784,30]))
+b1_variable_node=tf.Variable(tf.truncated_normal([1,30]))
+w2_variable_node=tf.Variable(tf.truncated_normal([30,10]))
+b2_variable_node=tf.Variable(tf.truncated_normal([1,10]))
 
 
-def sigma(x):
+def sigmoid_function(x):
     #  sigmoid function
     return tf.div(tf.constant(1.0),
-                  tf.add(tf.constant(1.0), tf.exp(-x)))
+                  tf.add(tf.constant(1.0),tf.exp(-x)))
 
 
-def sigma_prime(x):
+def differentiation_of_sigmoid_function(x):
     # derivative of the sigmoid function
-    return sigma(x) * (1 - sigma(x))
+    return sigmoid_function(x)*(1-sigmoid_function(x))
 
 # Forward prop
-l1 = tf.add(tf.matmul(X, w1), b1)
-a1 = sigma(l1)
-l2 = tf.add(tf.matmul(a1, w2), b2)
-y_pred = sigma(l2)
+layer1_hypothesis_f_node=tf.add(tf.matmul(X_placeholder_node,w1_variable_node),b1_variable_node)
+layer1_hypothesis_f_node_after_sigmoid_f=sigmoid_function(layer1_hypothesis_f_node)
+layer2_hypothesis_f_node=tf.add(tf.matmul(layer1_hypothesis_f_node_after_sigmoid_f,w2_variable_node),b2_variable_node)
+layer2_hypothesis_f_node_after_sigmoid_f=sigmoid_function(layer2_hypothesis_f_node)
 
-# diff
-assert y_pred.shape.as_list() == Y.shape.as_list()
-diff = (y_pred - Y)
+# difference_between_y_prediction_and_y_label
+assert layer2_hypothesis_f_node_after_sigmoid_f.shape.as_list()==Y_placeholder_node.shape.as_list()
+difference_between_y_prediction_and_y_label=(layer2_hypothesis_f_node_after_sigmoid_f-Y_placeholder_node)
 
 
 # Back prop (chain rule)
-d_l2 = diff * sigma_prime(l2)
-d_b2 = d_l2
-d_w2 = tf.matmul(tf.transpose(a1), d_l2)
+differentiation_of_layer2=difference_between_y_prediction_and_y_label*differentiation_of_sigmoid_function(layer2_hypothesis_f_node)
+b2_of_differentiated_layer2=differentiation_of_layer2
+w2_of_differentiated_layer2=tf.matmul(tf.transpose(layer1_hypothesis_f_node_after_sigmoid_f),differentiation_of_layer2)
 
-d_a1 = tf.matmul(d_l2, tf.transpose(w2))
-d_l1 = d_a1 * sigma_prime(l1)
-d_b1 = d_l1
-d_w1 = tf.matmul(tf.transpose(X), d_l1)
+differentiated_hypothesis_f_after_sigmoid_f_of_layer1=tf.matmul(differentiation_of_layer2,tf.transpose(w2_variable_node))
+differentiated_hypothesis_f_of_layer1=differentiated_hypothesis_f_after_sigmoid_f_of_layer1*differentiation_of_sigmoid_function(layer1_hypothesis_f_node)
+differentiated_b1_of_layer1=differentiated_hypothesis_f_of_layer1
+differentiated_w1_of_layer1=tf.matmul(tf.transpose(X_placeholder_node),differentiated_hypothesis_f_of_layer1)
 
 
 # Updating network using gradients
-learning_rate = 0.5
-step = [
-    tf.assign(w1, w1 - learning_rate * d_w1),
-    tf.assign(b1, b1 - learning_rate *
-              tf.reduce_mean(d_b1, reduction_indices=[0])),
-    tf.assign(w2, w2 - learning_rate * d_w2),
-    tf.assign(b2, b2 - learning_rate *
-              tf.reduce_mean(d_b2, reduction_indices=[0]))
+learning_rate=0.5
+step=[
+    tf.assign(w1_variable_node,w1_variable_node-learning_rate*differentiated_w1_of_layer1),
+    tf.assign(b1_variable_node,b1_variable_node-learning_rate *
+              tf.reduce_mean(differentiated_b1_of_layer1,reduction_indices=[0])),
+    tf.assign(w2_variable_node,w2_variable_node-learning_rate*w2_of_differentiated_layer2),
+    tf.assign(b2_variable_node,b2_variable_node-learning_rate *
+              tf.reduce_mean(b2_of_differentiated_layer2,reduction_indices=[0]))
 ]
 
 # 7. Running and testing the training process
-acct_mat = tf.equal(tf.argmax(y_pred, 1), tf.argmax(Y, 1))
-acct_res = tf.reduce_sum(tf.cast(acct_mat, tf.float32))
+compare_final_prediction_and_label=tf.equal(tf.argmax(layer2_hypothesis_f_node_after_sigmoid_f,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_sum(tf.cast(compare_final_prediction_and_label,tf.float32))
 
-sess = tf.InteractiveSession()
-sess.run(tf.global_variables_initializer())
+sess_object=tf.InteractiveSession()
+sess_object.run(tf.global_variables_initializer())
 
 for i in range(10000):
-    batch_xs, batch_ys = mnist.train.next_batch(10)
-    sess.run(step, feed_dict={X: batch_xs,
-                              Y: batch_ys})
-    if i % 1000 == 0:
-        res = sess.run(acct_res, feed_dict={X: mnist.test.images[:1000],
-                                            Y: mnist.test.labels[:1000]})
-        print(res)
+    batch_xs,batch_ys=mnist.train.next_batch(10)
+    sess_object.run(step,feed_dict={X_placeholder_node:batch_xs,
+                              Y_placeholder_node:batch_ys})
+    if i%1000==0:
+        accuracy_result=sess_object.run(accuracy_node,feed_dict={X_placeholder_node:mnist.test.images[:1000],
+                                            Y_placeholder_node:mnist.test.labels[:1000]})
+        print(accuracy_result)
 
 # 8. Automatic differentiation in TensorFlow
-cost = diff * diff
-step = tf.train.GradientDescentOptimizer(0.1).minimize(cost)
+cost_f_node=difference_between_y_prediction_and_y_label*difference_between_y_prediction_and_y_label
+step=tf.train.GradientDescentOptimizer(0.1).minimize(cost_f_node)
+      </xmp>
+   </BODY>
+</HTML><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size:25px;
+ 
+ margin-top:50px;
+    margin-bottom:50px;
+    margin-right:80px;
+    margin-left:80px;
+    
+    padding-top:50px;
+    padding-bottom:50px;
+    padding-right:80px;
+    padding-left:80px;
+    
+    line-height:1.6em
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" :{
+        availableFonts :["STIX"],
+        preferredFont :"STIX",
+        webFont :"STIX-Web",
+        imageFont :null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML:["input/TeX","output/HTML-CSS"],
+        TeX:{ extensions:["AMSmath.js","AMSsymbols.js"],
+               equationNumbers:{ autoNumber:"AMS" } },
+        extensions:["tex2jax.js"],
+        jax:["input/TeX","output/HTML-CSS"],
+        tex2jax:{ inlineMath:[ ['$$$','$$$'] ],
+                   displayMath:[ ['$$$$','$$$$'] ],
+                   processEscapes:true },
+        "HTML-CSS":{ availableFonts:["TeX"],
+                      linebreaks:{ automatic:true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+010-lab. nn,relu,xavier,dropout,adam adam_optimizer_node
+<xmp>
+@
+DeepLearningZeroToAll/lab-10-1-mnist_softmax.py
+
+import tensorflow as tf
+import random
+import matplotlib.pyplot as plt
+from tensorflow.examples.tutorials.mnist import input_data
+tf.set_random_seed(777)
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+learning_rate=0.001
+# I run entire dataset 15 times
+training_epochs=15
+# Piece of entire dataset
+batch_size=100
+
+# input data [n,784]
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+# output data [n,10]
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+# [n,784][?,?]=[n,10],[?,?]=[784,10]
+W_variable_node=tf.Variable(tf.random_normal([784,10]))
+# [10] from output data [n,10]
+b_variable_node=tf.Variable(tf.random_normal([10]))
+
+hypothesis_f_node=tf.matmul(X_placeholder_node,W_variable_node)+b_variable_node
+
+# I use softmax function
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
+
+plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+          reshape(28,28),cmap='Greys',interpolation='nearest')
+plt.show()
+# Epoch:0001 cost_f_node=5.888845987
+# Epoch:0002 cost_f_node=1.860620173
+# Epoch:0003 cost_f_node=1.159035648
+# Epoch:0004 cost_f_node=0.892340870
+# Epoch:0005 cost_f_node=0.751155428
+# Epoch:0006 cost_f_node=0.662484806
+# Epoch:0007 cost_f_node=0.601544010
+# Epoch:0008 cost_f_node=0.556526115
+# Epoch:0009 cost_f_node=0.521186961
+# Epoch:0010 cost_f_node=0.493068354
+# Epoch:0011 cost_f_node=0.469686249
+# Epoch:0012 cost_f_node=0.449967254
+# Epoch:0013 cost_f_node=0.433519321
+# Epoch:0014 cost_f_node=0.419000337
+# Epoch:0015 cost_f_node=0.406490815
+# Learning Finished!
+# Accuracy:0.9035
+
+
+DeepLearningZeroToAll/lab-10-2-mnist_nn.py
+
+import tensorflow as tf
+import random
+import matplotlib.pyplot as plt
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+learning_rate=0.001
+training_epochs=15
+batch_size=100
+
+# [n,784]
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+# [n,10]
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+# 784inputs layer1_cost_f_node 256outputs
+# [n,784][?,?]=[n,256],[?,?]=[784,256]
+W1_variable_node=tf.Variable(tf.random_normal([784,256]))
+# [256] from [n,256]
+b1_variable_node=tf.Variable(tf.random_normal([256]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+
+# 256inputs layer2 256outputs
+# [n,256][?,?]=[n,256],[?,?]=[256,256]
+W2_variable_node=tf.Variable(tf.random_normal([256,256]))
+b2_variable_node=tf.Variable(tf.random_normal([256]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+
+# 256inputs layer3 10outputs
+W3_variable_node=tf.Variable(tf.random_normal([256,10]))
+b3_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node
+
+# loss function
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+# adam_optimizer_node
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+# initialize
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+# train my model
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+'''
+Epoch:0001 cost_f_node=141.207671860
+Epoch:0002 cost_f_node=38.788445864
+Epoch:0003 cost_f_node=23.977515479
+Epoch:0004 cost_f_node=16.315132428
+Epoch:0005 cost_f_node=11.702554882
+Epoch:0006 cost_f_node=8.573139748
+Epoch:0007 cost_f_node=6.370995680
+Epoch:0008 cost_f_node=4.537178684
+Epoch:0009 cost_f_node=3.216900532
+Epoch:0010 cost_f_node=2.329708954
+Epoch:0011 cost_f_node=1.715552875
+Epoch:0012 cost_f_node=1.189857912
+Epoch:0013 cost_f_node=0.820965160
+Epoch:0014 cost_f_node=0.624131458
+Epoch:0015 cost_f_node=0.454633765
+Learning Finished!
+Accuracy:0.9455
+'''
+
+# @
+# lab-10-3-mnist_nn_xavier.py
+
+import tensorflow as tf
+import random
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+learning_rate=0.001
+training_epochs=15
+batch_size=100
+
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+# I initialize weight by xavier initialization
+# When you run this mode,
+# you will see low loss at first rather than normal dist for weight initialization
+W1_variable_node=tf.get_variable("W1_variable_node",shape=[784,256],initializer=tf.contrib.layers.xavier_initializer())
+b1_variable_node=tf.Variable(tf.random_normal([256]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+
+W2_variable_node=tf.get_variable("W2_variable_node",shape=[256,256],initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([256]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+
+W3_variable_node=tf.get_variable("W3_variable_node",shape=[256,10],initializer=tf.contrib.layers.xavier_initializer())
+b3_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node
+
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+# Epoch:0001 cost_f_node=0.301498963
+# Epoch:0002 cost_f_node=0.107252513
+# Epoch:0003 cost_f_node=0.064888892
+# Epoch:0004 cost_f_node=0.044463030
+# Epoch:0005 cost_f_node=0.029951642
+# Epoch:0006 cost_f_node=0.020663404
+# Epoch:0007 cost_f_node=0.015853033
+# Epoch:0008 cost_f_node=0.011764387
+# Epoch:0009 cost_f_node=0.008598264
+# Epoch:0010 cost_f_node=0.007383116
+# Epoch:0011 cost_f_node=0.006839140
+# Epoch:0012 cost_f_node=0.004672963
+# Epoch:0013 cost_f_node=0.003979437
+# Epoch:0014 cost_f_node=0.002714260
+# Epoch:0015 cost_f_node=0.004707661
+# Learning Finished!
+# Accuracy:0.9783
+
+
+# @
+# lab-10-4-mnist_nn_deep.py
+
+import tensorflow as tf
+import random
+import matplotlib.pyplot as plt
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+learning_rate=0.001
+training_epochs=15
+batch_size=100
+
+# You will try deep and wide nn with xavier initialization
+# deeper:number of layer from 3 to 5
+# wider:256 to 784
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+W1_variable_node=tf.get_variable("W1_variable_node",shape=[784,512],initializer=tf.contrib.layers.xavier_initializer())
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+
+W2_variable_node=tf.get_variable("W2_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+
+W3_variable_node=tf.get_variable("W3_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=tf.nn.relu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
+
+W4_variable_node=tf.get_variable("W4_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=tf.nn.relu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+
+W5_variable_node=tf.get_variable("W5_variable_node",shape=[512,10],initializer=tf.contrib.layers.xavier_initializer())
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
+
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1]}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+# Epoch:0001 cost_f_node=0.266061549
+# Epoch:0002 cost_f_node=0.080796588
+# Epoch:0003 cost_f_node=0.049075800
+# Epoch:0004 cost_f_node=0.034772298
+# Epoch:0005 cost_f_node=0.024780529
+# Epoch:0006 cost_f_node=0.017072763
+# Epoch:0007 cost_f_node=0.014031383
+# Epoch:0008 cost_f_node=0.013763446
+# Epoch:0009 cost_f_node=0.009164047
+# Epoch:0010 cost_f_node=0.008291388
+# Epoch:0011 cost_f_node=0.007319742
+# Epoch:0012 cost_f_node=0.006434021
+# Epoch:0013 cost_f_node=0.005684378
+# Epoch:0014 cost_f_node=0.004781207
+# Epoch:0015 cost_f_node=0.004342310
+# Learning Finished!
+# Accuracy:0.9742
+
+# @
+# lab-10-5-mnist_nn_dropout.py
+
+import tensorflow as tf
+import random
+# import matplotlib.pyplot as plt
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+learning_rate=0.001
+training_epochs=15
+batch_size=100
+
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+# dropout (keep_prob) rate  0.7 on training,but should be 1 for testing
+keep_prob=tf.placeholder(tf.float32)
+
+W1_variable_node=tf.get_variable("W1_variable_node",shape=[784,512],initializer=tf.contrib.layers.xavier_initializer())
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=tf.nn.relu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+
+# 'softmax'+'xavier initialization'+'deep and wide nn'+'dropout'
+layer1_cost_f_node=tf.nn.dropout(layer1_cost_f_node,keep_prob=keep_prob)
+
+W2_variable_node=tf.get_variable("W2_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=tf.nn.relu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+layer2_cost_f_node=tf.nn.dropout(layer2_cost_f_node,keep_prob=keep_prob)
+
+W3_variable_node=tf.get_variable("W3_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=tf.nn.relu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
+layer3_cost_f_node=tf.nn.dropout(layer3_cost_f_node,keep_prob=keep_prob)
+
+W4_variable_node=tf.get_variable("W4_variable_node",shape=[512,512],initializer=tf.contrib.layers.xavier_initializer())
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=tf.nn.relu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+layer4_cost_f_node=tf.nn.dropout(layer4_cost_f_node,keep_prob=keep_prob)
+
+W5_variable_node=tf.get_variable("W5_variable_node",shape=[512,10],initializer=tf.contrib.layers.xavier_initializer())
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
+
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,keep_prob:0.7}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels,keep_prob:1}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1],keep_prob:1}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+# Epoch:0001 cost_f_node=0.447322626
+# Epoch:0002 cost_f_node=0.157285590
+# Epoch:0003 cost_f_node=0.121884535
+# Epoch:0004 cost_f_node=0.098128681
+# Epoch:0005 cost_f_node=0.082901778
+# Epoch:0006 cost_f_node=0.075337573
+# Epoch:0007 cost_f_node=0.069752543
+# Epoch:0008 cost_f_node=0.060884363
+# Epoch:0009 cost_f_node=0.055276413
+# Epoch:0010 cost_f_node=0.054631256
+# Epoch:0011 cost_f_node=0.049675195
+# Epoch:0012 cost_f_node=0.049125314
+# Epoch:0013 cost_f_node=0.047231930
+# Epoch:0014 cost_f_node=0.041290121
+# Epoch:0015 cost_f_node=0.043621063
+# Learning Finished!
+# Accuracy:0.9804
+
+
+
+lab-10-6-mnist_nn_batchnorm.ipynb
+
+Lab:Batchnormalization Layer
+What is a batchnormalization layer?
+It is a layer that normalize the output before the activation layer. The original paper was proposed by Sergey Ioffe in 2015.
+
+Batch Normalization Layer looks like this:bn
+
+Why batchnormalization?
+The distribution of each layer's input changes because the weights of the previous layer change as you update weights by the gradient descent. This is called a covariance shift,which makes the network training difficult.
+
+For example,if the activation layer is a relu layer and the input of the activation layer is shifted to less than zeros,no weights will be activated!
+
+One thing also worth mentioning is that $$$\gamma$$$ and $$$\beta$$$ parameters in $$$ y=\gamma \hat{x}+\beta $$$ are also trainable.
+
+What it means is that if you don't need the batchnormalization,its parameters will be updated such that it offsets the normalization step.
+
+For example,assume that
+
+$$$\begin{align}
+\gamma=\sqrt{\sigmoid_function^2_B+\epsilon}\\
+\beta=\mu_B
+\end{align}$$$
+then
+
+$$$ y_i=\gamma \hat{x_i}+\beta=x_i $$$
+Also note that $$$\mu$$$ and $$$\sigmoid_function$$$ are computed using moving averages during the training step. However,during the test time,the computed $$$\mu$$$ and $$$\sigmoid_function$$$ will be used as fixed
+
+Conclusion
+Always use the batch normalization!
+Enough Talk:how to implement in Tensorflow
+1. Load Library
+You use the famous MNIST data
+In [1]:
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from tensorflow.examples.tutorials.mnist import input_data
+%matplotlib inline
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+In [2]:
+mnist.train.images.shape
+Out[2]:
+(55000,784)
+2. Define Model & Solver Class
+Object-Oriented-Programming allows to define multiple model easily
+Why do you separate model and solver classes?
+You can just swap out the model class in the Solver class when you need a different network architecture
+Usually you need one solver class
+In [3]:
+class Model:
+    """Network Model Class
+    
+    Note that this class has only the constructor.
+    The actual model is defined inside the constructor.
+    
+    Attributes
+    ----------
+    X_placeholder_node :tf.float32
+        This is a tensorflow placeholder for MNIST images
+        Expected shape is [None,784]
+        
+    y :tf.float32
+        This is a tensorflow placeholder for MNIST labels (one hot encoded)
+        Expected shape is [None,10]
+        
+    mode :tf.bool
+        This is used for the batch normalization
+        It's `True` at training time and `False` at test time
+        
+    loss :tf.float32
+        The loss function is a softmax cross entropy
+        
+    train_op
+        This is simply the training op that minimizes the loss
+        
+    accuracy_node :tf.float32
+        The accuracy_node operation
+        
+    
+    Examples
+    ----------
+    >>> model=Model("Batch Norm",32,10)
+
+    """
+    def __init__(self,name,input_dim,output_dim,hidden_dims=[32,32],use_batchnorm=True,activation_fn=tf.nn.relu,adam_optimizer_node=tf.train.AdamOptimizer,lr=0.01):
+        """ Constructor
+        
+        Parameters
+        --------
+        name :str
+            The name of this network
+            The entire network will be created under `tf.variable_scope(name)`
+            
+        input_dim :int
+            The input dimension
+            In this example,784
+        
+        output_dim :int
+            The number of output labels
+            There are 10 labels
+            
+        hidden_dims :list (default:[32,32])
+            len(hidden_dims)=number of layers
+            each element is the number of hidden units
+            
+        use_batchnorm :bool (default:True)
+            If true,it will create the batchnormalization layer
+            
+        activation_fn :TF functions (default:tf.nn.relu)
+            Activation Function
+            
+        adam_optimizer_node :TF adam_optimizer_node (default:tf.train.AdamOptimizer)
+            Optimizer Function
+            
+        lr :float (default:0.01)
+            Learning rate
+        
+        """
+        with tf.variable_scope(name):
+            # Placeholders are defined
+            self.X_placeholder_node=tf.placeholder(tf.float32,[None,input_dim],name='X_placeholder_node')
+            self.y=tf.placeholder(tf.float32,[None,output_dim],name='y')
+            self.mode=tf.placeholder(tf.bool,name='train_mode_node')            
+            
+            # Loop over hidden layers
+            net=self.X_placeholder_node
+            for i,h_dim in enumerate(hidden_dims):
+                with tf.variable_scope('layer{}'.format(i)):
+                    net=tf.layers.dense(net,h_dim)
+                    
+                    if use_batchnorm:
+                        net=tf.layers.batch_normalization(net,training=self.mode)
+                        
+                    net=activation_fn(net)
+            
+            # Attach fully connected layers
+            net=tf.contrib.layers.flatten(net)
+            net=tf.layers.dense(net,output_dim)
+            
+            self.loss=tf.nn.softmax_cross_entropy_with_logits(logits=net,labels=self.y)
+            self.loss=tf.reduce_mean(self.loss,name='loss')    
+            
+            # When using the batchnormalization layers,
+            # it is necessary to manually add the update operations
+            # because the moving averages are not included in the graph            
+            update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS,scope=name)
+            with tf.control_dependencies(update_ops):                    
+                self.train_op=adam_optimizer_node(lr).minimize(self.loss)
+            
+            # Accuracy etc 
+            softmax=tf.nn.softmax(net,name='softmax')
+            self.accuracy_node=tf.equal(tf.argmax(softmax,1),tf.argmax(self.y,1))
+            self.accuracy_node=tf.reduce_mean(tf.cast(self.accuracy_node,tf.float32))
+In [4]:
+class Solver:
+    """Solver class
+    
+    This class will contain the model class and session
+    
+    Attributes
+    ----------
+    model :Model class
+    sess_object :TF session
+        
+    Methods
+    ----------
+    train(X_placeholder_node,y)
+        Run the train_op and Returns the loss
+        
+    evalulate(X_placeholder_node,y,batch_size=None)
+        Returns "Loss" and "Accuracy"
+        If batch_size is given,it's computed using batch_size
+        because most GPU memories cannot handle the entire training data at once
+            
+    Example
+    ----------
+    >>> sess_object=tf.InteractiveSession()
+    >>> model=Model("BatchNorm",32,10)
+    >>> solver=Solver(sess_object,model)
+    
+    # Train
+    >>> solver.train(X_placeholder_node,y)
+    
+    # Evaluate
+    >>> solver.evaluate(X_placeholder_node,y)
+    """
+    def __init__(self,sess_object,model):
+        self.model=model
+        self.sess_object=sess_object
+        
+    def train(self,X_placeholder_node,y):
+        feed={
+            self.model.X_placeholder_node:X_placeholder_node,
+            self.model.y:y,
+            self.model.mode:True
+        }
+        train_op=self.model.train_op
+        loss=self.model.loss
+        
+        return self.sess_object.run([train_op,loss],feed_dict=feed)
+    
+    def evaluate(self,X_placeholder_node,y,batch_size=None):
+        if batch_size:
+            N=X_placeholder_node.shape[0]
+            
+            total_loss=0
+            total_acc=0
+            
+            for i in range(0,N,batch_size):
+                X_batch=X_placeholder_node[i:i+batch_size]
+                y_batch=y[i:i+batch_size]
+                
+                feed={
+                    self.model.X_placeholder_node:X_batch,
+                    self.model.y:y_batch,
+                    self.model.mode:False
+                }
+                
+                loss=self.model.loss
+                accuracy_node=self.model.accuracy_node
+                
+                step_loss,step_acc=self.sess_object.run([loss,accuracy_node],feed_dict=feed)
+                
+                total_loss+=step_loss*X_batch.shape[0]
+                total_acc+=step_acc*X_batch.shape[0]
+            
+            total_loss /= N
+            total_acc /= N
+            
+            return total_loss,total_acc
+            
+            
+        else:
+            feed={
+                self.model.X_placeholder_node:X_placeholder_node,
+                self.model.y:y,
+                self.model.mode:False
+            }
+            
+            loss=self.model.loss            
+            accuracy_node=self.model.accuracy_node
+
+            return self.sess_object.run([loss,accuracy_node],feed_dict=feed)
+3. Instantiate Model/Solver classes
+In [5]:
+input_dim=784
+output_dim=10
+N=55000
+
+tf.reset_default_graph()
+sess_object=tf.InteractiveSession()
+
+# You create two models:one with the batch norm and other without
+bn=Model('batchnorm',input_dim,output_dim,use_batchnorm=True)
+nn=Model('no_norm',input_dim,output_dim,use_batchnorm=False)
+
+# You create two solvers:to train both models at the same time for comparison
+# Usually you only need one solver class
+bn_solver=Solver(sess_object,bn)
+nn_solver=Solver(sess_object,nn)
+In [6]:
+epoch_n=10
+batch_size=32
+
+# Save Losses and Accuracies every epoch
+# You are going to plot them later
+train_losses=[]
+train_accs=[]
+
+valid_losses=[]
+valid_accs=[]
+4. Run the train step
+In [7]:
+init=tf.global_variables_initializer()
+sess_object.run(init)
+
+for epoch in range(epoch_n):
+    for _ in range(N//batch_size):
+        X_batch,y_batch=mnist.train.next_batch(batch_size)
+        
+        _,bn_loss=bn_solver.train(X_batch,y_batch)
+        _,nn_loss=nn_solver.train(X_batch,y_batch)       
+    
+    b_loss,b_acc=bn_solver.evaluate(mnist.train.images,mnist.train.labels,batch_size)
+    n_loss,n_acc=nn_solver.evaluate(mnist.train.images,mnist.train.labels,batch_size)
+    
+    # Save train losses/acc
+    train_losses.append([b_loss,n_loss])
+    train_accs.append([b_acc,n_acc])
+    print(f'[Epoch {epoch}-TRAIN] Batchnorm Loss(Acc):{b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc):{n_loss:.5f}({n_acc:.2%})')
+    
+    b_loss,b_acc=bn_solver.evaluate(mnist.validation.images,mnist.validation.labels)
+    n_loss,n_acc=nn_solver.evaluate(mnist.validation.images,mnist.validation.labels)
+    
+    # Save valid losses/acc
+    valid_losses.append([b_loss,n_loss])
+    valid_accs.append([b_acc,n_acc])
+    print(f'[Epoch {epoch}-VALID] Batchnorm Loss(Acc):{b_loss:.5f}({b_acc:.2%}) vs No Batchnorm Loss(Acc):{n_loss:.5f}({n_acc:.2%})')
+    print()
+[Epoch 0-TRAIN] Batchnorm Loss(Acc):0.18456(94.19%) vs No Batchnorm Loss(Acc):0.31917(91.01%)
+[Epoch 0-VALID] Batchnorm Loss(Acc):0.19054(94.10%) vs No Batchnorm Loss(Acc):0.31920(91.00%)
+
+[Epoch 1-TRAIN] Batchnorm Loss(Acc):0.10349(96.78%) vs No Batchnorm Loss(Acc):0.16142(95.34%)
+[Epoch 1-VALID] Batchnorm Loss(Acc):0.11720(96.48%) vs No Batchnorm Loss(Acc):0.18348(94.96%)
+
+[Epoch 2-TRAIN] Batchnorm Loss(Acc):0.11239(96.43%) vs No Batchnorm Loss(Acc):0.17737(94.79%)
+[Epoch 2-VALID] Batchnorm Loss(Acc):0.12829(96.30%) vs No Batchnorm Loss(Acc):0.20401(94.34%)
+
+[Epoch 3-TRAIN] Batchnorm Loss(Acc):0.07526(97.69%) vs No Batchnorm Loss(Acc):0.15240(95.65%)
+[Epoch 3-VALID] Batchnorm Loss(Acc):0.09549(97.12%) vs No Batchnorm Loss(Acc):0.20025(95.16%)
+
+[Epoch 4-TRAIN] Batchnorm Loss(Acc):0.07339(97.68%) vs No Batchnorm Loss(Acc):0.15641(95.53%)
+[Epoch 4-VALID] Batchnorm Loss(Acc):0.10588(96.96%) vs No Batchnorm Loss(Acc):0.19816(94.86%)
+
+[Epoch 5-TRAIN] Batchnorm Loss(Acc):0.08164(97.38%) vs No Batchnorm Loss(Acc):0.15969(95.67%)
+[Epoch 5-VALID] Batchnorm Loss(Acc):0.11476(96.52%) vs No Batchnorm Loss(Acc):0.22123(95.10%)
+
+[Epoch 6-TRAIN] Batchnorm Loss(Acc):0.05879(98.10%) vs No Batchnorm Loss(Acc):0.18191(94.92%)
+[Epoch 6-VALID] Batchnorm Loss(Acc):0.09402(97.30%) vs No Batchnorm Loss(Acc):0.25907(94.50%)
+
+[Epoch 7-TRAIN] Batchnorm Loss(Acc):0.05014(98.38%) vs No Batchnorm Loss(Acc):0.23831(93.59%)
+[Epoch 7-VALID] Batchnorm Loss(Acc):0.08446(97.58%) vs No Batchnorm Loss(Acc):0.28310(93.46%)
+
+[Epoch 8-TRAIN] Batchnorm Loss(Acc):0.04956(98.41%) vs No Batchnorm Loss(Acc):0.12616(96.48%)
+[Epoch 8-VALID] Batchnorm Loss(Acc):0.08479(97.48%) vs No Batchnorm Loss(Acc):0.18636(95.44%)
+
+[Epoch 9-TRAIN] Batchnorm Loss(Acc):0.04351(98.61%) vs No Batchnorm Loss(Acc):0.12277(96.54%)
+[Epoch 9-VALID] Batchnorm Loss(Acc):0.08275(97.66%) vs No Batchnorm Loss(Acc):0.19641(95.74%)
+
+5. Performance Comparison
+With the batchnormalization,the loss is lower and it's more accurate too!
+In [8]:
+bn_solver.evaluate(mnist.test.images,mnist.test.labels)
+Out[8]:
+[0.089340471,0.97370011]
+In [9]:
+nn_solver.evaluate(mnist.test.images,mnist.test.labels)
+Out[9]:
+[0.20733583,0.95130014]
+In [10]:
+def plot_compare(loss_list:list,ylim=None,title=None) -> None:
+    
+    bn=[i[0] for i in loss_list]
+    nn=[i[1] for i in loss_list]
+    
+    plt.figure(figsize=(15,10))
+    plt.plot(bn,label='With BN')
+    plt.plot(nn,label='Without BN')
+    if ylim:
+        plt.ylim(ylim)
+        
+    if title:
+        plt.title(title)
+    plt.legend()
+    plt.grid('on')
+    plt.show()
+In [11]:
+plot_compare(train_losses,title='Training Loss at Epoch')
+
+In [12]:
+plot_compare(train_accs,[0,1.0],title="Training Acc at Epoch")
+
+In [13]:
+plot_compare(valid_losses,title='Validation Loss at Epoch')
+
+In [14]:
+plot_compare(valid_accs,[0,1.],title='Validation Acc at Epoch')
+
+
+
+DeepLearningZeroToAll/lab-10-7-mnist_nn_higher_level_API.py
+
+# Lab 10 MNIST and High-level TF API
+from tensorflow.contrib.layers import fully_connected,batch_norm,dropout
+from tensorflow.contrib.framework import arg_scope
+import tensorflow as tf
+import random
+# import matplotlib.pyplot as plt
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)  # reproducibility
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+# Check out https://www.tensorflow.org/get_started/mnist/beginners for
+# more information about the mnist dataset
+
+# parameters
+learning_rate=0.01  # you can use large learning rate using Batch Normalization
+training_epochs=15
+batch_size=100
+keep_prob=0.7
+
+# input place holders
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+train_mode_node=tf.placeholder(tf.bool,name='train_mode_node')
+
+# layer output size
+hidden_output_size=512
+final_output_size=10
+
+xavier_initialization_node=tf.contrib.layers.xavier_initializer()
+batch_normalization_parameters={
+    'is_training':train_mode_node,
+    'decay':0.9,
+    'updates_collections':None
+}
+
+# You can build short code using 'arg_scope' to avoid duplicate code
+# same function with different arguments
+with arg_scope([fully_connected],
+               activation_fn=tf.nn.relu,
+               weights_initializer=xavier_initialization_node,
+               biases_initializer=None,
+               normalizer_fn=batch_norm,
+               normalizer_params=batch_normalization_parameters
+               ):
+    hidden_layer1=fully_connected(X_placeholder_node,hidden_output_size,scope="h1")
+    h1_drop=dropout(hidden_layer1,keep_prob,is_training=train_mode_node)
+    hidden_layer2=fully_connected(h1_drop,hidden_output_size,scope="h2")
+    h2_drop=dropout(hidden_layer2,keep_prob,is_training=train_mode_node)
+    hidden_layer3=fully_connected(h2_drop,hidden_output_size,scope="h3")
+    h3_drop=dropout(hidden_layer3,keep_prob,is_training=train_mode_node)
+    hidden_layer4=fully_connected(h3_drop,hidden_output_size,scope="h4")
+    h4_drop=dropout(hidden_layer4,keep_prob,is_training=train_mode_node)
+    hypothesis_f_node=fully_connected(h4_drop,final_output_size,activation_fn=None,scope="hypothesis_f_node")
+
+
+# define cost_f_node/loss & adam_optimizer_node
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+    logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+# initialize
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+# train my model
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict_train={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,train_mode_node:True}
+        feed_dict_cost={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,train_mode_node:False}
+        opt=sess_object.run(adam_optimizer_node,feed_dict=feed_dict_train)
+        cost_value=sess_object.run(cost_f_node,feed_dict=feed_dict_cost)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print("[Epoch:{:>4}] cost_f_node={:>.9}".format(epoch+1,average_of_cost))
+    #print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels,train_mode_node:False}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1],train_mode_node:False}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+'''
+[Epoch:   1] cost_f_node=0.519417209
+[Epoch:   2] cost_f_node=0.432551052
+[Epoch:   3] cost_f_node=0.404978843
+[Epoch:   4] cost_f_node=0.392039919
+[Epoch:   5] cost_f_node=0.382165317
+[Epoch:   6] cost_f_node=0.377987834
+[Epoch:   7] cost_f_node=0.372577601
+[Epoch:   8] cost_f_node=0.367208552
+[Epoch:   9] cost_f_node=0.365525589
+[Epoch:  10] cost_f_node=0.361964276
+[Epoch:  11] cost_f_node=0.359540287
+[Epoch:  12] cost_f_node=0.356423751
+[Epoch:  13] cost_f_node=0.354478216
+[Epoch:  14] cost_f_node=0.353212552
+[Epoch:  15] cost_f_node=0.35230893
+Learning Finished!
+Accuracy:0.9826
+'''
+
+DeepLearningZeroToAll/lab-10-8-mnist_nn_selu(wip).py
+
+
+# Lab 10 MNIST and Dropout
+# SELU implementation from https://github.com/bioinf-jku/SNNs/blob/master/selu.py
+import tensorflow as tf
+import random
+# import matplotlib.pyplot as plt
+# -*- coding:utf-8 -*-
+'''
+Tensorflow Implementation of the Scaled ELU function and Dropout
+'''
+
+import numbers
+from tensorflow.contrib import layers
+from tensorflow.python.framework import ops
+from tensorflow.python.framework import tensor_shape
+from tensorflow.python.framework import tensor_util
+from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import random_ops
+from tensorflow.python.ops import array_ops
+from tensorflow.python.layers import utils
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+tf.set_random_seed(777)  # reproducibility
+
+def selu(x):
+    with ops.name_scope('elu') as scope:
+        alpha=1.6732632423543772848170429916717
+        scale=1.0507009873554804934193349852946
+        return scale*tf.where(x>=0.0,x,alpha*tf.nn.elu(x))
+
+
+def dropout_selu(x,keep_prob,alpha= -1.7580993408473766,fixedPointMean=0.0,fixedPointVar=1.0,
+                 noise_shape=None,seed=None,name=None,training=False):
+    """Dropout to a value with rescaling."""
+
+    def dropout_selu_impl(x,rate,alpha,noise_shape,seed,name):
+        keep_prob=1.0-rate
+        x=ops.convert_to_tensor(x,name="x")
+        if isinstance(keep_prob,numbers.Real) and not 0 < keep_prob <= 1:
+            raise ValueError("keep_prob must be a scalar tensor or a float in the "
+                                             "range (0,1],got %g"%keep_prob)
+        keep_prob=ops.convert_to_tensor(keep_prob,dtype=x.dtype,name="keep_prob")
+        keep_prob.get_shape().assert_is_compatible_with(tensor_shape.scalar())
+
+        alpha=ops.convert_to_tensor(alpha,dtype=x.dtype,name="alpha")
+        keep_prob.get_shape().assert_is_compatible_with(tensor_shape.scalar())
+
+        if tensor_util.constant_value(keep_prob)==1:
+            return x
+
+        noise_shape=noise_shape if noise_shape is not None else array_ops.shape(x)
+        random_tensor=keep_prob
+        random_tensor+=random_ops.random_uniform(noise_shape,seed=seed,dtype=x.dtype)
+        binary_tensor=math_ops.floor(random_tensor)
+        ret=x*binary_tensor+alpha*(1-binary_tensor)
+
+        a=tf.sqrt(fixedPointVar/(keep_prob *((1-keep_prob)*tf.pow(alpha-fixedPointMean,2)+fixedPointVar)))
+
+        b_variable_node=fixedPointMean-a*(keep_prob*fixedPointMean+(1-keep_prob)*alpha)
+        ret=a*ret+b_variable_node
+        ret.set_shape(x.get_shape())
+        return ret
+
+    with ops.name_scope(name,"dropout",[x]) as name:
+        return utils.smart_cond(training,
+                                lambda:dropout_selu_impl(x,keep_prob,alpha,noise_shape,seed,name),
+                                lambda:array_ops.identity(x))
+
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+# Check out https://www.tensorflow.org/get_started/mnist/beginners for
+# more information about the mnist dataset
+
+# parameters
+learning_rate=0.001
+training_epochs=50
+batch_size=100
+
+# input place holders
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+# dropout (keep_prob) rate  0.7 on training,but should be 1 for testing
+keep_prob=tf.placeholder(tf.float32)
+
+# weights & bias for nn layers
+# http://stackoverflow.com/questions/33640581/how-to-do-xavier-initialization-on-tensorflow
+W1_variable_node=tf.get_variable("W1_variable_node",shape=[784,512],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b1_variable_node=tf.Variable(tf.random_normal([512]))
+layer1_cost_f_node=selu(tf.matmul(X_placeholder_node,W1_variable_node)+b1_variable_node)
+layer1_cost_f_node=dropout_selu(layer1_cost_f_node,keep_prob=keep_prob)
+
+W2_variable_node=tf.get_variable("W2_variable_node",shape=[512,512],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b2_variable_node=tf.Variable(tf.random_normal([512]))
+layer2_cost_f_node=selu(tf.matmul(layer1_cost_f_node,W2_variable_node)+b2_variable_node)
+layer2_cost_f_node=dropout_selu(layer2_cost_f_node,keep_prob=keep_prob)
+
+W3_variable_node=tf.get_variable("W3_variable_node",shape=[512,512],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b3_variable_node=tf.Variable(tf.random_normal([512]))
+layer3_cost_f_node=selu(tf.matmul(layer2_cost_f_node,W3_variable_node)+b3_variable_node)
+layer3_cost_f_node=dropout_selu(layer3_cost_f_node,keep_prob=keep_prob)
+
+W4_variable_node=tf.get_variable("W4_variable_node",shape=[512,512],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b4_variable_node=tf.Variable(tf.random_normal([512]))
+layer4_cost_f_node=selu(tf.matmul(layer3_cost_f_node,W4_variable_node)+b4_variable_node)
+layer4_cost_f_node=dropout_selu(layer4_cost_f_node,keep_prob=keep_prob)
+
+W5_variable_node=tf.get_variable("W5_variable_node",shape=[512,10],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b5_variable_node=tf.Variable(tf.random_normal([10]))
+hypothesis_f_node=tf.matmul(layer4_cost_f_node,W5_variable_node)+b5_variable_node
+
+# define cost_f_node/loss & adam_optimizer_node
+cost_f_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+    logits=hypothesis_f_node,labels=Y_placeholder_node))
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_f_node)
+
+# initialize
+sess_object=tf.Session()
+sess_object.run(tf.global_variables_initializer())
+
+# train my model
+for epoch in range(training_epochs):
+    average_of_cost=0
+    number_of_total_batch=int(mnist.train.num_examples/batch_size)
+
+    for i in range(number_of_total_batch):
+        batch_xs,batch_ys=mnist.train.next_batch(batch_size)
+        feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys,keep_prob:0.7}
+        cost_value,_=sess_object.run([cost_f_node,adam_optimizer_node],feed_dict=feed_dict)
+        average_of_cost+=cost_value/number_of_total_batch
+
+    print('Epoch:','%04d'%(epoch+1),'cost_f_node =','{:.9f}'.format(average_of_cost))
+
+print('Learning Finished!')
+
+# Test model and check accuracy_node
+compare_prediction_and_label_node=tf.equal(tf.argmax(hypothesis_f_node,1),tf.argmax(Y_placeholder_node,1))
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy:',sess_object.run(accuracy_node,feed_dict={
+      X_placeholder_node:mnist.test.images,Y_placeholder_node:mnist.test.labels,keep_prob:1}))
+
+# Get one and predict
+one_random_number=random.randint(0,mnist.test.num_examples-1)
+print("Label:",sess_object.run(tf.argmax(mnist.test.labels[one_random_number:one_random_number+1],1)))
+print("Prediction:",sess_object.run(
+    tf.argmax(hypothesis_f_node,1),feed_dict={X_placeholder_node:mnist.test.images[one_random_number:one_random_number+1],keep_prob:1}))
+
+# plt.imshow(mnist.test.images[one_random_number:one_random_number+1].
+#           reshape(28,28),cmap='Greys',interpolation='nearest')
+# plt.show()
+
+'''
+Epoch:0001 cost_f_node=0.447322626
+Epoch:0002 cost_f_node=0.157285590
+Epoch:0003 cost_f_node=0.121884535
+Epoch:0004 cost_f_node=0.098128681
+Epoch:0005 cost_f_node=0.082901778
+Epoch:0006 cost_f_node=0.075337573
+Epoch:0007 cost_f_node=0.069752543
+Epoch:0008 cost_f_node=0.060884363
+Epoch:0009 cost_f_node=0.055276413
+Epoch:0010 cost_f_node=0.054631256
+Epoch:0011 cost_f_node=0.049675195
+Epoch:0012 cost_f_node=0.049125314
+Epoch:0013 cost_f_node=0.047231930
+Epoch:0014 cost_f_node=0.041290121
+Epoch:0015 cost_f_node=0.043621063
+Learning Finished!
+Accuracy:0.9804
+'''
+
+
+# @
+# lab-10-X1-mnist_back_prop.py
+
+import tensorflow as tf
+
+tf.set_random_seed(777)
+
+from tensorflow.examples.tutorials.mnist import input_data
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+
+X_placeholder_node=tf.placeholder(tf.float32,[None,784])
+Y_placeholder_node=tf.placeholder(tf.float32,[None,10])
+
+w1_variable_node=tf.Variable(tf.truncated_normal([784,30]))
+b1_variable_node=tf.Variable(tf.truncated_normal([1,30]))
+w2_variable_node=tf.Variable(tf.truncated_normal([30,10]))
+b2_variable_node=tf.Variable(tf.truncated_normal([1,10]))
+
+
+def sigmoid_function(x):
+    return tf.div(tf.constant(1.0),tf.add(tf.constant(1.0),tf.exp(-x)))
+
+
+def differentiation_of_sigmoid_function(x):
+    return sigmoid_function(x)*(1-sigmoid_function(x))
+
+# You perform forward propagation
+layer1_hypothesis_f_node=tf.add(tf.matmul(X_placeholder_node,w1_variable_node),b1_variable_node)
+layer1_hypothesis_f_node_after_sigmoid_f=sigmoid_function(layer1_hypothesis_f_node)
+layer2_hypothesis_f_node=tf.add(tf.matmul(layer1_hypothesis_f_node_after_sigmoid_f,w2_variable_node),b2_variable_node)
+layer2_hypothesis_f_node_after_sigmoid_f=sigmoid_function(layer2_hypothesis_f_node)
+
+
+assert layer2_hypothesis_f_node_after_sigmoid_f.shape.as_list()==Y_placeholder_node.shape.as_list()
+
+difference_between_layer2_hypothesis_f_node_after_sigmoid_f_and_y_label\
+    =(layer2_hypothesis_f_node_after_sigmoid_f-Y_placeholder_node)
+
+# You perform back propagation,
+# by using chain rule
+differentiation_of_layer2=difference_between_layer2_hypothesis_f_node_after_sigmoid_f_and_y_label*differentiation_of_sigmoid_function(layer2_hypothesis_f_node)
+b2_of_differentiated_layer2=differentiation_of_layer2
+w2_of_differentiated_layer2=tf.matmul(tf.transpose(layer1_hypothesis_f_node_after_sigmoid_f),differentiation_of_layer2)
+
+differentiated_hypothesis_f_after_sigmoid_f_of_layer1=tf.matmul(differentiation_of_layer2,tf.transpose(w2_variable_node))
+differentiated_hypothesis_f_of_layer1\
+    =differentiated_hypothesis_f_after_sigmoid_f_of_layer1*differentiation_of_sigmoid_function(layer1_hypothesis_f_node)
+differentiated_b1_of_layer1=differentiated_hypothesis_f_of_layer1
+differentiated_w1_of_layer1=tf.matmul(tf.transpose(X_placeholder_node),differentiated_hypothesis_f_of_layer1)
+
+# You update network by using gradient descent
+learning_rate=0.5
+step=[
+    tf.assign(w1_variable_node,w1_variable_node-learning_rate*differentiated_w1_of_layer1),
+    tf.assign(b1_variable_node,b1_variable_node-learning_rate*tf.reduce_mean(differentiated_b1_of_layer1,reduction_indices=[0])),
+    tf.assign(w2_variable_node,w2_variable_node-learning_rate*w2_of_differentiated_layer2),
+    tf.assign(b2_variable_node,b2_variable_node-learning_rate*tf.reduce_mean(b2_of_differentiated_layer2,reduction_indices=[0]))
+]
+
+# 7. You perform running and testing training process
+compare_final_prediction_and_label\
+    =tf.equal(tf.argmax(layer2_hypothesis_f_node_after_sigmoid_f,1),tf.argmax(Y_placeholder_node,1))
+
+accuracy_node=tf.reduce_sum(tf.cast(compare_final_prediction_and_label,tf.float32))
+
+sess_object=tf.InteractiveSession()
+sess_object.run(tf.global_variables_initializer())
+
+for i in range(10000):
+    batch_xs,batch_ys=mnist.train.next_batch(10)
+    sess_object.run(step,feed_dict={X_placeholder_node:batch_xs,Y_placeholder_node:batch_ys})
+    if i%1000==0:
+        accuracy_result=sess_object.run(accuracy_node\
+            ,feed_dict={X_placeholder_node:mnist.test.images[:1000]\
+                ,Y_placeholder_node:mnist.test.labels[:1000]})
+        print(accuracy_result)
+
+# 8. You perform automatic differentiation in tensorflow
+cost_f_node=difference_between_layer2_hypothesis_f_node_after_sigmoid_f_and_y_label*difference_between_layer2_hypothesis_f_node_after_sigmoid_f_and_y_label
+gradient_descent_optimizer=tf.train.GradientDescentOptimizer(0.1).minimize(cost_f_node)
       </xmp>
    </BODY>
 </HTML>
