@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -54,28 +54,34 @@ MathJax.Hub.Config({
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-sess = tf.InteractiveSession()
+
+sess_object=tf.InteractiveSession()
 
 # This is psuedo array representing image
-image = np.array([[[[1],[2],[3]],
-                   [[4],[5],[6]], 
-                   [[7],[8],[9]]]], dtype=np.float32)
-print(image.shape)
-# (number of image(instance), image size, image size, color)
-# < (1, 3, 3, 1)
-plt.imshow(image.reshape(3,3), cmap='Greys')
-# < <matplotlib.image.AxesImage at 0x10db29e10>
-# (filtersize, filtersize, color, number of filter)
-weight.shape = 1 filter (2 , 2 , 1, 1) image
-weight = tf.constant([[[[1.]],[[1.]]],
-                      [[[1.]],[[1.]]]])
-# This is sliding filter
-conv2d = tf.nn.conv2d(image, weight, strides=[1, 1, 1, 1], padding='VALID')
-conv2d_img = conv2d.eval()
-conv2d_img = np.swapaxes(conv2d_img, 0, 3)
-for i, one_img in enumerate(conv2d_img):
+image_array=np.array([[[[1],[2],[3]],
+                       [[4],[5],[6]],
+                       [[7],[8],[9]]]],dtype=np.float32)
+
+print(image_array.shape)
+# (number of image(instance),image_array size,image_array size,color information)
+# (1,3,3,1)
+
+plt.imshow(image_array.reshape(3,3),cmap='Greys')
+# <matplotlib.image_array.AxesImage at 0x10db29e10>
+
+# (filtersize,filtersize,color,number of filter)
+# weight.shape=1 filter (2,2,1,1) image_array
+weight=tf.constant([[[[1.]],[[1.]]],
+                    [[[1.]],[[1.]]]])
+
+# This is step of sliding filter
+first_convolution_layer_node=tf.nn.conv2d(image_array,weight,strides=[1,1,1,1],padding='VALID')
+image_after_first_convolution_layer_node=first_convolution_layer_node.eval()
+swaped_image_after_first_convolution_layer_node=np.swapaxes(image_after_first_convolution_layer_node,0,3)
+
+for index,one_img in enumerate(swaped_image_after_first_convolution_layer_node):
     print(one_img.reshape(2,2))
-    plt.subplot(1,2,i+1), plt.imshow(one_img.reshape(2,2), cmap='gray')
+    plt.subplot(1,2,index+1),plt.imshow(one_img.reshape(2,2),cmap='gray')
 
 # 1  2  3
 # 4  5  6
@@ -89,81 +95,93 @@ for i, one_img in enumerate(conv2d_img):
 # 24  28
 
 # padding=SAME, no matter filter size, 1*1 stride
-# => convolutioned image size is same raw image size
-weight = tf.constant([[[[1.]],[[1.]]],
-                      [[[1.]],[[1.]]]])
-conv2d = tf.nn.conv2d(image, weight, strides=[1, 1, 1, 1], padding='SAME')
-conv2d_img = conv2d.eval()
-conv2d_img = np.swapaxes(conv2d_img, 0, 3)
-for i, one_img in enumerate(conv2d_img):
+# => size of convolutioned image_array will be same,
+# with size of raw image_array
+weight=tf.constant([[[[1.]],[[1.]]],
+                    [[[1.]],[[1.]]]])
+first_convolution_layer_node=tf.nn.conv2d(image_array,weight,strides=[1,1,1,1],padding='SAME')
+image_after_first_convolution_layer_node=first_convolution_layer_node.eval()
+swaped_image_after_first_convolution_layer_node=np.swapaxes(image_after_first_convolution_layer_node,0,3)
+for i,one_img in enumerate(swaped_image_after_first_convolution_layer_node):
     print(one_img.reshape(3,3))
-    plt.subplot(1,2,i+1), plt.imshow(one_img.reshape(3,3), cmap='gray')
+    plt.subplot(1,2,i+1),plt.imshow(one_img.reshape(3,3),cmap='gray')
 
-# I can use 3 filters
-# (filtersize, filtersize, color, number of filter)
-# shape of filter = (2, 2, 2, 3)
-weight = tf.constant([[[[1.,10.,-1.]],[[1.,10.,-1.]]],
-                      [[[1.,10.,-1.]],[[1.,10.,-1.]]]])
-conv2d = tf.nn.conv2d(image, weight, strides=[1, 1, 1, 1], padding='SAME')
-conv2d_img = conv2d.eval()
-conv2d_img = np.swapaxes(conv2d_img, 0, 3)
-for i, one_img in enumerate(conv2d_img):
+# You can use 3 filters
+# (filtersize,filtersize,color,number of filter)
+# shape of filter=(2,2,2,3)
+weight=tf.constant([[[[1.,10.,-1.]],[[1.,10.,-1.]]],
+                    [[[1.,10.,-1.]],[[1.,10.,-1.]]]])
+first_convolution_layer_node=tf.nn.conv2d(image_array,weight,strides=[1,1,1,1],padding='SAME')
+image_after_first_convolution_layer_node=conv2d.eval()
+swaped_image_after_first_convolution_layer_node=np.swapaxes(image_after_first_convolution_layer_node,0,3)
+for i,one_img in enumerate(swaped_image_after_first_convolution_layer_node):
     print(one_img.reshape(3,3))
-    plt.subplot(1,3,i+1), plt.imshow(one_img.reshape(3,3), cmap='gray')
+    plt.subplot(1,3,i+1),plt.imshow(one_img.reshape(3,3),cmap='gray')
 
 
 # @
-# MAX POOLING
-image = np.array([[[[4],[3]],
-                   [[2],[1]]]], dtype=np.float32)
-# ksize=[1, 2, 2, 1]
-# 2*2
-pool = tf.nn.max_pool(image, ksize=[1, 2, 2, 1], strides=[1, 1, 1, 1], padding='VALID')
-print(pool.shape)
-# < (1, 1, 1, 1)
-print(pool.eval())
-# < [[[[ 4.]]]]
+# You will perform "max pooling"
+image_array=np.array([[[[4],[3]],
+                       [[2],[1]]]],dtype=np.float32)
+
+# pooling filer: ksize=[1,2,2,1]
+# size of pooling filter is 2*2
+max_pooled_image_node=tf.nn.max_pool(image_array,ksize=[1,2,2,1],strides=[1,1,1,1],padding='VALID')
+
+print(max_pooled_image_node.shape)
+# (1,1,1,1)
+
+print(max_pooled_image_node.eval())
+# [[[[ 4.]]]]
 
 # @
-# SAME: Zero paddings
-image = np.array([[[[4],[3]],
-                   [[2],[1]]]], dtype=np.float32)
-pool = tf.nn.max_pool(image, ksize=[1, 2, 2, 1], strides=[1, 1, 1, 1], padding='SAME')
-print(pool.shape)
-# < (1, 2, 2, 1)
-print(pool.eval())
-# < [[[[ 4.]
-# <    [ 3.]]
-# <   [[ 2.]
-# <    [ 1.]]]]
+# You can use padding when you perform pooling
+image_array=np.array([[[[4],[3]],
+                       [[2],[1]]]],dtype=np.float32)
 
+max_pooled_image_node=tf.nn.max_pool(image_array,ksize=[1,2,2,1],strides=[1,1,1,1],padding='SAME')
+
+print(max_pooled_image_node.shape)
+# (1,2,2,1)
+
+print(max_pooled_image_node.eval())
+# [[[[ 4.]
+#    [ 3.]]
+#   [[ 2.]
+#    [ 1.]]]]
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-img = mnist.train.images[0].reshape(28,28)
-plt.imshow(img, cmap='gray')
-# <matplotlib.image.AxesImage at 0x1152b2048>
-sess = tf.InteractiveSession()
-# n image, 28*28, 1 color
-img = img.reshape(-1,28,28,1)
-# (filter size, filter size, color, 5 filters)
-W1 = tf.Variable(tf.random_normal([3, 3, 1, 5], stddev=0.01))
-# strides=[2, 2], padding=same => 14*14 image
-conv2d = tf.nn.conv2d(img, W1, strides=[1, 2, 2, 1], padding='SAME')
-sess.run(tf.global_variables_initializer())
-conv2d_img = conv2d.eval()
-conv2d_img = np.swapaxes(conv2d_img, 0, 3)
-for i, one_img in enumerate(conv2d_img):
-    plt.subplot(1,5,i+1), plt.imshow(one_img.reshape(14,14), cmap='gray')
-# Tensor("Conv2D_3:0", shape=(1, 14, 14, 5), dtype=float32)
+mnist=input_data.read_data_sets("MNIST_data/",one_hot=True)
+reshaped_one_image=mnist.train.images[0].reshape(28,28)
+plt.imshow(reshaped_one_image,cmap='gray')
+# <matplotlib.image_array.AxesImage at 0x1152b2048>
 
-pool = tf.nn.max_pool(conv2d, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-sess.run(tf.global_variables_initializer())
-pool_img = pool.eval()
-pool_img = np.swapaxes(pool_img, 0, 3)
-for i, one_img in enumerate(pool_img):
-    plt.subplot(1,5,i+1), plt.imshow(one_img.reshape(7, 7), cmap='gray')
-# < Tensor("MaxPool_2:0", shape=(1, 7, 7, 5), dtype=float32)
+sess_object=tf.InteractiveSession()
+
+# -1(n image_array),28*28,1(color)
+reshaped_one_image=reshaped_one_image.reshape(-1,28,28,1)
+
+# (filter size,filter size,color,5 filters)
+W1_variable_node=tf.Variable(tf.random_normal([3,3,1,5],stddev=0.01))
+
+# strides=[2,2], padding=same => 14*14 image_array
+first_convolution_layer_node=tf.nn.conv2d(reshaped_one_image,W1_variable_node,strides=[1,2,2,1],padding='SAME')
+
+sess_object.run(tf.global_variables_initializer())
+
+image_after_first_convolution_layer_node=first_convolution_layer_node.eval()
+swaped_image_after_first_convolution_layer_node=np.swapaxes(image_after_first_convolution_layer_node,0,3)
+for i,one_img in enumerate(swaped_image_after_first_convolution_layer_node):
+    plt.subplot(1,5,i+1),plt.imshow(one_img.reshape(14,14),cmap='gray')
+# Tensor("Conv2D_3:0",shape=(1,14,14,5),dtype=float32)
+
+max_pooled_image_node=tf.nn.max_pool(conv2d,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
+sess_object.run(tf.global_variables_initializer())
+max_pooled_image=max_pooled_image_node.eval()
+swaped_max_pooled_image=np.swapaxes(max_pooled_image,0,3)
+for i,one_img in enumerate(swaped_max_pooled_image):
+    plt.subplot(1,5,i+1),plt.imshow(one_img.reshape(7,7),cmap='gray')
+# < Tensor("MaxPool_2:0",shape=(1,7,7,5),dtype=float32)
 
 
       </xmp>
