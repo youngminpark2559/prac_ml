@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -46,7 +46,7 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-029. classify text data into class by mlp(multi layer perceptron), convert text data into vector
+029. classify text mini_size_text_data_file into class by "multi layer perceptron", convert text mini_size_text_data_file into vector
 <xmp>
 # @
 from keras.models import Sequential
@@ -57,77 +57,80 @@ from sklearn.model_selection import train_test_split
 from sklearn import model_selection, metrics
 import json
 
-# Mumber of words in text is 56681
+# Number of words in text is 56681
 # You can check it out in word-dic.json file
-max_words=56681
+max_words_number=56681
 # There are 6 categories(like genres)
-nb_classes=6
+number_of_classes=6
 batch_size=64
-nb_epoch=20
+number_of_epoch=20
 
-# This method creates mlp(multi layer perceptron) model,
-# which will be passed into KerasClassifier as argument
+# This method creates "multi layer perceptron" model,
+# which will be passed into KerasClassifier constructor as argument
 def build_model():
-    model=Sequential()
-    model.add(Dense(512,input_shape=(max_words,)))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adam',
-                  metrics=['accuracy'])
-    return model
+    Sequential_object=Sequential()
+    Sequential_object.add(Dense(512,input_shape=(max_words_number,)))
+    Sequential_object.add(Activation('relu'))
+    Sequential_object.add(Dropout(0.5))
+    Sequential_object.add(Dense(number_of_classes))
+    Sequential_object.add(Activation('softmax'))
+    Sequential_object.compile(\
+                loss='categorical_crossentropy',
+                optimizer='adam',
+                metrics=['accuracy'])
+    return Sequential_object
 
-# I load mini size data file
-data=json.load(open("./newstext/data-mini.json")) 
-# I load full size data file
-#data=json.load(open("./newstext/data.json"))
-# Data representing text
-X=data["X"]
-# Data representing category
-Y=data["Y"]
+mini_size_text_data_file=json.load(open("./newstext/data-mini.json")) 
+# You can load full size data file
+# full_size_text_data_file=json.load(open("./newstext/data.json"))
 
-# For learning
-X_train,X_test,Y_train,Y_test=train_test_split(X,Y)
-Y_train=np_utils.to_categorical(Y_train,nb_classes)
-print(len(X_train),len(Y_train))
+X_text_data=mini_size_text_data_file["X"]
+Y_category_data=mini_size_text_data_file["Y"]
 
-# I create classifier
-model=KerasClassifier(
+# You train model
+x_train_data,x_test_data,y_train_data,y_test_data=train_test_split(X,Y)
+categorized_y_train_data=np_utils.to_categorical(y_train_data,number_of_classes)
+print(len(x_train_data),len(categorized_y_train_data))
+
+# You create classifier
+keras_classifier_object=KerasClassifier(
     build_fn=build_model,
-    nb_epoch=nb_epoch,
+    number_of_epoch=number_of_epoch,
     batch_size=batch_size)
 
-# I let "created classifier" to train
-# by passing feature and label of train data
-# X_train is frequency of appearance of word like data=[2,2,2,1,1,1,1]
-# Y_train is categories(something like genre)
-model.fit(X_train,Y_train)
+# You let created keras_classifier_object to train,
+# by passing feature(text) and label(category) of train data
+# x_train_data is frequency of word like [2,2,2,1,1,1,1]
+# y_train_data is categories(something like genre)
+Sequential_object.fit(x_train_data,y_train_data)
 
 # For predicting
-y=model.predict(X_test)
+prediction_value=Sequential_object.predict(x_test_data)
 
 # For evaluating
-ac_score=metrics.accuracy_score(Y_test,y)
-cl_report=metrics.classification_report(Y_test,y)
-print("accuracy: ",ac_score)
-print("report: \n",cl_report)
+accuracy_score=metrics.accuracy_score(y_test_data,prediction_value)
+classification_report=metrics.classification_report(y_test_data,prediction_value)
+print("accuracy: ",accuracy_score)
+print("report: \n",classification_report)
 
 
 # @
-# Let's talk about way how you can convert text data into fixed length vector
-# Suppose we have following sentence
+# Let's talk about way,
+# how you can convert text data into fixed length vector
+# Suppose you have following sentence
 # "몇 번을 쓰러지더라도 몇 번을 무너지더라도 다시 일어나라"
-# We will process morphological analysis by twitter morphological analyzer
-# and we will get following processed output
+# You will process morphological analysis by twitter morphological analyzer
+# and you will get following processed output
 # 몇|번|을|쓰러지다|몇|번|을|무너지다|다시|일어나다
 
-# To convert text data into vector, we need "word_dictionary" and "data"
+# To convert text data into vector,
+# you need "word_dictionary" and "data"
 
-# If we can't find "몇" in word_dictionary, we input "몇" into word_dictionary
+# If you can't find "몇" in word_dictionary,
+# you input "몇" into word_dictionary,
 # with unique ID number representing "몇"
-# If we can find "몇" in word_dictionary, we just pass with doing nothing
+# If you can find "몇" in word_dictionary,
+# you just pass with doing nothing
 
 # word_dictionary=
 # {
@@ -140,10 +143,11 @@ print("report: \n",cl_report)
 #     "일어나다":7
 # }
 
-# You can create this word dictionary for entire text, resulting lots of elements in vector
+# You can create this word dictionary for entire text,
+# resulting lots of elements in vector
 
-# Now, we can create vector of above sentence by counting frequency of appearance in text
-# data=[2,2,2,1,1,1,1]
+# Now, you can create vector of above sentence,
+# by counting frequency of appearance in text
 
 </xmp>
    </BODY>
