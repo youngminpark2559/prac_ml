@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,12 +33,12 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$','$'],["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'],["\\[","\\]"] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,87 +46,82 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-034. Converting image to vector and increasing quantity of data by processing some techniques like rotating<br/>
+034. convert image to vector,increas quantity of data by processing original data by some techniques like rotating<br/>
 <xmp>
-# How to increase data by rotating, stressing on brightness, etc
 
 from PIL import Image
-import os, glob
+import os,glob
 import numpy as np
-import random, math
+import random,math
 
-# I define folder for image files
-root_dir = "./image/"
-# I defind categories for image data
-categories = ["normal", "beni", "negi", "cheese"]
-# The number of class is same length of list of category
-nb_classes = len(categories)
-# I will use image sized 50*50
-image_size = 50
+# You define folder for image files
+folder_containing_image_file_string="./image/"
+# You define categories_list for image data
+categories_list=["normal","beni","negi","cheese"]
+# Number of class is same length of categories_list
+number_of_classes=len(categories_list)
+# You will use image sized 50*50
+image_size_integer=50
 
-# This is space of list for image data
-X = []
-# This is space of list for image's label data
-Y = []
+X_feature_train_data_list=[]
+Y_feature_train_data_list=[]
 
-def add_sample(cat, fname, is_train):
-    # I open image file with file name
-    img = Image.open(fname)
-    # I convert loaded image file into vector which keeps color information
-    img = img.convert("RGB")
-    # I resize image by 50*50
-    img = img.resize((image_size, image_size))
-    # I make data with process image
-    data = np.asarray(img)
-    # I append data into list X
-    X.append(data)
-    # I append category label data into list Y
-    Y.append(cat)
-    if not is_train: return
+def add_sample(category,fname,is_train):
+    opened_image_file=Image.open(fname)
+    converted_image_file_to_rgb=opened_image_file.convert("RGB")
+    resized_image_file=converted_image_file_to_rgb.resize((image_size_integer,image_size_integer))
+    image_file_in_nparray=np.asarray(resized_image_file)
+    X_feature_train_data_list.append(image_file_in_nparray)
+    Y_feature_train_data_list.append(category)
+    if not is_train:
+        return
     
-    # I add image data which is created by manipulating angle of image
-    # 5 is steps
-    # So, it will process by -20, -15, -10, ...
-    for ang in range(-20, 20, 5):
-        # First, I rotate image by -20 and assign it to img2
-        img2 = img.rotate(ang)
-        # I store rotated image into array
-        data = np.asarray(img2)
-        # I append data into X
-        X.append(data)
-        # I append label data
-        Y.append(cat)
-        # img2.save("gyudon-"+str(ang)+".PNG")
+    # You add image data which is created by manipulating angle of image
+    # starting, last, 5 is steps
+    # So, it will process by -20,-15,-10,...
+    for one_angle in range(-20,20,5):
+        # First, you rotate image by -20,
+        # and assign rotated image into rotated_image
+        rotated_image=opened_image_file.rotate(one_angle)
+        # You store rotated image into nparray
+        rotated_image_in_nparray=np.asarray(rotated_image)
+        # You append data into X_feature_train_data_list
+        X_feature_train_data_list.append(rotated_image_in_nparray)
+        # You append label data
+        Y_feature_train_data_list.append(category)
+        # rotated_image.save("gyudon-"+str(one_angle)+".PNG")
 
-        # 반전하기
-        img2 = img2.transpose(Image.FLIP_LEFT_RIGHT)
-        data = np.asarray(img2)
-        X.append(data)
-        Y.append(cat)
+        flipped_image=rotated_image.transpose(Image.FLIP_LEFT_RIGHT)
+        flipped_image_in_nparray=np.asarray(flipped_image)
+        X_feature_train_data_list.append(flipped_image_in_nparray)
+        Y_feature_train_data_list.append(category)
 
-def make_sample(files, is_train):
-    global X, Y
-    X = []; Y = []
-    for cat, fname in files:
-        add_sample(cat, fname, is_train)
-    return np.array(X), np.array(Y)
-# I collect files in each folder
-allfiles = []
-for idx, cat in enumerate(categories):
-    image_dir = root_dir + "/" + cat
-    files = glob.glob(image_dir + "/*.PG")
-    for f in files:
-        allfiles.append((idx, f))
-# I suffle files and then separate train data and test data
-random.shuffle(allfiles)
-th = math.floor(len(allfiles) * 0.6)
-train = allfiles[0:th]
-test  = allfiles[th:]
-X_train, y_train = make_sample(train, True)
-X_test, y_test = make_sample(test, False)
-xy = (X_train, X_test, y_train, y_test)
-np.save("./image/gyudon2.npy", xy)
-print("ok,", len(y_train))
+def make_sample(files,is_train):
+    global X_feature_train_data_list,Y_feature_train_data_list
+    X_feature_train_data_list=[]; Y_feature_train_data_list=[]
+    for category,fname in files:
+        add_sample(category,fname,is_train)
+    return np.array(X_feature_train_data_list),np.array(Y_feature_train_data_list)
+
+# You collect files in each folder
+allfiles_list=[]
+for index,category in enumerate(categories_list):
+    image_folder_string=folder_containing_image_file_string+"/"+category
+    loaded_files=glob.glob(image_folder_string+"/*.PG")
+    for one_file in loaded_files:
+        allfiles_list.append((index,one_file))
+
+# You suffle files,
+# and then separate train data and test data
+random.shuffle(allfiles_list)
+borderline_for_deviding_data_number=math.floor(len(allfiles_list)*0.6)
+train_data=allfiles_list[0:borderline_for_deviding_data_number]
+test_data=allfiles_list[borderline_for_deviding_data_number:]
+x_train,y_train=make_sample(train_data,True)
+x_test,y_test=make_sample(test_data,False)
+xy_data=(x_train,x_test,y_train,y_test)
+np.save("./image/gyudon2.npy",xy_data)
+print("ok,",len(y_train))
 
       </xmp>
    </BODY>
