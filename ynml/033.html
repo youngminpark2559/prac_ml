@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,12 +33,12 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -46,155 +46,177 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-033. Converting colored image to vector, Using CNN model<br/>
+033. conver colored image to vector,use cnn model
 <xmp>
-@
-# I want to convert image to vector but with color data 
+# @
+# I want to convert image to vector,
+# but with keeping color data
+
 from PIL import Image
 import numpy as np
 
-with open("tower.jpg", "rb") as file:
-    img = Image.open(file)
-    img = img.convert("RGB")
-    I reduce image size by reshaping
-    img = img.resize((64,64))
-    data = np.array(img)
+with open("tower.jpg","rb") as file:
+    opened_file=Image.open(file)
+    converted_image_to_rgb=opened_file.convert("RGB")
+    # You reduce image size by reshape
+    resized_image=converted_image_to_rgb.resize((64,64))
+    converted_image_to_nparray=np.array(resized_image)
 
-@
+# @
 from PIL import Image
-import os, glob
+import os,glob
 import numpy as np
 from sklearn.model_selection import train_test_split
 
 # This is folder I want to load
-caltech_dir = "./image/101_ObjectCategories"
-# This is categories which I want to use
-categories = ["chair","camera","butterfly","elephant","flamingo"]
-# I define nb_classes as len(categories)
-nb_classes = len(categories)
-# I define size of image as 64*64
-image_w = 64 
-image_h = 64
-# Since I use RGB information,
-# I should multiply 3 to calculate entire number of element of image vector
-pixels = image_w * image_h * 3
+folder_you_want_to_open="./image/101_ObjectCategories"
+# These are categories_list which I want to use
+categories_list=["chair","camera","butterfly","elephant","flamingo"]
+# You define number_of_classes by len(categories_list)
+number_of_classes=len(categories_list)
+# You define size of image as 64*64
+width_of_image=64 
+height_of_image=64
+# Since you will use RGB information,
+# you should multiply 3,
+# to calculate entire number of element of image vector
+number_of_element_of_converted_vector_from_image=width_of_image*height_of_image*3
 
-# I load image data
-X = []
-Y = []
-for idx, cat in enumerate(categories):
-    # I make list for label data
-    label = [0 for i in range(nb_classes)]
-    label[idx] = 1
-    # I define image folder
-    image_dir = caltech_dir + "/" + cat
+# You will load image data
+X_feature_of_data_list=[]
+Y_label_of_data_list=[]
+for index,category in enumerate(categories_list):
+    # You create list for label_list data
+    label_list=[0 for index in range(number_of_classes)]
+    label_list[index]=1
+    # You define image folder
+    image_directory=folder_you_want_to_open+"/"+category
     # glob can load every file in specified folder
-    files = glob.glob(image_dir+"/*.jpg")
-    for i, f in enumerate(files):
-        img = Image.open(f)
-        img = img.convert("RGB")
-        img = img.resize((image_w, image_h))
-        data = np.asarray(img)
-        X.append(data)
-        Y.append(label)
-        if i % 10 == 0:
-            print(i, "\n", data)
-X = np.array(X)
-Y = np.array(Y)
+    loaded_files_from_specified_folder=glob.glob(image_directory+"/*.jpg")
+    for index,one_file in enumerate(loaded_files_from_specified_folder):
+        opened_file=Image.open(one_file)
+        converted_file_to_rgb=opened_file.convert("RGB")
+        resized_file=converted_file_to_rgb.resize((width_of_image,height_of_image))
+        filed_represented_in_nparray=np.asarray(resized_file)
+        X_feature_of_data_list.append(filed_represented_in_nparray)
+        Y_label_of_data_list.append(label_list)
+        if index%10==0:
+            print(index,"\n",data)
+X_feature_of_data_nparray=np.array(X_feature_of_data_list)
+Y_label_of_data_nparray=np.array(Y_label_of_data_list)
 
-# I separate training dataset and test dataset
-X_train, X_test, y_train, y_test = train_test_split(X, Y)
-xy = (X_train, X_test, y_train, y_test)
-np.save("./image/5obj.npy", xy)
-print("ok,", len(Y))
+# I separate train dataset and test dataset
+x_train_data,x_test_data,y_train_data,y_test_data\
+    =train_test_split(X_feature_of_data_list,Y_label_of_data_list)
+xy_data_set=(x_train_data,x_test_data,y_train_data,y_test_data)
+np.save("./image/5obj.npy",xy_data_set)
+print("ok,",len(Y_label_of_data_list))
 
-@
-Classifying image by CNN
+# @
+Classifying image by cnn
 
 from keras.models import Sequential
-from keras.layers import Convolution2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense
+from keras.layers import Convolution2D,MaxPooling2D
+from keras.layers import Activation,Dropout,Flatten,Dense
 import h5py
 from PIL import Image
 import numpy as np
 import os
 
-# I define categories
-categories = ["chair","camera","butterfly","elephant","flamingo"]
-# I define nb_classes as len(categories)
-nb_classes = len(categories)
+# You define categories
+categories_list=["chair","camera","butterfly","elephant","flamingo"]
+# You define number_of_classes by len(categories_list)
+number_of_classes=len(categories_list)
 
-# Since we created image data sized 64*64, we disgnate 64, 64
-image_w = 64 
-image_h = 64
+# Since you created image data,
+# whose size is 64*64,
+# you will disgnate 64,64
+width_of_image=64 
+height_of_image=64
 
-# We load 5obj.npy file which we created just ago
-X_train, X_test, y_train, y_test = np.load("./image/5obj.npy")
+# You load 5obj.npy file,
+# which you created from above
+x_train_data,x_test_data,y_train_data,y_test_data=np.load("./image/5obj.npy")
 
-# We normalize data
+# You normalize data,
 # because input data should have value ranged from 0 to 1
-X_train = X_train.astype("float") / 256
-X_test  = X_test.astype("float")  / 256
-print('X_train shape:', X_train.shape)
+normalized_x_train_data=x_train_data.astype("float")/256
+normalized_x_test_data =x_test_data.astype("float") /256
+print("normalized_x_train_data.shape:",normalized_x_train_data.shape)
 
-# We implement CNN model
-# The following scheme is ordinal one which can be applied to in almost cases
-model = Sequential()
-model.add(Convolution2D(32, 3, 3, 
+# You implement cnn model
+# Following scheme is ordinal one,
+# which can be applied to in almost cases
+sequential_object=Sequential()
+# You perform filter sliding
+sequential_object.add(Convolution2D(32,3,3,
     border_mode='same',
-    input_shape=X_train.shape[1:]))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+    input_shape=x_train_data.shape[1:]))
+# You perform relu funtion
+sequential_object.add(Activation('relu'))
+# You perform pooling
+sequential_object.add(MaxPooling2D(pool_size=(2,2)))
+# You perform dropout
+sequential_object.add(Dropout(0.25))
 
-model.add(Convolution2D(64, 3, 3, border_mode='same'))
-model.add(Activation('relu'))
-model.add(Convolution2D(64, 3, 3))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+# You perform 2nd convolution layer
+sequential_object.add(Convolution2D(64,3,3,border_mode='same'))
+sequential_object.add(Activation('relu'))
+sequential_object.add(Convolution2D(64,3,3))
+sequential_object.add(MaxPooling2D(pool_size=(2,2)))
+sequential_object.add(Dropout(0.25))
 
-model.add(Flatten())
-model.add(Dense(512))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
-model.add(Dense(nb_classes))
-model.add(Activation('softmax'))
+sequential_object.add(Flatten())
 
-model.compile(loss='binary_crossentropy',
-    optimizer='rmsprop',
-    metrics=['accuracy'])
+sequential_object.add(Dense(512))
+sequential_object.add(Activation('relu'))
+sequential_object.add(Dropout(0.5))
+sequential_object.add(Dense(number_of_classes))
+sequential_object.add(Activation('softmax'))
 
-# For learning
-hdf5_file = "./image/5obj-model.hdf5"
+# You actually run built model
+sequential_object.compile(\
+    loss='binary_crossentropy'\
+    ,optimizer='rmsprop'\
+    ,metrics=['accuracy'])
+
+# You train model
+hdf5_file="./image/5obj-sequential_object.hdf5"
 if os.path.exists(hdf5_file):
-    model.load_weights(hdf5_file)
+    sequential_object.load_weights(hdf5_file)
 else:
-    model.fit(X_train, y_train, batch_size=32, nb_epoch=50)
-    model.save_weights(hdf5_file)
+    sequential_object.fit(x_train_data,y_train_data,batch_size=32,nb_epoch=50)
+    sequential_object.save_weights(hdf5_file)
 
-# For evaluating
-pre = model.predict(X_test)
-for i,v in enumerate(pre):
-    pre_ans = v.argmax()
-    ans = y_test[i].argmax()
-    dat = X_test[i]
-    if ans == pre_ans: continue
-    print("[NG]", categories[pre_ans], "!=", categories[ans])
-    print(v)
-    fname = "image/error/" + str(i) + "-" + categories[pre_ans] + \
-        "-ne-" + categories[ans] + ".png"
-    dat *= 256
-    img = Image.fromarray(np.uint8(dat))
-    img.save(fname)
-score = model.evaluate(X_test, y_test)
-print('loss=', score[0])
-print('accuracy=', score[1])
+# You evaluate model
+prediction_values=sequential_object.predict(x_test_data)
+for index,prediction_value in enumerate(prediction_values):
+    prediction_value_after_argmax=prediction_value.argmax()
+    label_value_after_argmax=y_test_data[index].argmax()
+    one_x_feature_test_data=x_test_data[index]
+    if label_value_after_argmax==prediction_value_after_argmax:
+        continue
+    print("[NG]",categories_list[prediction_value_after_argmax],"!=",categories_list[label_value_after_argmax])
+    print(prediction_value)
+    filename_string\
+        ="image/error/"+str(index)+"-"+categories_list[prediction_value_after_argmax]\
+            +"-ne-"+categories_list[label_value_after_argmax]+".png"
+    one_x_feature_test_data*=256
+    opened_file=Image.fromarray(np.uint8(one_x_feature_test_data))
+    opened_file.save(filename_string)
+score=sequential_object.evaluate(x_test_data,y_test_data)
+print('loss=',score[0])
+print('accuracy=',score[1])
 
-@
-# People who make models like CNN, RNN are not ordinal developers but researchers in constitute
+# @
+# People who create new models like cnn, rnn are not ordinal developers,
+# but researchers in constitute
 # Researchers should know every aspect of model in detail
-# However, data scientists and ordinal developers who apply these models would be better to focus on applying models to make benefits rather than researching new models
-# To apply model, the most recommended way is to read related thesis papers which are written by researchers
+# However, data scientists and ordinal developers,
+# who apply these models would be better to focus on applying models,
+# to make benefits rather than creating new models
+# To apply model, most recommended way is to read related thesis papers,
+# which are written by researchers
 
 
       </xmp>
