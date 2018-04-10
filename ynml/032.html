@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,12 +33,12 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
-        tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        tex2jax: { inlineMath: [ ['$','$'],["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'],["\\[","\\]"] ],
                    processEscapes: true },
         "HTML-CSS": { availableFonts: ["TeX"],
                       linebreaks: { automatic: true } }
@@ -48,120 +48,153 @@ MathJax.Hub.Config({
    <BODY>
 032. Converting image into vector by hash function<br/>
 <xmp>
-@
-# Average hash expresses image as hash value which can be compared to other hash value of image
-# We use MD5, SHA256, etc as hash function 
 
-@
-# We use term of "hash" in 2 ways
+# @
+# "Average hash" expresses image as hash value,
+# which can be compared to other "hash value of image"
+# You can use MD5,SHA256,etc as hash function 
 
-# We use term of "hash" for hashtable
-# Hashtable means one method of data structure, which stores data based on a pair of key and value like Python's dictionary, JavaScript's object
+# @
+# You use term of "hash" in 2 ways
 
-# We use term of "hash" to call fixed length string as "hash"
+# You use term of "hash" for hashtable
+# Hashtable means one method of data structure,
+# which stores data based on pair of key and value
+# like Python's dictionary or JavaScript's object
 
-@
+# You use term of "hash" to call fixed length image_in_binary_form as "hash"
+
+# @
 # Let's learn how to use hash library in Python
 
 import hashlib
 
-m = hashlib.md5()
-m.update("StringWhatYouWantToHash")
-# I get final hashed string
-result = m.digest()
+md5_hash_function_object=hashlib.md5()
+md5_hash_function_object.update("StringWhatYouWantToHash")
+# I get final hashed image_in_binary_form
+hashed_image_represented_in_string=md5_hash_function_object.digest()
 
-@
+# @
 # Let's deal with image with hash library
 
 import hashlib
+# You open file stream,
+# which will load tower.jpg file in rb mode
+with open("tower.jpg","rb") as file:
+    # You get binary image represented in string from file
+    image_in_binary_form=file.read()
 
-# I open file stream which is automatically closed when task is finished
-with open("tower.jpg", "rb") as file:
-    # I get binary image represented in string from file
-    string = file.read()
-    m = hashlib.md5()
-    m.update(string)
-    result = m.digest()
+    # You create md5 hash function object
+    md5_hash_function_object=hashlib.md5()
+
+    # You hash image_in_binary_form by md5_hash_function_object
+    md5_hash_function_object.update(image_in_binary_form)
+
+    # You obtain hashed string
+    hashed_image_represented_in_string=md5_hash_function_object.digest()
 
 # The good points of hashed image
-# 1. It makes comparison possible to other image by fixed short unique sequence of characters
-# 1. A specific image generates unique hash value so hash value can be used when you claim intellecture property
+# 1. It makes comparison possible,
+# to other image by fixed short unique sequence of characters
+# 1. A specific image generates unique hash value,
+# so hash value can be used when you claim ownership of image
 
 
-@
-# The process of converting image into vector is following
-# 1. I reduce size of image to 8*8
-# 1. I convert color of image to gray
-# 1. I calculate average value from values of all pixels
-# 1. If a pixel's darkness is larger than average, I input 1 into that pixel, otherwise I input 0 into corresponding pixel
+# @
+# Steps of converting image into vector is following
+# 1. You reduce size of image to 8*8
+# 1. You convert color of image to grey
+# 1. You calculate average value from values of all pixels
+# 1. If pixel's darkness is larger than average,
+# you input 1 into that pixel, otherwise you input 0 into corresponding pixel
 
-@
+# @
 pop install Pillow
 
-@
+# @
 from PIL import Image
 import numpy as np
 
 # This method takes 2 arguments(filename, size)
-def average_hash(fname, size = 16):
-    # I use Pillow to load file by file name
-    img = Image.open(fname)
-    # I convert color of image to gray
-    # You can use other options(1 for binary, RGB, RGBA, CMYK) to convert
-    img = img.convert('L')
-    # I resize image
-    img = img.resize((size, size), Image.ANTIALIAS)
-    # I extract pixel data
-    pixel_data = img.getdata()
-    # I convert pixel_data into numpy array
-    pixels = np.array(pixel_data)
+def average_hash(fname,size=16):
+    # You use Pillow to load file by file name
+    opend_file_by_pillow=Image.open(fname)
 
-    # Converted pixel stored in numpy array is 1 dimensional arry
+    # You convert color of image to grey
+    # You can use other options(1:binary,RGB,RGBA,CMYK) to convert
+    color_changed_image=opend_file_by_pillow.convert('L')
+
+    # You resize image
+    resized_image=color_changed_image.resize((size,size),Image.ANTIALIAS)
+
+    # You extract pixel data
+    pixel_data_image=resized_image.getdata()
+    
+    # You convert pixel_data_image into numpy array
+    pixel_data_of_image_in_nparray=np.array(pixel_data_image)
+
+    # pixel_data_of_image_in_nparray is 1 dimensional array
     # [
     #     1 1
     #     1 1
     # ]
-    # so it's hard to get clear overview data
-    # To resolve this issue, I reshape 1 dimensional array into 2 dimensional array
+
+    # So, it's hard to get clear overview data
+
+    # To resolve this issue,
+    # you can reshape 1 dimensional array into 2 dimensional array
     # [
     #     [1 1]
     #     [1 1]
     # ]
     # High number represents bright point
-    pixels = pixels.reshape((size, size))
-    # I find mean value of all pixels
-    avg = pixels.mean()
-    # If a pixel is larger than avg, 1 is assigned
-    diff = 1 * (pixels > avg)
-    return diff
+
+    # size is passed by user,
+    # or default value is 16
+    reshaped_pixel_data_of_image_in_nparray=pixel_data_of_image_in_nparray.reshape((size,size))
+
+    # You find mean value of all pixels
+    mean_value_of_pixel_data=reshaped_pixel_data_of_image_in_nparray.mean()
+    
+    # If pixel is higher than mean_value_of_pixel_data,
+    # 1 is assigned
+    compare_reshaped_pixel_data_and_mean_value_of_pixel_data=1*(reshaped_pixel_data_of_image_in_nparray>mean_value_of_pixel_data)
+    return compare_reshaped_pixel_data_and_mean_value_of_pixel_data
 
 # This method converts data into binary hash
 def np2hash(n):
-    bhash = []
-    for nl in ahash.tolist():
-        sl = [str(i) for i in nl]
-        s2 = "".join(sl)
-        i = int(s2, 2) # 이진수를 정수로 변환하기
-        bhash.append("%04x" % i)
-    return "".join(bhash)
+    binary_hash_list=[]
+    for nl in average_hash_value_from_image.tolist():
+        # You create list
+        sl_list=[str(integer_converted_from_string) for integer_converted_from_string in nl]
+        s2_joined_from_sl_string="".join(sl_list)
+        # You convert binary number into integer
+        integer_converted_from_string=int(s2_joined_from_sl_string,2)
+        # You append integer_converted_from_string into binary_hash_list
+        binary_hash_list.append("%04x"%integer_converted_from_string)
+    # You join binary_hash_list into string
+    return "".join(binary_hash_list)
 
-# I use average_hash() with passing tower.jpg
-ahash = average_hash('tower.jpg')
+# You use average_hash() with passing tower.jpg
+average_hash_value_from_image=average_hash('tower.jpg')
 
 # You can reshape 2 dimensinal array into 1 dimensional array
-print(ahash.reshape(1,-1))
+reshaped_average_hash_value_from_image=average_hash_value_from_image.reshape(1,-1)
+reshaped_average_hash_value_from_image
 
-print(ahash)
-print(np2hash(ahash))
+np2hash(reshaped_average_hash_value_from_image)
 
-@
-ahash_1 = average_hash('tower.jpg')
-ahash_2 = average_hash('test.png')
-a = print(ahash_1.reshape(1,-1))
-b = print(ahash_2.reshape(1,-1))
+# @
+average_hash_value_from_image1=average_hash('tower.jpg')
+average_hash_value_from_image2=average_hash('test.png')
 
-# This compare 2 hashed value and returns true if 2 points are same
-print(a != b)
+reshaped_average_hash_value_from_image1=average_hash_value_from_image1.reshape(1,-1)
+reshaped_average_hash_value_from_image2=average_hash_value_from_image2.reshape(1,-1)
+
+# This compare 2 hashed value,
+# and returns true,
+# if 2 values are same
+reshaped_average_hash_value_from_image1!=reshaped_average_hash_value_from_image2
 # [
 #     [True True False
 #     True True False
@@ -169,11 +202,14 @@ print(a != b)
 #     True True False
 #     False True False]
 # ]
+
 # True is 0 in number
-print((a != b).sum())
-# 155 means how many points are different
+
+print((reshaped_average_hash_value_from_image1!=reshaped_average_hash_value_from_image2).sum())
+# 155 means how many pixels of images are different
 # 155 is called haming distance
-# If 2 images have 155 different points out of 16*16=256 pixels, it's fair to say they're different images   
+# If 2 images have 155 different pixels out of 16*16=256 pixels,
+# it's fair to say they're different images   
 
       </xmp>
    </BODY>
