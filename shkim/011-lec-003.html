@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -52,23 +52,23 @@ MathJax.Hub.Config({
 LeNet-5
 
 32*32 image, 5*5 filter, 1 stride, 6 filters
-convolution
-output 6@28*28
+$$$\rightarrow$$$1st convolution layer$$$\rightarrow$$$
+output will be 28*28*6images
 
-6@28*28 image, 2*2 filter, 2 stride
-pooling
-output 6@14*14
+28*28*6images, 2*2 filter, 2 stride
+$$$\rightarrow$$$1st pooling$$$\rightarrow$$$
+output will be 14*14*6imgaes
 
-6@14*14, 5*5 filter, 1 stride, 6 filters
-convolution
-output 16@10*10
+14*14*6images, 5*5 filter, 1 stride, 6 filters
+$$$\rightarrow$$$2nd convolution$$$\rightarrow$$$
+output will be 10*10*16images
 
 16@10*10 image, 2*2 filter, 2 stride
-pooling
-output 16@5*5
+$$$\rightarrow$$$2nd pooling$$$\rightarrow$$$
+output will be 5*5*16images
 
-16@5*5 image
-full connection
+5*5*16images
+$$$\rightarrow$$$fully connectioned layer$$$\rightarrow$$$
 
       </xmp>
    </BODY>
