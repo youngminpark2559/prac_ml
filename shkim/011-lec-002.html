@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -49,16 +49,20 @@ MathJax.Hub.Config({
 011-lec-002. max pooling
 <xmp>
 @
-Depth of convolution layer is determined by number of filters
-I extract one layer from entire convolution layer
-Pooling means resizing(sampling) extracted layer image
-And then, I iterate above process and then get one entire pooled layer
+Depth of summed output from convolution layer is determined,
+by number of filters
+You can extract one layer from summed output from convolution layer
+Pooling means resizing(sampling) extracted one layer image from above step
+And then, I iterate above process
+(extract one layer from summed output and resizing it),
+and then sum resized layers up
 
 @
 4*4 image, 2*2 pooling filter, 2 stride
-output is 2*2
-There are many ways to extract one value from 2*2 matrix
-Most used ways is max pooling which extracts highest value
+output will be 2*2
+There are many ways to extract one value from 2*2 being slided part
+Most used ways is "max pooling",
+which extracts highest value from 4 values
 
       </xmp>
    </BODY>
