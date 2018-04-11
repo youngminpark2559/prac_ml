@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,7 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -33,7 +33,7 @@ MathJax.Hub.Config({
      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
     MathJax.Hub.Config({
         HTML: ["input/TeX","output/HTML-CSS"],
-        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"],
                equationNumbers: { autoNumber: "AMS" } },
         extensions: ["tex2jax.js"],
         jax: ["input/TeX","output/HTML-CSS"],
@@ -50,50 +50,97 @@ MathJax.Hub.Config({
 <xmp>
 import tensorflow as tf
 
-input_data = [[1,5,3,7,8,10,12],
+input_data=[[1,5,3,7,8,10,12],
               [5,8,10,3,9,7,1]]
-label_data = [[0,0,0,1,0],
+label_data=[[0,0,0,1,0],
               [1,0,0,0,0]]
 
-INPUT_SIZE = 7
-HIDDEN1_SIZE = 10
-HIDDEN2_SIZE = 8
-CLASSES = 5
-Learning_rate = 0.05
+INPUT_SIZE=7
+HIDDEN1_SIZE=10
+HIDDEN2_SIZE=8
+CLASSES=5
+Learning_rate=0.05
 
-x = tf.placeholder(tf.float32, shape=[None, INPUT_SIZE], name='x')
-y_ = tf.placeholder(tf.float32, shape=[None, CLASSES], name='y_')
+x_placeholder_node\
+    =tf.placeholder(tf.float32,shape=[None,INPUT_SIZE],name='x_placeholder_node')
+y_placeholder_node\
+    =tf.placeholder(tf.float32,shape=[None,CLASSES],name='y_placeholder_node')
 
-tensor_map = {x: input_data, y_: label_data}
+map_placeholder_and_data_dict\
+    ={x_placeholder_node:input_data,y_placeholder_node:label_data}
 
-W_h1 = tf.Variable(tf.truncated_normal(shape=[INPUT_SIZE, HIDDEN1_SIZE]), dtype=tf.float32, name='W_h1')
-b_h1 = tf.Variable(tf.zeros(shape=[HIDDEN1_SIZE]), dtype=tf.float32, name='b_h1')
+W_variable_in_h1_node\
+    =tf.Variable(tf.truncated_normal(\
+        shape=[INPUT_SIZE,HIDDEN1_SIZE])\
+        ,dtype=tf.float32\
+        ,name='W_variable_in_h1_node')
 
-W_h2 = tf.Variable(tf.truncated_normal(shape=[HIDDEN1_SIZE, HIDDEN2_SIZE]), dtype=tf.float32, name='W_h2')
-b_h2 = tf.Variable(tf.zeros(shape=[HIDDEN2_SIZE]), dtype=tf.float32, name='b_h2')
+b_variable_in_h1_node\
+    =tf.Variable(tf.zeros(\
+        shape=[HIDDEN1_SIZE])\  
+        ,dtype=tf.float32\
+        ,name='b_variable_in_h1_node')
 
-W_o = tf.Variable(tf.truncated_normal(shape=[HIDDEN2_SIZE, CLASSES]), dtype=tf.float32, name='W_o')
-b_o = tf.Variable(tf.zeros(shape=[CLASSES]), dtype=tf.float32, name='b_o')
+W_variable_in_h2_node\
+    =tf.Variable(tf.truncated_normal(\
+        shape=[HIDDEN1_SIZE,HIDDEN2_SIZE])\
+        ,dtype=tf.float32\
+        ,name='W_variable_in_h2_node')
 
-param_list = [W_h1, b_h1, W_h2, b_h2, W_o, b_o]
-saver = tf.train.Saver()
+b_variable_in_h2_node\
+    =tf.Variable(tf.zeros(\
+        shape=[HIDDEN2_SIZE])\
+        ,dtype=tf.float32\
+        ,name='b_variable_in_h2_node')
 
-hidden1 = tf.sigmoid(tf.matmul(x, W_h1) + b_h1, name='hidden1')
-hidden2 = tf.sigmoid(tf.matmul(hidden1, W_h2) + b_h2, name='hidden2')
-y = tf.sigmoid(tf.matmul(hidden2, W_o) + b_o, name='y')
+W_variable_in_o_node\
+    =tf.Variable(tf.truncated_normal(\
+        shape=[HIDDEN2_SIZE,CLASSES])\
+        ,dtype=tf.float32\
+        ,name='W_variable_in_o_node')
 
-sess = tf.Session()
-# We don't need this code because we're using checkpoint
-# sess.run(tf.initialize_all_variables())
-# We restore checkpoint at this point of code
-saver.restore(sess, './tflectcheckpoint')
-result = sess.run(y, tensor_map)
-print(result)
-# Out model is now not function outputting meaningless value
-# We need to make this function meaningful by restoring saved weights from checkpoint
+b_variable_in_o_node\
+    =tf.Variable(tf.zeros(\
+        shape=[CLASSES])\
+        ,dtype=tf.float32\
+        ,name='b_variable_in_o_node')
+
+parameters_to_be_saved_list\
+    =[W_variable_in_h1_node,b_variable_in_h1_node\
+    ,W_variable_in_h2_node,b_variable_in_h2_node\
+    ,W_variable_in_o_node,b_variable_in_o_node]
+
+saver_object=tf.train.Saver()
+
+hypothesis_f_in_h1\
+    =tf.sigmoid(tf.matmul(x_placeholder_node,W_variable_in_h1_node)+b_variable_in_h1_node\
+    ,name='hypothesis_f_in_h1')
+
+hypothesis_f_in_h2\
+    =tf.sigmoid(tf.matmul(hypothesis_f_in_h1,W_variable_in_h2_node)+b_variable_in_h2_node\
+    ,name='hypothesis_f_in_h2')
+
+hypothesis_f_in_o\
+    =tf.sigmoid(tf.matmul(hypothesis_f_in_h2,W_variable_in_o_node)+b_variable_in_o_node\
+    ,name='hypothesis_f_in_o')
+
+sess_object=tf.Session()
+
+# You don't need this code because you're using checkpoint
+# sess_object.run(tf.initialize_all_variables())
+
+# You will restore checkpoint at this point of code
+saver_object.restore(sess_object,'./tflectcheckpoint')
+result_of_train=sess_object.run(hypothesis_f_in_o,map_placeholder_and_data_dict)
+print(result_of_train)
+
+# Out model before restoring checkpoint is not function,
+# because it outputs meaningless value
+# You need to make this function to output meaningful value,
+# by restoring saved weights from checkpoint
 # [[radomvalue radomvalue radomvalue radomvalue radomvalue],
 #  [radomvalue radomvalue radomvalue radomvalue radomvalue]]
-# We expected,
+# You expected,
 # [[0,0,0,1,0],
 #  [1,0,0,0,0]]
 
