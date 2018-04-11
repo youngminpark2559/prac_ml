@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+},
+img {
+ width=900px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005-002. how to configure vairables to use tensorboard
+<xmp>
+import tensorflow as tf
+import numpy as np
+
+
+loaded_data_csv=np.loadtxt(\
+    '/home/young/문서/data.csv'\
+    ,delimiter=','\
+    ,unpack=True\
+    ,dtype='float32')
+
+x_data=np.transpose(loaded_data_csv[0:2])
+y_data=np.transpose(loaded_data_csv[2:])
+
+
+# @
+# You will build model
+
+global_step=tf.Variable(0,trainable=False,name='global_step')
+
+X_placeholder_node=tf.placeholder(tf.float32)
+Y_placeholder_node=tf.placeholder(tf.float32)
+
+# Block which is grouped by "with tf.name_scope('layer1'):" will show,
+# in one layer in tensorboard
+with tf.name_scope('layer1'):
+    W_variable_in_layer1_node\
+        =tf.Variable(tf.random_uniform([2,10],-1.,1.),name='W_variable_in_layer1_node')
+    hypothesis_f_in_layer1_node\
+        =tf.nn.relu(tf.matmul(X_placeholder_node,W_variable_in_layer1_node))
+
+with tf.name_scope('layer2'):
+    W_variable_in_layer2_node\
+        =tf.Variable(tf.random_uniform([10,20],-1.,1.),name='W_variable_in_layer2_node')
+    hypothesis_f_in_layer2_node\
+        =tf.nn.relu(tf.matmul(hypothesis_f_in_layer1_node,W_variable_in_layer2_node))
+
+with tf.name_scope('output'):
+    W_variable_in_layer3_node\
+        =tf.Variable(tf.random_uniform([20,3],-1.,1.),name='W_variable_in_layer3_node')
+    hypothesis_function_node=tf.matmul(hypothesis_f_in_layer2_node,W_variable_in_layer3_node)
+
+with tf.name_scope('adam_optimizer_node'):
+    cost_function_node=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(\
+        labels=Y_placeholder_node\
+        ,logits=hypothesis_function_node))
+
+    adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=0.01)
+    to_be_trained_node=adam_optimizer_node.minimize(cost_function_node,global_step=global_step)
+
+    # You can specify values which you want tensorboard to collect,
+    # by tf.summary.scalar() 
+    tf.summary.scalar('cost_function_node',cost_function_node)
+
+
+# @
+# You will train model
+
+sess_object=tf.Session()
+saver_object=tf.train.Saver(tf.global_variables())
+
+ckeckpoint_directory=tf.train.get_checkpoint_state('/home/young/문서/model')
+if ckeckpoint_directory and tf.train.checkpoint_exists(ckeckpoint_directory):
+    saver_object.restore(sess_object,ckeckpoint_directory)
+else:
+    sess_object.run(tf.global_variables_initializer())
+
+# You merge tennsors which you want to show on tensorboard
+merged_tensor_node=tf.summary.merge_all()
+# You designate directory where graph and tensors will be saved
+writer_node=tf.summary.FileWriter('/home/young/문서/logs',sess_object.graph)
+
+# You can use "log" file like following steps
+# 1. You run webserver with following command
+# tensorboard --logdir=/home/young/문서/logs
+# 1. You go to http://localhost:6006
+
+# @
+# You will perform train
+for step in range(100):
+    sess_object.run(\
+        to_be_trained_node\
+        ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data})
+
+    print('Step: %d,' % sess_object.run(global_step),
+          'Cost: %.3f' % sess_object.run(\
+            cost_function_node\
+            ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data}))
+
+    # You should collect and save vairables at proper time
+    summary_of_tensor=sess_object.run(\
+        merged_tensor_node\
+        ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data})
+    writer_node.add_summary(\
+        summary_of_tensor\
+        ,global_step=sess_object.run(global_step))
+
+saver_object.save(sess_object,'/home/young/문서/model/dnn.ckeckpoint_directory',global_step=global_step)
+
+# @
+# You will see result
+prediction_after_argmax_node=tf.argmax(hypothesis_function_node,1)
+label_after_argmax_node=tf.argmax(Y_placeholder_node,1)
+print('Prediction value:',sess_object.run(prediction_after_argmax_node,feed_dict={X_placeholder_node: x_data}))
+print('Label value:',sess_object.run(label_after_argmax_node,feed_dict={Y_placeholder_node: y_data}))
+
+compare_prediction_and_label_node=tf.equal(prediction_after_argmax_node,label_after_argmax_node)
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('Accuracy: %.2f' % sess_object.run(accuracy_node*100,feed_dict={X_placeholder_node:x_data,Y_placeholder_node: y_data}))
+
+# img 557bd399-e3cc-477b-a127-f27753710b06
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/golbin/pic/557bd399-e3cc-477b-a127-f27753710b06.png"><xmp>
+
+# img 6f2465bd-2e16-4dff-a0ad-f0fb95171fe9
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/golbin/pic/6f2465bd-2e16-4dff-a0ad-f0fb95171fe9.png"><xmp>
+
+</xmp>
+   </BODY>
+</HTML>
