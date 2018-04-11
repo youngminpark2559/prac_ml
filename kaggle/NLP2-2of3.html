@@ -1,0 +1,455 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+rangedata-7cofy5fmoNM. deal with range data, one hot encoding
+<xmp>
+
+https://github.com/corazzon/KaggleStruggle/blob/master/word2vec-nlp-tutorial/tutorial-part-2.ipynb
+NLP 2 Word2Vec을 Gensim을 통해 벡터화하고 t-SNE로 시각화-IMDB 영화 리뷰 분석 캐글 머신러닝(기계학습)
+
+@
+You will vectorize words by word2vec(word embedding to vector),
+which is one of deep learning techniques
+You can visualize vectorized word data by t-SNE
+You can use hybrid methodology,
+using both deep learning and random forest of supervised learning.
+
+@
+Computer only can recognize numbers
+Character and image are saved as binary file
+You can vectorize words by "bag of word" methodology,
+to let computer to understand words
+
+@
+Vectorizing by "one hot encoding" and "bag of word" can create too big and sparse vector
+This way reduces perfomance in neural network
+
+@
+Word2Vec uses idea that meaning of "some word" should be similar,
+with words located in around that word
+When you use around words as label for specific word when you train model,
+process of word2vec is mapping "some word" to "dense vector" containing meaning
+Word2Vec uses similarity between words,
+so, model can understand relation between "paris and france" and "berlin and germany"
+
+# img d77a3d3f-8e8f-4e64-a7d2-56f20ef7d7a6
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/kaggle/pic/d77a3d3f-8e8f-4e64-a7d2-56f20ef7d7a6.png"><xmp>
+@
+You can see process of word embedding in visualization in real time
+,in following site,https://ronxin.github.io/wevi/
+
+@
+# img a9e5bd6a-7fff-4e57-9515-12a344e6d5f3
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/kaggle/pic/a9e5bd6a-7fff-4e57-9515-12a344e6d5f3.png"><xmp>
+Ref: https://arxiv.org/pdf/1301.3781.pdf
+Tomas Mikolov,Ilya Sutskever,Kai Chen,Greg Corrado,and Jeffrey Dean
+Distributed Representations of Words and Phrases and their Compositionality
+In Proceedings of NIPS,2013.
+
+@
+There are 2 methods,CBOW,Skip-Gram
+CBOW(continuous bag-of-words) predicts one word by entire text,
+so,it's beneficial to use CBOW for small entire data
+
+The example of "CBOW fitted task" is predicting word for blank in simple sentence
+
+1. __ has good taste   
+2. Riding __ is fun   
+3. Since I ate food 2 __,I'm feeling __ ache  
+
+@
+Skip-Gram is predicting original word from target words
+As opposed to CBOW,Skip-Gram processes a pair of "context-target" as new finding,
+and it's beneficial to use skip-gram when you have large dataset
+
+@
+You can use Skip-gram to predict word which can be fit around follwing marked word.
+
+1. *Apple* has good taste   
+2. Riding *bike* is fun   
+3. Since I ate food 2 *times*,I'm feeling *stomach* ache  
+
+@
+References for word2vec
+tensorflow document in korean:
+https://tensorflowkorea.gitbooks.io/tensorflow-kr/g3doc/tutorials/word2vec/
+ratsgo's blog
+https://ratsgo.github.io/natural%20language%20processing/2017/03/08/word2vec/
+Efficient Estimation of Word Representations in Vector Space:
+https://arxiv.org/pdf/1301.3781v3.pdf
+Distributed Representations of Words and Phrases and their Compositionality:
+http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
+CS224n: Natural Language Processing with Deep Learning:
+http://web.stanford.edu/class/cs224n/syllabus.html
+Chris McCormick's Word2Vec Tutorial-The Skip-Gram Model:
+http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/
+
+@
+References for gensim
+gensim: models.word2vec – Deep learning with word2vec:
+https://radimrehurek.com/gensim/models/word2vec.html
+gensim: Tutorials:
+https://radimrehurek.com/gensim/tutorial.html
+Korean and nltk and gensim-PyCon Korea 2015:
+https://www.lucypark.kr/docs/2015-pyconkr/#1
+
+
+
+# Following code prevents too long output displayed
+# So,you'd better to uncomment following 2 sentences_list out,
+# in training and testing and servicing time
+import warnings
+warnings.filterwarnings('ignore')
+
+import pandas as pd
+import re
+import nltk
+
+import numpy as np
+
+from bs4 import BeautifulSoup
+from nltk.corpus import stopwords
+
+
+labeled_traindata_dataframe=pd.read_csv(
+    'D:/chromedown/labeledTrainData.tsv'\
+    ,header=0\
+    ,delimiter='\t'\
+    ,quoting=3)
+print(labeled_traindata_dataframe.shape)
+# (25000,3)
+
+print(labeled_traindata_dataframe['review'].size)
+# 25000
+
+labeled_traindata_dataframe.head()
+#      id      sentiment    review
+# 0    "5814_8"    1    "With all this stuff going down at the moment ...
+# 1    "2381_9"    1    "\"The Classic War of the Worlds\" by Timothy ...
+# 2    "7759_3"    0    "The film starts with a manager (Nicholas Bell...
+# 3    "3630_4"    0    "It must be assumed that those who praised thi...
+# 4    "9495_8"    1    "Superbly trashy and wondrously unpretentious ...
+
+
+
+testdata_dataframe=pd.read_csv(\
+    'D:/chromedown/testData.tsv'\
+    ,header=0\
+    ,delimiter='\t'\
+    ,quoting=3)
+print(testdata_dataframe.shape)
+# (25000,2)
+
+print(testdata_dataframe['review'].size)
+# 25000
+
+# You can see there is no sentiment data,
+# in testdata_dataframe data unlike labeled_traindata_dataframe
+testdata_dataframe.head()
+#        id          review
+# 0    "12311_10"  "Naturally in a film who's main themes are of ...
+# 1    "8348_2"    "This movie is a disaster within a disaster fi...
+# 2    "5828_4"    "All in all,this is a movie for kids. We saw ...
+# 3    "7186_2"    "Afraid of the Dark left me with the impressio...
+# 4    "12128_7"   "A very accurate depiction of small time mob l...
+
+unlabeled_traindata_dataframe=pd.read_csv(\
+    'D:/chromedown/unlabeledTrainData.tsv'\
+    ,header=0\
+    ,delimiter='\t'\
+    ,quoting=3)
+print(unlabeled_traindata_dataframe.shape)
+# (50000,2)
+
+print(unlabeled_traindata_dataframe['review'].size)
+# 50000
+
+
+# @
+from KaggleWord2VecUtility import KaggleWord2VecUtility
+KaggleWord2VecUtility.review_to_wordlist(labeled_traindata_dataframe['review'][0])[:10]
+# ['with',
+#  'all',
+#  'this',
+#  'stuff',
+#  'going',
+#  'down',
+#  'at',
+#  'the',
+#  'moment',
+#  'with']
+
+# @
+from nltk import word_tokenize
+sentences_list=[]
+for review in labeled_traindata_dataframe["review"]:
+    sentences_list+=KaggleWord2VecUtility\
+        .review_to_sentences(review,remove_stopwords=False)
+# ---------------------------------------------------------------------------
+# AttributeError                            Traceback (most recent call last)
+# <ipython-input-48-872e30cda2f9> in <module>()
+#       4 for review in labeled_traindata_dataframe["review"]:
+#       5     sentences_list+=KaggleWord2VecUtility.review_to_sentences(
+# ----> 6         review,remove_stopwords=False)
+
+# D:\repo\pracdatascience\KaggleWord2VecUtility.py in review_to_sentences(review,remove_stopwords)
+#      43         # 1. Use the NLTK tokenizer to split the paragraph into sentences_list
+#      44 
+# ---> 45         raw_sentences=nltk.word_tokenize(review)
+#      46         #
+#      47         # 2. Loop over each sentence
+
+# AttributeError: 'str' object has no attribute 'decode'
+
+for review in unlabeled_traindata_dataframe["review"]:
+    sentences_list+=KaggleWord2VecUtility\
+        .review_to_sentences(review,remove_stopwords=False)
+len(sentences_list)
+sentences_list[0][:10]
+sentences_list[1][:10]
+
+# @
+# Gensim
+# gensim: models.word2vec – Deep learning with word2vec
+# https://radimrehurek.com/gensim/models/word2vec.html
+
+# @
+# Parameters of Word2Vec model
+# 1. architecture: architecture option is given by skip-gram (default) or CBOW
+# skip-gram(default) is slow but creates better result
+# 1. learning algorithm: hierarchical softmax (default) or negative sampling
+# You'd better use default one if it working well
+# 1. down sampling for frequently appearing word:
+# Google document recommends 0.00001 ~ 0.001.
+# 1. dimensionality of vector of word
+# 1. context / window size
+# 1. minimal number of word
+
+# @
+import logging
+logging.basicConfig(\
+    format='%(asctime)s : %(levelname)s : %(message)s',
+    level=logging.INFO)
+
+# You configure parameters
+# This is dimensionality of vector for words
+num_features=300 
+# This is minimum number of characters
+min_word_count=40 
+num_workers=4
+context=10 
+downsampling=1e-3
+
+# You initialize and let word2vec_model to train
+from gensim.models import word2vec
+word2vec_model=word2vec.Word2Vec(sentences_list,
+                          workers=num_workers,
+                          size=num_features,
+                          min_count=min_word_count,
+                          window=context,
+                          sample=downsampling)
+word2vec_model
+
+# When finishing training, you unload not being used memory
+word2vec_model.init_sims(replace=True)
+
+model_name='300features_40minwords_10text'
+# model_name='300features_50minwords_20text'
+word2vec_model.save(model_name)
+
+
+# @
+# Exploring the Model Results
+
+# You extract words which have no similarity
+word2vec_model.wv.doesnt_match('man woman child kitchen'.split())
+word2vec_model.wv.doesnt_match("france england germany berlin".split())
+
+# # You extract words which have most highted similarity
+word2vec_model.wv.most_similar("man")
+word2vec_model.wv.most_similar("queen")
+# word2vec_model.wv.most_similar("awful")
+word2vec_model.wv.most_similar("film")
+# word2vec_model.wv.most_similar("happy")
+# When you performed stemming
+word2vec_model.wv.most_similar("happi") 
+
+# @
+# You will visualize vectorized words by word2vec via t-sne
+# References:
+# https://stackoverflow.com/questions/43776572/visualise-word2vec-generated-from-gensim
+
+from sklearn.manifold import TSNE
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import gensim 
+import gensim.models as g
+
+# Following code resolves broken "-" character in graph
+mpl.rcParams['axes.unicode_minus']=False
+
+model_name='300features_40minwords_10text'
+word2vec_model=g.Doc2Vec.load(model_name)
+
+vocabulary_list=list(word2vec_model.wv.vocab)
+X_feature_data=word2vec_model[vocabulary_list]
+
+print(len(X_feature_data))
+# You select 1st one from X_feature_data,
+# then select 0 to 10th rows
+print(X_feature_data[0][:10])
+tsne_object=TSNE(n_components=2)
+
+# You will visualize only 100 words
+X_feature_data_in_tsne=tsne.fit_transform(X_feature_data[:100,:])
+# X_feature_data_in_tsne=tsne.fit_transform(X_feature_data)
+
+X_feature_data_in_tsne_dataframe=pd.DataFrame(\
+    X_feature_data_in_tsne\
+    ,index=vocabulary_list[:100]\
+    ,columns=['x','y'])
+X_feature_data_in_tsne_dataframe.shape
+X_feature_data_in_tsne_dataframe.head(10)
+figure_object=plt.figure()
+figure_object.set_size_inches(40,20)
+subplot_object=figure_object.add_subplot(1,1,1)
+subplot_object.scatter(\
+    X_feature_data_in_tsne_dataframe['x']\
+    ,X_feature_data_in_tsne_dataframe['y'])
+
+for word,pos in X_feature_data_in_tsne_dataframe.iterrows():
+    subplot_object.annotate(word,pos,fontsize=30)
+plt.show()
+
+# @
+import numpy as np
+
+def makeFeatureVec(words,model,num_features):
+    """
+    This is a function which find mean value of word vector from given sentence.
+    """
+    # In advance, you initialize matrix by 0 to enhance process speed
+    featureVec_nparray=np.zeros((num_features,),dtype="float32")
+    number_of_words=0.
+    # Index2word is a list containing name of word,
+    # which is located in dictionary of model
+    # You convert index2word into set data type
+    index2word_set=set(model.wv.index2word)
+    # You add words into features vector,
+    # if they're involved in model dictionary,
+    # as you go with "for loop".
+    for word in words:
+        if word in index2word_set:
+            number_of_words=number_of_words+1.
+            featureVec_nparray=np.add(featureVec_nparray,model[word])
+    # You calculate mean value of feature vector,
+    # by deviding feature vector by number of workds
+    featureVec_nparray=np.divide(featureVec_nparray,number_of_words)
+    return featureVec_nparray
+
+def getAvgFeatureVecs(reviews,model,number_of_features):
+    # You calculate mean value of feature vector of each list of review word
+    # And then you return 2D numpy array.
+
+    counter=0
+    
+    reviewFeatureVecs_nparray=np.zeros((len(reviews),number_of_features),dtype="float32")
+    
+    for review in reviews:
+       # You will display review per 1000 one
+       if counter%1000.==0.:
+           print("Review %d of %d"%(counter,len(reviews)))
+       
+       reviewFeatureVecs_nparray[int(counter)]=makeFeatureVec(review,model,number_of_features)
+       
+       counter=counter+1.
+    return reviewFeatureVecs_nparray
+
+# You use 4 workers by using multiple threads
+# You return clean_reviews
+def getCleanReviews(reviews):
+    clean_reviews_list=[]
+    clean_reviews_list=KaggleWord2VecUtility\
+        .apply_by_multiprocessing(\
+            reviews["review"]\
+            ,KaggleWord2VecUtility.review_to_wordlist\
+            ,workers=4)
+    return clean_reviews_list
+
+%time trainDataVecs=getAvgFeatureVecs(getCleanReviews(labeled_traindata_dataframe),word2vec_model,num_features)
+%time testDataVecs=getAvgFeatureVecs(getCleanReviews(testdata_dataframe),word2vec_model,num_features)
+
+from sklearn.ensemble import RandomForestClassifier
+randomforest_classifier_object=RandomForestClassifier(n_estimators=100,n_jobs=-1,random_state=2018)
+%time trained_randomforest=randomforest_classifier_object.fit(trainDataVecs,labeled_traindata_dataframe["sentiment"])
+
+from sklearn.model_selection import cross_val_score
+%time cross_validation_score=np.mean(cross_val_score(trained_randomforest,trainDataVecs,labeled_traindata_dataframe['sentiment'],cv=10,scoring='roc_auc'))
+cross_validation_score
+
+prediction_result_by_randomforest=randomforest_classifier_object.predict(testDataVecs)
+prediction_result_by_randomforest_dataframe=pd.DataFrame(data={"id":testdata_dataframe["id"],"sentiment":prediction_result_by_randomforest})
+prediction_result_by_randomforest_dataframe.to_csv('data/Word2Vec_AverageVectors_{0:.5f}.csv'.format(score),index=False,quoting=3)
+# 300features_40minwords_10text 일 때 0.90709436799999987
+# 300features_50minwords_20text 일 때 0.86815798399999999
+
+count_of_sentiment=prediction_result_by_randomforest_dataframe['sentiment'].value_counts()
+print(count_of_sentiment[0]-count_of_sentiment[1])
+count_of_sentiment
+
+import seaborn as sns
+%matplotlib inline
+
+figure_object,subplot_object=plt.subplots(ncols=2)
+figure_object.set_size_inches(12,5)
+sns.countplot(labeled_traindata_dataframe['sentiment'],ax=subplot_object[0])
+sns.countplot(prediction_result_by_randomforest_dataframe['sentiment'],ax=subplot_object[1])
+# 544/578
+</xmp>
+   </BODY>
+</HTML>
