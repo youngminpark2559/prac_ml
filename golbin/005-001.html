@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+},
+img {
+ width=900px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+005-001. how to save variables
+<xmp>
+import tensorflow as tf
+import numpy as np
+
+loaded_data_csv=np.loadtxt(\
+    '/home/young/문서/data.csv'\
+    ,delimiter=','\
+    ,unpack=True\
+    ,dtype='float32')
+
+# Hair,wing, etc,mammal,bird
+# x_data=0,1
+# y_data=2,3,4
+x_data=np.transpose(loaded_data_csv[0:2])
+# array([[0., 0.],
+#        [1., 0.],
+#        [1., 1.],
+#        [0., 0.],
+#        [0., 0.],
+#        [0., 1.]], dtype=float32)
+
+y_data=np.transpose(loaded_data_csv[2:])
+# array([[1., 0., 0.],
+#        [0., 1., 0.],
+#        [0., 0., 1.],
+#        [1., 0., 0.],
+#        [1., 0., 0.],
+#        [0., 0., 1.]], dtype=float32)
+
+# This will be used as incrementing variable as step increments
+value_will_be_incremented_as_step_increments\
+    =tf.Variable(0,trainable=False,name='global_step')
+
+# @
+# You will build model
+
+X_placeholder_node=tf.placeholder(tf.float32)
+Y_placeholder_node=tf.placeholder(tf.float32)
+
+W_variable_in_layer1_node=tf.Variable(tf.random_uniform([2,10],-1.,1.))
+hypothesis_f_in_layer1_node\
+    =tf.nn.relu(tf.matmul(X_placeholder_node,W_variable_in_layer1_node))
+
+W_variable_in_layer2_node=tf.Variable(tf.random_uniform([10,20],-1.,1.))
+hypothesis_f_in_layer2_node\
+    =tf.nn.relu(tf.matmul(hypothesis_f_in_layer1_node,W_variable_in_layer2_node))
+
+W_variable_in_layer3_node=tf.Variable(tf.random_uniform([20,3],-1.,1.))
+hypothesis_function_node=tf.matmul(hypothesis_f_in_layer2_node,W_variable_in_layer3_node)
+
+cost_function_node\
+    =tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(\
+        labels=Y_placeholder_node\
+        ,logits=hypothesis_function_node))
+
+adam_optimizer_node=tf.train.AdamOptimizer(learning_rate=0.01)
+
+# global_step로 넘겨준 변수를,학습용 변수들을 최적화 할 때 마다 학습 횟수를 하나씩 증가시킵니다.
+to_be_trained_node\
+    =adam_optimizer_node.minimize(\
+        cost_function_node\
+        ,global_step=value_will_be_incremented_as_step_increments)
+
+
+# @
+# You will train model
+
+sess_object=tf.Session()
+
+# You initialize api which saves and restores variables
+# You can initialize variables by tf.global_variables()
+# Or, you can restore variables
+saver_object=tf.train.Saver(tf.global_variables())
+
+checkpoint_directory=tf.train.get_checkpoint_state('/home/young/문서/model')
+if checkpoint_directory and tf.train.checkpoint_exists(checkpoint_directory):
+    saver_object.restore(sess_object,checkpoint_directory)
+else:
+    sess_object.run(tf.global_variables_initializer())
+
+# You will perform train
+for step in range(2):
+    sess_object.run(\
+        to_be_trained_node\
+        ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data})
+
+    print('Step: %d,' % sess_object.run(value_will_be_incremented_as_step_increments),
+          'Cost: %.3f' % sess_object.run(\
+            cost_function_node\
+            ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data}))
+
+# After train, you save variables
+saver_object.save(\
+    sess_object,\
+    '/home/young/문서/model/dnn.ckpt'\
+    ,global_step=value_will_be_incremented_as_step_increments)
+
+
+# You will see result
+# 0 is etc
+# 1 is mammal
+# 2 is bird
+prediction_after_argmax_node=tf.argmax(hypothesis_function_node,1)
+label_after_argmax_node=tf.argmax(Y_placeholder_node,1)
+print(\
+    'Prediction value:',sess_object.run(\
+        prediction_after_argmax_node\
+        ,feed_dict={X_placeholder_node:x_data}))
+print('Lable value:',sess_object.run(\
+    label_after_argmax_node\
+    ,feed_dict={Y_placeholder_node:y_data}))
+
+compare_prediction_and_label_node=tf.equal(\
+    prediction_after_argmax_node\
+    ,label_after_argmax_node)
+
+accuracy_node=tf.reduce_mean(tf.cast(compare_prediction_and_label_node,tf.float32))
+print('정확도: %.2f' % sess_object.run(\
+    accuracy_node*100\
+    ,feed_dict={X_placeholder_node:x_data,Y_placeholder_node:y_data}))
+</xmp>
+   </BODY>
+</HTML>
