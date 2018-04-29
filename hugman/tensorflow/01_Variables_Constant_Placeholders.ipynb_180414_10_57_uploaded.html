@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+    
+    background-color: black;
+    color:#ABBAB7;
+},
+img {
+ width=900px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+bikesharingdemand
+<xmp>
+import tensorflow as tf
+import numpy as np
+
+sess_object = tf.Session()
+# Now you can create any variables and constants
+
+# constant sum ops
+constant1_node = tf.constant(10)
+constant2_node = tf.constant(20)
+sum_operation_for_c1_and_c2_node = constant1_node + constant2_node
+
+# variable sum ops
+variable1_node = tf.Variable(10)
+variable2_node = tf.Variable(20)
+sum_operation_for_v1_and_v2_node = variable1_node + variable2_node
+
+
+
+# constant1_node = tf.constant(10)
+# constant2_node = tf.constant(20)
+# sum_operation_for_c1_and_c2_node = constant1_node + constant2_node
+# print("constant sum : ", sess_object.run( sum_operation_for_c1_and_c2_node ))
+# 30
+
+# variable1_node = tf.Variable(10)
+# variable2_node = tf.Variable(20)
+# sum_operation_for_v1_and_v2_node = variable1_node + variable2_node
+
+# Initialize variables
+initialize_variable_node = tf.initialize_all_variables()
+sess_object.run(initialize_variable_node)
+
+# print("variable sum : ", sess_object.run( sum_operation_for_v1_and_v2_node ))
+# 30
+
+# You can change values of variables with 'feed_dict'
+summed_result_by_using_feed_dict_for_variable=sess_object.run( sum_operation_for_v1_and_v2_node, feed_dict={variable1_node:40, variable2_node:50} )
+print("summed_result_by_using_feed_dict_for_variable",summed_result_by_using_feed_dict_for_variable)
+
+
+# You cna close Session
+sess_object.close()
+
+
+# Tensorflow provides 'placeholder' for drawing graph,
+# without real variables or constants
+# Placeholder will be fed at 'running' time, not drawing time
+
+# tf.placeholder(datatype, shape=None, name=None)
+# You can use placeholder for tensor that will be always fed
+
+# [n,100] shape placeholder composed of tf.float32 datatype elements
+input_value_placeholder_node = tf.placeholder(tf.float32, shape=[None, 100])
+# [100,10] shape variable
+weights_variable_node = tf.get_variable("W", [100,10])
+matmul_operation_node_for_input_v_ph_and_weights_v_n = tf.matmul(input_value_placeholder_node, weights_variable_node)
+
+sess_object = tf.Session()
+initialize_variable_node = tf.initialize_all_variables()
+sess_object.run(initialize_variable_node)
+
+# Following code generate errors
+# Placeholder should be fed with 'feed_dict'
+# print(sess_object.run( matmul_operation_node_for_input_v_ph_and_weights_v_n ))
+
+# Number of element is 200
+# Element starts with 0 and ends with 199
+# 1 dimension array
+# print("np.arange(200)",np.arange(200))
+# [  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
+#   18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35
+#   36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53
+#   54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
+#   72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89
+#   90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107
+#  108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125
+#  126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
+#  144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161
+#  162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179
+#  180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197
+#  198 199]
+
+# 2 dimension array
+# shape (2,100)
+# print("np.arange(200).reshape(2,100)",np.arange(200).reshape(2,100))
+# [[  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
+#    18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35
+#    36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53
+#    54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
+#    72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89
+#    90  91  92  93  94  95  96  97  98  99]
+#  [100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117
+#   118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135
+#   136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153
+#   154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171
+#   172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189
+#   190 191 192 193 194 195 196 197 198 199]]
+
+_input_nparray = np.arange(200).reshape(2, 100)
+
+output = sess_object.run(\
+    matmul_operation_node_for_input_v_ph_and_weights_v_n\
+    ,feed_dict={input_value_placeholder_node:_input_nparray}) 
+
+print("output.shape",output.shape)
+# (2, 100)
+
+print(output)
+# [[ 9.5714207e+00  3.0001825e+01  1.4423824e+01 -1.8109047e+01
+#   -1.3509974e+01  1.7623901e-03  8.1329742e+01 -8.6805923e+01
+#    6.7744072e+01  6.8244629e+01]
+#  [ 3.3239922e+01  1.3441599e+02  9.1928253e+01 -2.5589962e+01
+#    2.5693932e+01 -2.5009190e+01  1.3784079e+02 -2.2765759e+02
+#    2.1639032e+02  2.9889111e+02]]
+
+sess_object.close()
+      
+</xmp>
+   </BODY>
+</HTML>

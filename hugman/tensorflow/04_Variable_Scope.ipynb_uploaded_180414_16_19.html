@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+    
+    background-color: black;
+    color:#ABBAB7
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+04_Variable_Scope.ipynb_uploaded_180414_16_19.html
+tf.get_variable(), tf.variable_scope(), tf.name_scope()
+<xmp>
+
+
+
+
+# Tensorflow provides 2 different scope methods,
+# to group and specify "variables,operations and constants"
+# To understand it,it is better to first check,
+# how tensorflow to name variables and operations
+
+import tensorflow as tf
+import numpy as np
+
+# @
+# Tensorflow naming method
+
+# You can create variable with 'get_variable_scope'
+# tf.get_variable(
+#     name,
+#     shape=None,
+#     dtype=None,
+#     initializer=None,
+#     regularizer=None,
+#     trainable=True,
+#     collections=None,
+#     caching_device=None,
+#     partitioner=None,
+#     validate_shape=True,
+#     use_resource=None,
+#     custom_getter=None,
+#     constraint=None
+# )
+# You can either get existing variable with these parameters,
+# or create new one
+
+a=tf.get_variable("a",[])
+# print a.name  
+# a:0
+# It means name of a node is 'a:0'
+
+# You will try to create variable which has same name with "a:0"
+# But, it will generate errors
+
+
+# @
+# Variable Scope
+
+with tf.variable_scope("A"):
+    b=tf.get_variable("b",[])
+    print b.name 
+# A/b:0
+# It means A is scope name,
+# b is variable name
+
+# With variable_scope,
+# you can create many variables with same names
+
+
+with tf.variable_scope("C"):
+    b2=tf.get_variable("b",[])
+    print b2.name 
+# C/b:0
+# It means C is scope name,
+# b is variable name
+
+# from graph_visualizer import show_graph
+# show_graph(tf.get_default_graph().as_graph_def())
+
+
+# You can create nested variable scope
+# You can nest variable scope many times
+with tf.variable_scope("C"):
+    with tf.variable_scope("D"):
+        c=tf.get_variable("b",[])
+        print c
+        print c.name # --> C/D/b:0       C,D=scope name,b=variable name
+
+# <tensorflow.python.ops.variables.Variable object at 0x7fb5afb2e710>
+# C/D/b:0
+
+
+# You can reuse existing variable,
+# with get_variable_scope and 'reuse=True'
+
+with tf.variable_scope("C"):
+    with tf.variable_scope("D",reuse=True):  # <--- Notice,'reuse'
+        alias_c=tf.get_variable("b")
+        print alias_c
+        print alias_c.name
+
+# <tensorflow.python.ops.variables.Variable object at 0x7fb5afb2e710>
+# C/D/b:0
+
+# Or, you can set all variables in scope will be 'reused' inside of the scope as follows:
+with tf.variable_scope("C"):
+    with tf.variable_scope("D"): # <-- note! no 'reuse' flag here!
+        m=tf.get_variable("m",[])
+        print m
+        print m.name
+        
+        print "current variable scope :",tf.get_variable_scope().name
+        tf.get_variable_scope().reuse_variables()
+        m2=tf.get_variable("m")
+        print m2        
+        print m2.name
+
+# <tensorflow.python.ops.variables.Variable object at 0x7fb5afb13750>
+# C/D/m:0
+
+# current variable scope : C/D
+# <tensorflow.python.ops.variables.Variable object at 0x7fb5afb13750>
+# C/D/m:0
+
+# Namescope
+# tf.name_scope(name,default_name=None,values=None)
+# It returns context manager for use when defining Python op.
+
+# This context manager validates,
+# that given values are from same graph,
+# makes that graph default graph,
+# and pushes name scope in that graph,
+# (see Graph.name_scope() for more details on that)
+
+with tf.name_scope("custom_scope"):
+    x=tf.get_variable("x",[]) 
+    y=tf.Variable(0.0,"x")
+    op=x+y
+    
+# print x.name, "  <--- tf.get_variable ignore name_scope"
+# print y.name, "  <--- name_scope() affects tf.Variable()"
+# print op.name,"  <--  name_scope() affects operations"
+# x:0   <--- tf.get_variable ignore name_scope
+# custom_scope/Variable:0   <--- name_scope() affects tf.Variable()
+# custom_scope/add:0   <--  name_scope() affects operations
+
+with tf.variable_scope("custom_scope2"):
+    x=tf.get_variable("x",[]) 
+    y=tf.Variable(0.0,"y")
+    op=x+y
+    
+# print x.name, "  <--- variable_scope() affects tf.get_variable()"
+# print y.name, "  <--- variable_scope() affects tf.Variable()"
+# print op.name,"  <--  variable_scope() affects operations"
+# custom_scope2/x:0   <--- variable_scope() affects tf.get_variable()
+# custom_scope2/Variable:0   <--- variable_scope() affects tf.Variable()
+# custom_scope2/add:0   <--  variable_scope() affects operations
+
+</xmp>
+   </BODY>
+</HTML>

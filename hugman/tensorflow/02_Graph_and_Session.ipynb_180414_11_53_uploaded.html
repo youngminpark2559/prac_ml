@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 23px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+    
+    background-color: black;
+    color:#ABBAB7
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+02_Graph_and_Session.ipynb_uploaded_180414_11_53.html
+<xmp>
+import tensorflow as tf
+import numpy as np
+
+# You can create new tensorflow session
+# tf.Session.init(target='', graph=None, config=None)
+
+# Session object may own resources such as variables, queues, and readers
+# So, it's important to release these resources,
+# when resources are no longer required
+# To do this, you can either invoke close() on session object,
+# or you can use session as context manager
+
+# Session and Graph
+# from : https://www.tensorflow.org/versions/r0.11/api_docs/python/client.html
+
+# If you are using multiple graphs,
+# (which can be created with tf.Graph() in same process),
+# you will have to use different sessions for each graph,
+# but "each graph" can be used in "multiple sessions"
+
+# graph1 should be in session1
+# graph2 should be in session2
+# graph3 should be in session3
+
+# graph1 can be in session1
+# graph1 can be in session2
+# graph1 can be in session3
+
+# In this case, it is often clearer to pass the graph,
+# to be launched explicitly to session constructor
+
+# You can create graph
+graph1_node = tf.Graph()
+with graph1_node.as_default():
+    constant1_node = tf.constant(10.0, name="a")
+    constant2_node = tf.constant(20.0, name="b")
+    sum_operation_for_c1_and_c2_node = constant1_node + constant2_node
+    
+# check constant1_node's graph
+# print(sum_operation_for_c1_and_c2_node.graph)
+# <tensorflow.python.framework.ops.Graph object at 0x7f2dcb337710>
+
+graph2_node = tf.Graph()
+with graph2_node.as_default():
+    constant1_for_graph2_node = tf.constant(40.0, name="x")
+    constant2_for_graph2_node = tf.constant(50.0, name="y")
+    substraction_operation_for_c1g2_and_c2g2_node\
+        =constant1_for_graph2_node-constant2_for_graph2_node
+    
+# check graph2_node's graph
+# print("substraction_operation_for_c1g2_and_c2g2_node.graph",substraction_operation_for_c1g2_and_c2g2_node.graph)
+# <tensorflow.python.framework.ops.Graph object at 0x7ff619467710>
+
+# You create session object for graph1_node
+with tf.Session( graph=graph1_node ) as sess_object:
+    print(sess_object.run(sum_operation_for_c1_and_c2_node))
+# 30.0
+
+# You create session object for graph2_node
+with tf.Session( graph=graph2_node ) as sess_object:
+    print(sess_object.run(substraction_operation_for_c1g2_and_c2g2_node))
+# -10.0
+
+# Following codes generate errors
+# You will create session for graph1_node,
+# but you will try to use node which is included in graph2_node
+# with tf.Session( graph=graph1_node ) as sess_object:
+#     # following code should make errors
+#     print(sess_object.run(substraction_operation_for_c1g2_and_c2g2_node))
+
+# print(graph1_node.as_graph_def())
+# node {
+#   name: "a"
+#   op: "Const"
+#   attr {
+#     key: "dtype"
+#     value {
+#       type: DT_FLOAT
+#     }
+#   }
+#   attr {
+#     key: "value"
+#     value {
+#       tensor {
+#         dtype: DT_FLOAT
+#         tensor_shape {
+#         }
+#         float_val: 10.0
+#       }
+#     }
+#   }
+# }
+# node {
+#   name: "b"
+#   op: "Const"
+#   attr {
+#     key: "dtype"
+#     value {
+#       type: DT_FLOAT
+#     }
+#   }
+#   attr {
+#     key: "value"
+#     value {
+#       tensor {
+#         dtype: DT_FLOAT
+#         tensor_shape {
+#         }
+#         float_val: 20.0
+#       }
+#     }
+#   }
+# }
+# node {
+#   name: "add"
+#   op: "Add"
+#   input: "a"
+#   input: "b"
+#   attr {
+#     key: "T"
+#     value {
+#       type: DT_FLOAT
+#     }
+#   }
+# }
+# versions {
+#   producer: 26
+# }
+
+# You can perfrm graph visualization
+from graph_visualizer import show_graph
+# print(show_graph(graph1_node.as_graph_def()))
+# print(show_graph(graph2_node.as_graph_def()))
+
+</xmp>
+   </BODY>
+</HTML>
