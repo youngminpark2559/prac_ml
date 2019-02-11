@@ -18,6 +18,9 @@ body {
     padding-left: 80px;
     
     line-height:35px;
+},
+img {
+ width:900px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -46,78 +49,184 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-009-lec-002. forward-propagaion and back-propagation in deep neural net
 <xmp>
-</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/51580d37-47fb-4fd7-ac47-e452ab7baa35.png"/><xmp>
-@
-f=wx+b
-g=wx
-f=g+b
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_19:54:39.png"><xmp>
 
-Effect of w on f: $$$\frac{\partial{f}}{\partial{w}}$$$
-Effect of x on f: $$$\frac{\partial{f}}{\partial{x}}$$$
-Effect of b on f: $$$\frac{\partial{f}}{\partial{b}}$$$, meaning if b changes 2, f will be affected by 2
-If $$$\frac{\partial{f}}{\partial{b}}=4$$$, if b changes 2, f will be affected by 8
+Let's see idea about how to train neural network  
 
-Step1. You perform forward-propagation with given values(w=-2, x=5, b=3),
-then, you can obtain f=7
-w*x=-2*5=-10=g
-g+b=-10+3=-7=f
-    
-Step2. With f=7, you perform backpropagation,
-from f=7,
-to updata parameters(w and b)
+Goal of training neural network is to minimize "cost"  
+See graph, "cost" is written in vertical axis  
+weight w is written in horizontal axis  
 
-You know this relation, f=wx+b
+Another expression of goal is to make differentiation (slope) w  
+with respect to cost minimize  
 
-You perform differentiation on g=wx,
-then, you obtain $$$\frac{\partial{g}}{\partial{w}}=x$$$, $$$\frac{\partial{g}}{\partial{x}}=w$$$
+See graph, slope at top right point is high  
+But slope decreases as training goes 
+Finally, if training converges, you can reach to lowest point  
+which has almost 0 slope  
 
-You perform differentiation on f=g+b,
-then, you obtain $$$\frac{\partial{f}}{\partial{g}}=1$$$, $$$\frac{\partial{f}}{\partial{b}}=1$$$
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:05:50.png"><xmp>
 
-Effect of w on f:
-$$$\frac{\partial{f}}{\partial{w}}=\frac{\partial{f}}{\partial{g}} \frac{\partial{g}}{\partial{w}}$$$
-$$$\frac{\partial{f}}{\partial{w}}=1*5=5$$$
-meaning: effect of changing w on f is 1:5    
+Conceptually, you should know "amont of effect to $$$\hat{y}$$$ by $$$x_1$$$  
+to adjust $$$w_1$$$  
 
-Effect of x on f:
-$$$\frac{\partial{f}}{\partial{x}}=\frac{\partial{f}}{\partial{g}} \frac{\partial{g}}{\partial{x}}$$$
-$$$\frac{\partial{f}}{\partial{w}}=1*-2=-2$$$
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:06:10.png"><xmp>
+Aside from effect to $$$\hat{y}$$$ by $$$x_1$$$  
+you also should know effects to $$$\hat{y}$$$ by all other x like $$$x_2$$$, $$$x_3$$$, ... 
 
-Effect of g on f:
-$$$\frac{\partial{f}}{\partial{g}}=1$$$    
-meaning: effect of changing g on f is 1:1    
+But this is very high computationally burden
 
-From above relations, we can manipulate f    
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:09:03.png"><xmp>
+So professor M. Minsky concluded this kind of computation couldn't be possible 
+because it'd be too high computationally burden  
 
-@
-Let's see 2nd example    
-When we perform backpropagation,
-first, you calculate last node
-f=a+b, $$$\frac{\partial{f}}{\partial{a}}$$$
-We can know above value along with given parameter values
-Effect of a on f: $$$\frac{\partial{f}}{\partial{a}}$$$
+==================================================
+Above issue had been resolved by backpropagation algorithm  
 
-You know $$$\frac{\partial{f}}{\partial{g}}$$$ which is calculated from earlier step
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:10:16.png"><xmp>
 
-Ultimately, you want to know effect of x on f $$$\frac{\partial{f}}{\partial{x}}$$$
-You know effect of x on g $$$\frac{\partial{g}}{\partial{x}}$$$
-because we know following relation by operator *,
-g=xy, $$$\frac{\partial{g}}{\partial{x}}$$$
+Idea of backpropagation is  
+1. you calculate error (loss or cost)  
+2. you pass error from last layer to first layers, that is backward direction  
+3. through "2." step, you can calculate "derivative values"  
+and you can decide how and what to update  
 
-You can use chain rule to find $$$\frac{\partial{f}}{\partial{x}}$$$
-$$$\frac{\partial{f}}{\partial{x}} = \frac{\partial{f}}{\partial{g}} \cdot \frac{\partial{g}}{\partial{x}}$$$
+==================================================
+$$$f=wx+b$$$  
+You can replace $$$wx$$$ with $$$g$$$  
+then, you can write  
+$$$g=wx$$$  
 
-In conclusion, even if there are many nodes between first node and last node,
-you can find effect of x on f $$$\frac{\partial{f}}{\partial{x}}$$$ by using above steps
+Then, you can write $$$f=wx+b$$$ as follow  
+$$$f=g+b$$$  
 
+==================================================
+You can draw graph about above equations 
 
-@
-Sigmoid $$$g(z) = \frac{1}{1+e^{-2}}$$$
-How to differentiate sigmoid function
-z ------ *-1 ------ exp ------ +1 ------ x ------ $$$\frac{1}{x}$$$ ------ g
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:14:44.png"><xmp>
 
-      </xmp>
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:15:13.png"><xmp>
+
+$$$\dfrac{\partial f}{\partial w}$$$: effect to f by w  
+$$$\dfrac{\partial f}{\partial x}$$$: effect to f by x  
+$$$\dfrac{\partial f}{\partial b}$$$: effect to f by b  
+
+==================================================
+One technique you need to know to use backpropagation is chainrule  
+$$$y=f(g(x))$$$  
+$$$\dfrac{\partial y}{\partial x} =
+\dfrac{\partial y}{\partial g} \times 
+\dfrac{\partial g}{\partial x}$$$
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:20:33.png"><xmp>
+
+Step 1. Forward phase  
+Just suppose you have weight w, input x, bias b  
+as -2, 5, 3  
+
+Then, you can get values of $$$g$$$ and $$$f$$$ as $$$-10$$$ and $$$-7$$$  
+
+==================================================
+You perform several derivatives in advance for backpropagation  
+
+From $$$g=wx$$$, you can make  
+$$$\dfrac{\partial g}{\partial w}=x$$$  
+$$$\dfrac{\partial g}{\partial x}=w$$$ 
+
+From $$$f=g+b$$$, you can make  
+$$$\dfrac{\partial f}{\partial g}=1$$$  
+$$$\dfrac{\partial f}{\partial b}=1$$$ 
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:29:13.png"><xmp>
+
+In above screenshot,  
+you can see $$$\dfrac{\partial f}{\partial g}$$$ and $$$\dfrac{\partial f}{\partial b}$$$  
+are calcuated as 1 and 1 
+
+==================================================
+You're going to calculate $$$\dfrac{\partial f}{\partial w}$$$  
+by using chain rule  
+
+$$$\dfrac{\partial f}{\partial w} =
+\dfrac{\partial f}{\partial g} \times 
+\dfrac{\partial g}{\partial w}$$$  
+$$$= 1 \times 5$$$  
+$$$= 5$$$
+
+==================================================
+$$$\dfrac{\partial f}{\partial x} =
+\dfrac{\partial f}{\partial g} \times 
+\dfrac{\partial g}{\partial x}$$$  
+$$$= 1 \times -2$$$  
+$$$= -2$$$
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:33:53.png"><xmp>
+
+Now, you calculated all effects to f by $$$w, x, b$$$  
+
+==================================================
+Meaning  
+$$$\dfrac{\partial f}{\partial w}$$$: effect to f by w is 5 amount intensity 
+
+So, if you make w -1 from -2,  
+that means you performed +1 on -2 
+
+Since $$$1 \times 5 = 5$$$,
+you should +5 on f according to $$$\dfrac{\partial f}{\partial w}=5$$$  
+
+Let's perform operation manually to check whether above calculate is correct  
+$$$w=-1, x=5 \rightarrow -1 \times 5 = -5$$$  
+$$$-5 + 3=-2$$$  
+Since $$$-7 + 5 = -2$$$, above calculate is correct 
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:41:46.png"><xmp>
+
+Case where there are more nodes (like more layers)  
+Logic is same  
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_11_20:42:57.png"><xmp>
+You start with last node (next to f)  
+Operation of that node is +  
+
+Since you know operation on that node  
+and you know function f as f=a+b  
+you can calculate $$$\dfrac{\partial f}{\partial a}$$$  
+
+==================================================
+Suppose you've calculated $$$\dfrac{\partial f}{\partial g}$$$  
+
+Then, what you actually want to calculate is  
+$$$\dfrac{\partial f}{\partial x}$$$  
+
+In that situation, you already know $$$\dfrac{\partial g}{\partial x}$$$  
+because you know operation ($$$*$$$) on that node
+
+Since that operation is $$$*$$$  
+you can write $$$x*y=g$$$  
+
+Then, you can calculate $$$\dfrac{\partial g}{\partial x}$$$ using $$$x*y=g$$$  
+
+==================================================
+You can calculate $$$\dfrac{\partial f}{\partial x}$$$ using chain rule 
+
+$$$\dfrac{\partial f}{\partial x} =
+\dfrac{\partial f}{\partial g} \times 
+\dfrac{\partial g}{\partial x}$$$  
+
+Then, you can finally calculate effect to f by x  
+which will be used for updating neural network with minimizing loss value  
+
+</xmp>
    </BODY>
 </HTML>
