@@ -5,7 +5,7 @@
       <TITLE>My first HTML document</TITLE>
       <style rel="stylesheet" type="text/css">
 body {
- font-size: 25px;
+ font-size: 23px;
  
  margin-top: 50px;
     margin-bottom: 50px;
@@ -17,7 +17,10 @@ body {
     padding-right: 80px;
     padding-left: 80px;
     
-    line-height:1.6em
+    line-height:35px;
+},
+img {
+ width:900px;
 }
 </style>
       <script type="text/x-mathjax-config">
@@ -46,23 +49,90 @@ MathJax.Hub.Config({
 </script>
    </HEAD>
    <BODY>
-003-lec. gradient descent algorithm for linear regression
 <xmp>
-# @
-# You move down along with slope of loss function
-# When slope is 0, you don't have place to move
+==================================================
+You can make hypothesis function  
+(or function which represents your neural network) as follow  
+$$$H(x)=Wx+b$$$  
 
-# $$$W := W -\alpha \frac{\partial}{\partial{W}} cost(W)$$$
-# Let's say learning rate $$$\alpha = 0.1$$$
-# You find slope of cost(W) in respect to W
-# Let's say $$$\frac{\partial}{\partial{W}} cost(W)=10$$$
-# $$$0.1\times 10 = 1$$$
-# Then, you find 'new W which will be moved to left' from formular 'existing W - 1'
+Once you have your hypothesis function  
+you can also make cost function  
+which represents how much of difference your neural network has  
+between your prediction and ground truth  
+$$$cost(W,b)=
+\dfrac{1}{m}
+\sum\limits_{i=1}^m
+(H(x^{(i)})-y^{(i)})^2$$$  
 
-# @
-# To prevent minimization from falling into local minima,
-# you'd better confirm if your loss function L(W, b) forms convex shape
+Goal of linear regression (or goal of training neural network) is  
+to find W and b which minimize cost value  
+by using your data and backpropagation 
+
+==================================================
+For simplicity, suppose your model is as following without bias b term  
+$$$H(x)=Wx$$$  
+
+Then cost function can be written as follwo  
+$$$cost(W)=
+\dfrac{1}{m}
+\sum\limits_{i=1}^m
+(H(x^{(i)})-y^{(i)})^2$$$  
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:33:50.png"><xmp>
+
+When w=1, and when you know x values as data  
+you can calculate cost values  
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:35:16.png"><xmp>
+
+==================================================
+You can draw graph based on relationship between W and cost  
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:36:30.png"><xmp>
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:36:58.png"><xmp>
+
+Goal is to find specific W value which makes cost minimum  
+
+You can find above point W if you can draw graph of cost function  
+by using optimization methods like gradient descent algorithm  
+
+==================================================
+
+You can move down along with slope of loss function  
+When slope is 0, that can mean that you don't have place to move down  
+
+$$$\text{updated } W \leftarrow W -\alpha \dfrac{\partial cost(W)}{\partial{W}}$$$  
+Let's use learning rate $$$\alpha = 0.1$$$ 
+You find slope of cost(W) with respect to W by using partial derivative
+Let's say $$$\dfrac{\partial cost(W)}{\partial{W}}=10$$$ 
+$$$0.1 \times 10 = 1$$$ 
+Then, you can find 'new updated W which is supposed to be moved to left' 
+according to above formular $$$\text{updated } W \leftarrow W -\alpha \dfrac{\partial cost(W)}{\partial{W}}$$$ 
+specically $$$\text{new updated } W = \text{current } W - 1$$$ 
+which means you most W towards left as much as 1 
+
+If $$$\dfrac{\partial cost(W)}{\partial{W}}$$$ is less than 0 (in other words negative slope) 
+W will move towards right 
+for example $$$\text{updated } W \leftarrow W - (-1)$$$  
+
+==================================================
+To prevent minimization from falling into local minima, 
+you'd better confirm whether your loss function $$$L(W, b)$$$ forms convex shape in advance
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:51:36.png"><xmp>
+
+You can use gradient descent algorithm to find optimal W 
+but likelyhood you can fall into local minima is high 
+per starting points 
+
+==================================================
+</xmp><img src="https://raw.githubusercontent.com/youngminpark2559/pracdl/master/shkim/pic/2019_02_12_11:52:48.png"><xmp>
+This shape is good 
 
 </xmp>
-</BODY>
+   </BODY>
 </HTML>
