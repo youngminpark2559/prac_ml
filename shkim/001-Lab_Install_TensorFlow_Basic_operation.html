@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 20px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 100px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+}
+img {
+ width:900px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+<xmp>
+001-Lab_Install_TensorFlow_Basic_operation.html
+
+================================================================================
+Nodes in the graph represent mathematical operations
+
+Edges represent data arrays
+
+================================================================================
+import tensorflow as tf
+
+# c constant_node: constant node in the graph
+constant_node=tf.constant("Hi")
+
+# c sess_instance: Session instance
+sess_instance=tf.Session()
+
+# Run session, run constant_node
+out=sess_instance.run(constant_node)
+
+print(out)
+# b_placeholder'Hi'
+
+================================================================================
+constant_node_1=tf.constant(3.0,tf.float32)
+
+# tf.float32 is default
+constant_node_2=tf.constant(4.0)
+
+operation_node_1=tf.add(constant_node_1,constant_node_2)
+
+# ================================================================================
+print("constant_node_1",constant_node_1)
+# constant_node_1: Tensor("Const_1:0",shape=(),dtype=float32)
+
+print("constant_node_2",constant_node_2)
+# constant_node_2: Tensor("Const_2:0",shape=(),dtype=float32)
+
+print("constant_node_3",constant_node_3)
+# operation_node_1: Tensor("Add:0",shape=(),dtype=float32)
+
+# ================================================================================
+# You run tensorflow code in this way, by using Session object
+
+sess_instance=tf.Session()
+
+out_constant_node_1=sess_instance.run(constant_node_1)
+print(out_constant_node_1)
+# 3.0
+
+out_constant_node_2=sess_instance.run(constant_node_2)
+print(out_constant_node_2)
+# 3.0
+
+out_operation_node_1=sess_instance.run(operation_node_1)
+print(out_operation_node_1)
+# 7.0
+
+================================================================================
+# Suppose you want to implement following structure
+
+</xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/7f189664-5ca0-4d6d-8646-bb186b7ed5c4.png"/><xmp>
+
+# You can use placeholder node in that scenario
+
+================================================================================
+a_placeholder=tf.placeholder(tf.float32)
+
+b_placeholder=tf.placeholder(tf.float32)
+
+add_op_node=a_placeholder+b_placeholder
+
+# ================================================================================
+input_data={
+   a_placeholder:3,
+   b_placeholder: 4.5}
+
+out=sess_instance.run(add_op_node,feed_dict=input_data)
+print(out)
+# 7.5
+
+# ================================================================================
+intput_data2={
+   a_placeholder:[1,3],
+   b_placeholder:[2,4]}
+
+sess_instance.run(add_op_node,feed_dict=intput_data2)
+# array([3., 7.], dtype=float32)
+
+# ================================================================================
+# You create node
+add_then_3times_node=add_op_node*3
+
+input_data3={a_placeholder:3,b_placeholder:4.5}
+
+out=sess_instance.run(add_and_triple,feed_dict=input_data3)
+print(out)
+# 22.5
+
+================================================================================
+Rank is dimension of array
+Rank 1 means 1D array
+Rank 2 means 2D array
+Rank 3 means 3D array
+
+================================================================================
+Shape of [[1,2],[3,4],[5,6]] array is (3,2)
+
+# [5,6] => (2,)
+
+================================================================================
+# Rank 0 tensor: number, 'scalar' which has shape like ()
+# Example: 3 
+
+# Rank 1 tensor: 1D array, 'vector' which has shape like (3,)
+# Example: [1.,2.,3.]
+
+# Rank 2 tensor: 2D array, 'matrix' which has shape like (2,3)
+# Example: [[1.,2.,3.],[4.,5.,6.]] 
+
+# Rank 3 tensor: 3D array, "tensor" which has shape like (2,1,3)
+# Example: [[[1.,2.,3.]],[[7.,8.,9.]]] 
+      
+</xmp>
+   </BODY>
+</HTML>
+
+
