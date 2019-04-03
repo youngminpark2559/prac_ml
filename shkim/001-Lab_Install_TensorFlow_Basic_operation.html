@@ -58,7 +58,8 @@ Nodes in the graph represent mathematical operations
 Edges represent data arrays
 
 ================================================================================
-import tensorflow as tf
+</xmp>
+<!-- import tensorflow as tf
 
 # c constant_node: constant node in the graph
 constant_node=tf.constant("Hi")
@@ -70,10 +71,27 @@ sess_instance=tf.Session()
 out=sess_instance.run(constant_node)
 
 print(out)
-# b_placeholder'Hi'
+# b_placeholder'Hi' -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">tensorflow</span> <span style="color: #008800; font-weight: bold">as</span> <span style="color: #0e84b5; font-weight: bold">tf</span>
+
+<span style="color: #888888"># c constant_node: constant node in the graph</span>
+constant_node<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>constant(<span style="background-color: #fff0f0">&quot;Hi&quot;</span>)
+
+<span style="color: #888888"># c sess_instance: Session instance</span>
+sess_instance<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>Session()
+
+<span style="color: #888888"># Run session, run constant_node</span>
+out<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(constant_node)
+
+<span style="color: #007020">print</span>(out)
+<span style="color: #888888"># b_placeholder&#39;Hi&#39;</span>
+</pre></div>
+<xmp>
 
 ================================================================================
-constant_node_1=tf.constant(3.0,tf.float32)
+</xmp>
+<!-- constant_node_1=tf.constant(3.0,tf.float32)
 
 # tf.float32 is default
 constant_node_2=tf.constant(4.0)
@@ -105,17 +123,54 @@ print(out_constant_node_2)
 
 out_operation_node_1=sess_instance.run(operation_node_1)
 print(out_operation_node_1)
-# 7.0
+# 7.0 -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">constant_node_1<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>constant(<span style="color: #6600EE; font-weight: bold">3.0</span>,tf<span style="color: #333333">.</span>float32)
+
+<span style="color: #888888"># tf.float32 is default</span>
+constant_node_2<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>constant(<span style="color: #6600EE; font-weight: bold">4.0</span>)
+
+operation_node_1<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>add(constant_node_1,constant_node_2)
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #007020">print</span>(<span style="background-color: #fff0f0">&quot;constant_node_1&quot;</span>,constant_node_1)
+<span style="color: #888888"># constant_node_1: Tensor(&quot;Const_1:0&quot;,shape=(),dtype=float32)</span>
+
+<span style="color: #007020">print</span>(<span style="background-color: #fff0f0">&quot;constant_node_2&quot;</span>,constant_node_2)
+<span style="color: #888888"># constant_node_2: Tensor(&quot;Const_2:0&quot;,shape=(),dtype=float32)</span>
+
+<span style="color: #007020">print</span>(<span style="background-color: #fff0f0">&quot;constant_node_3&quot;</span>,constant_node_3)
+<span style="color: #888888"># operation_node_1: Tensor(&quot;Add:0&quot;,shape=(),dtype=float32)</span>
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># You run tensorflow code in this way, by using Session object</span>
+
+sess_instance<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>Session()
+
+out_constant_node_1<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(constant_node_1)
+<span style="color: #007020">print</span>(out_constant_node_1)
+<span style="color: #888888"># 3.0</span>
+
+out_constant_node_2<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(constant_node_2)
+<span style="color: #007020">print</span>(out_constant_node_2)
+<span style="color: #888888"># 3.0</span>
+
+out_operation_node_1<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(operation_node_1)
+<span style="color: #007020">print</span>(out_operation_node_1)
+<span style="color: #888888"># 7.0</span>
+</pre></div>
+<xmp>
 
 ================================================================================
-# Suppose you want to implement following structure
+Suppose you want to implement following structure
 
 </xmp><img src="https://raw.githubusercontent.com/youngmtool/pracdm/master/shkim/pic/7f189664-5ca0-4d6d-8646-bb186b7ed5c4.png"/><xmp>
 
-# You can use placeholder node in that scenario
+You can use placeholder node in that scenario
 
 ================================================================================
-a_placeholder=tf.placeholder(tf.float32)
+</xmp>
+<!-- a_placeholder=tf.placeholder(tf.float32)
 
 b_placeholder=tf.placeholder(tf.float32)
 
@@ -124,7 +179,7 @@ add_op_node=a_placeholder+b_placeholder
 # ================================================================================
 input_data={
    a_placeholder:3,
-   b_placeholder: 4.5}
+   b_placeholder:4.5}
 
 out=sess_instance.run(add_op_node,feed_dict=input_data)
 print(out)
@@ -142,11 +197,50 @@ sess_instance.run(add_op_node,feed_dict=intput_data2)
 # You create node
 add_then_3times_node=add_op_node*3
 
-input_data3={a_placeholder:3,b_placeholder:4.5}
+input_data3={
+   a_placeholder:3,
+   b_placeholder:4.5}
 
 out=sess_instance.run(add_and_triple,feed_dict=input_data3)
 print(out)
-# 22.5
+# 22.5 -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">a_placeholder<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>placeholder(tf<span style="color: #333333">.</span>float32)
+
+b_placeholder<span style="color: #333333">=</span>tf<span style="color: #333333">.</span>placeholder(tf<span style="color: #333333">.</span>float32)
+
+add_op_node<span style="color: #333333">=</span>a_placeholder<span style="color: #333333">+</span>b_placeholder
+
+<span style="color: #888888"># ================================================================================</span>
+input_data<span style="color: #333333">=</span>{
+   a_placeholder:<span style="color: #0000DD; font-weight: bold">3</span>,
+   b_placeholder:<span style="color: #6600EE; font-weight: bold">4.5</span>}
+
+out<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(add_op_node,feed_dict<span style="color: #333333">=</span>input_data)
+<span style="color: #007020">print</span>(out)
+<span style="color: #888888"># 7.5</span>
+
+<span style="color: #888888"># ================================================================================</span>
+intput_data2<span style="color: #333333">=</span>{
+   a_placeholder:[<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">3</span>],
+   b_placeholder:[<span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">4</span>]}
+
+sess_instance<span style="color: #333333">.</span>run(add_op_node,feed_dict<span style="color: #333333">=</span>intput_data2)
+<span style="color: #888888"># array([3., 7.], dtype=float32)</span>
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># You create node</span>
+add_then_3times_node<span style="color: #333333">=</span>add_op_node<span style="color: #333333">*</span><span style="color: #0000DD; font-weight: bold">3</span>
+
+input_data3<span style="color: #333333">=</span>{
+   a_placeholder:<span style="color: #0000DD; font-weight: bold">3</span>,
+   b_placeholder:<span style="color: #6600EE; font-weight: bold">4.5</span>}
+
+out<span style="color: #333333">=</span>sess_instance<span style="color: #333333">.</span>run(add_and_triple,feed_dict<span style="color: #333333">=</span>input_data3)
+<span style="color: #007020">print</span>(out)
+<span style="color: #888888"># 22.5</span>
+</pre></div>
+<xmp>
 
 ================================================================================
 Rank is dimension of array
@@ -175,5 +269,3 @@ Shape of [[1,2],[3,4],[5,6]] array is (3,2)
 </xmp>
    </BODY>
 </HTML>
-
-
