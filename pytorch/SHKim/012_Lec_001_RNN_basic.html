@@ -1,0 +1,507 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <TITLE>My first HTML document</TITLE>
+      <style rel="stylesheet" type="text/css">
+body {
+ font-size: 20px;
+ 
+ margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 80px;
+    margin-left: 100px;
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-right: 80px;
+    padding-left: 80px;
+    
+    line-height:35px;
+}
+img {
+ width:900px;
+}
+</style>
+      <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    "HTML-CSS" : {
+        availableFonts : ["STIX"],
+        preferredFont : "STIX",
+        webFont : "STIX-Web",
+        imageFont : null
+    }
+});
+</script>
+     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">    
+    MathJax.Hub.Config({
+        HTML: ["input/TeX","output/HTML-CSS"],
+        TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], 
+               equationNumbers: { autoNumber: "AMS" } },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: { inlineMath: [ ['$$$','$$$'] ],
+                   displayMath: [ ['$$$$','$$$$'] ],
+                   processEscapes: true },
+        "HTML-CSS": { availableFonts: ["TeX"],
+                      linebreaks: { automatic: true } }
+    });
+</script>
+   </HEAD>
+   <BODY>
+<xmp>
+This is notes from video lecture of 
+https://www.youtube.com/watch?v=ogZi5oIo4fI&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=13&t=0s
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_12:59:37.png' alt=''><xmp>
+
+Deep Neural Network (DNN)
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_12:58:20.png' alt=''><xmp>
+
+CNN is slightly different from DNN.
+
+Instead of using all data in image, 
+CNN focuses on some certain areas, with extracting feature of image.
+You will have many feature-image if you use many number of CNN image filters.
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:01:57.png' alt=''><xmp>
+
+$$$X_t$$$: input data
+
+$$$h_t$$$: output data
+
+Center acrossing arrow: hidden state which is passed into next cell
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:03:37.png' alt=''><xmp>
+
+Unfolded view
+
+Each one (green squres) has series of inputs (blue circles) like $$$x_1,x_2,...$$$
+Each one (green squres) produces series of outputs (red circles) like $$$y_1,y_2,...$$$
+
+Interesting thing in RNN is $$$y_1$$$ is passed into next cell (next green squre) as privious state
+With $$$y_1$$$ and $$$x_2$$$, 2nd cell creates $$$y_2$$$
+
+================================================================================
+RNN can be used for series data, for example,
+
+- Time series prediction
+- Language modeling (text generation)
+- Text sentiment analysis
+- Named Entity Recognition (NER)
+- Translation
+- Speech recognition
+- Music composition
+
+================================================================================
+Various RNN models
+
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:10:49.png' alt=''><xmp>
+
+- One to Many: Image captioning
+One input image
+Multiple captions on that image
+
+- Many to One: 
+Sentence input which composed of multiple tokens
+Output is one sentiment
+
+- Many to Many: Translation
+
+================================================================================
+See the inside of RNN
+
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:15:21.png' alt=''><xmp>
+
+Code:
+
+</xmp>
+<!-- mixed=Mat_mul(hidden_state_from_privious_cell,current_input)
+
+after_tanh=tanh(mixed)
+
+output,previous_state_for_next_cell=after_tanh -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">mixed<span style="color: #333333">=</span>Mat_mul(hidden_state_from_privious_cell,current_input)
+
+after_tanh<span style="color: #333333">=</span>tanh(mixed)
+
+output,previous_state_for_next_cell<span style="color: #333333">=</span>after_tanh
+</pre></div>
+<xmp>
+
+================================================================================
+You don't need to perform abvoe operation manually in PyTorch.
+
+You can use following API functios.
+
+Code:
+
+</xmp>
+<!-- # c input_size: size of input data
+# c hidden_size: size of output and previous-state-for-next-cell
+# c batch_first: batch data first for your input data like (batch_size,sequence_length,input_size)
+cell=nn.RNN(input_size=4,hidden_size=2,batch_first=True)
+
+cell=nn.GRU(input_size=4,hidden_size=2,batch_first=True)
+
+cell=nn.LSTM(input_size=4,hidden_size=2,batch_first=True) -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># c input_size: size of input data</span>
+<span style="color: #888888"># c hidden_size: size of output and previous-state-for-next-cell</span>
+<span style="color: #888888"># c batch_first: batch data first for your input data like (batch_size,sequence_length,input_size)</span>
+cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>GRU(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>LSTM(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+</pre></div>
+<xmp>
+
+================================================================================
+Training flow in RNN
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:29:25.png' alt=''><xmp>
+
+Code:
+
+</xmp>
+<!-- cell=nn.RNN(input_size=4,hidden_size=2,batch_first=True)
+
+inputs=prepare input data in here
+
+hidden=initial hidden state data
+
+# c out: h_t
+# c hidden: previous state for next cell
+out,hidden=cell(inputs,hidden)
+
+# Implement next cell
+# c inputs: input for this cell
+# c hidden: is from previous cell
+out,hidden=cell(inputs,hidden) -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+inputs<span style="color: #333333">=</span>prepare <span style="color: #007020">input</span> data <span style="color: #000000; font-weight: bold">in</span> here
+
+hidden<span style="color: #333333">=</span>initial hidden state data
+
+<span style="color: #888888"># c out: h_t</span>
+<span style="color: #888888"># c hidden: previous state for next cell</span>
+out,hidden<span style="color: #333333">=</span>cell(inputs,hidden)
+
+<span style="color: #888888"># Implement next cell</span>
+<span style="color: #888888"># c inputs: input for this cell</span>
+<span style="color: #888888"># c hidden: is from previous cell</span>
+out,hidden<span style="color: #333333">=</span>cell(inputs,hidden)
+</pre></div>
+<xmp>
+
+================================================================================
+Example
+
+Code:
+
+</xmp>
+<!-- # c cell: one RNN cell
+cell=nn.RNN(input_size=4,hidden_size=2,batch_first=True)
+
+# ================================================================================
+# c inputs: one letter as input, shape will be (1,1,4)
+# Note that input_size=4 is same to 4 from (1,1,4)
+inputs=autograd.Variable(torch.Tensor([[h]]))
+
+# ================================================================================
+# @ You initialize hidden state manually at initial time
+
+# c hidden: hidden_size=2 should be same 2 from (1,1,2)
+hidden=autograd.Variable(torch.randn(1,1,2))
+
+# ================================================================================
+# @ Feed one element to one cell
+
+out,hidden=cell(inputs,hidden)
+print(out)
+# -0.1243 0.0738 -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># c cell: one RNN cell</span>
+cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># c inputs: one letter as input, shape will be (1,1,4)</span>
+<span style="color: #888888"># Note that input_size=4 is same to 4 from (1,1,4)</span>
+inputs<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>Tensor([[h]]))
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># @ You initialize hidden state manually at initial time</span>
+
+<span style="color: #888888"># c hidden: hidden_size=2 should be same 2 from (1,1,2)</span>
+hidden<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>randn(<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">2</span>))
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># @ Feed one element to one cell</span>
+
+out,hidden<span style="color: #333333">=</span>cell(inputs,hidden)
+<span style="color: #007020">print</span>(out)
+<span style="color: #888888"># -0.1243 0.0738</span>
+</pre></div>
+<xmp>
+
+================================================================================
+Abvoe way which passes each character at a time is to slow
+
+So, you can pass multiple letters to each multiple cell at a time.
+
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:38:59.png' alt=''><xmp>
+
+- seg_len=5 means 5 cells you use in RNN.
+
+- Shape of output becomes (1,5,2)
+1: batch size
+5: number of cells as seq_len
+2: output size
+
+- Shape of input becomes (1,5,4)
+
+================================================================================
+Code:
+
+</xmp>
+<!-- cell=nn.RNN(input_size=4,hidden_size=2,batch_first=True)
+
+# ================================================================================
+inputs=autograd.Variable(torch.Tensor([[h,e,l,l,o]]))
+print(inputs.size())
+
+# ================================================================================
+hidden=autograd.Variable(torch.randn(1,1,2))
+
+# ================================================================================
+out,hidden=cell(inputs,hidden)
+print(out.data) -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+<span style="color: #888888"># ================================================================================</span>
+inputs<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>Tensor([[h,e,l,l,o]]))
+<span style="color: #007020">print</span>(inputs<span style="color: #333333">.</span>size())
+
+<span style="color: #888888"># ================================================================================</span>
+hidden<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>randn(<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">2</span>))
+
+<span style="color: #888888"># ================================================================================</span>
+out,hidden<span style="color: #333333">=</span>cell(inputs,hidden)
+<span style="color: #007020">print</span>(out<span style="color: #333333">.</span>data)
+</pre></div>
+<xmp>
+
+================================================================================
+Use batch input
+
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:45:05.png' alt=''><xmp>
+
+================================================================================
+Code:
+
+</xmp>
+<!-- cell=nn.RNN(input_size=4,hidden_size=2,batch_first=True)
+
+# ================================================================================
+batch_input=[
+  [h,e,l,l,o],
+  [e,o,l,l,l],
+  [l,l,e,e,l]]
+
+inputs=autograd.Variable(torch.Tensor())
+print(inputs.size())
+# (3,5,4)
+
+# ================================================================================
+hidden=autograd.Variable(torch.randn(1,1,2))
+
+# ================================================================================
+out,hidden=cell(inputs,hidden)
+print(out.data) -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">cell<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">4</span>,hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2</span>,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+<span style="color: #888888"># ================================================================================</span>
+batch_input<span style="color: #333333">=</span>[
+  [h,e,l,l,o],
+  [e,o,l,l,l],
+  [l,l,e,e,l]]
+
+inputs<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>Tensor())
+<span style="color: #007020">print</span>(inputs<span style="color: #333333">.</span>size())
+<span style="color: #888888"># (3,5,4)</span>
+
+<span style="color: #888888"># ================================================================================</span>
+hidden<span style="color: #333333">=</span>autograd<span style="color: #333333">.</span>Variable(torch<span style="color: #333333">.</span>randn(<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">2</span>))
+
+<span style="color: #888888"># ================================================================================</span>
+out,hidden<span style="color: #333333">=</span>cell(inputs,hidden)
+<span style="color: #007020">print</span>(out<span style="color: #333333">.</span>data)
+</pre></div>
+<xmp>
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:50:06.png' alt=''><xmp>
+
+Teach RNN model to learn context of "ihello" from "hihell"
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:52:13.png' alt=''><xmp>
+
+================================================================================
+</xmp><img src='https://raw.githubusercontent.com/youngminpark2559/prac_ml/master/pytorch/SHKim/pics/2019_04_05_13:53:09.png' alt=''><xmp>
+
+i,h,e,l,l,o are target $$$y$$$
+
+Red cells are predictions $$$\hat{y}$$$
+
+You use loss functions like cross entropy
+
+Then, you can sum all those losses or you can average those losses 
+to create one scalar loss value
+
+================================================================================
+Example
+
+Code:
+
+</xmp>
+<!-- idx2char=['h','i','e','l','o']
+
+# ================================================================================
+# @ Teach RNN to know the conext of "hihell->ihello"
+
+# c x_data: represents hihell
+# c x_data: indices of each character from character dictionary idx2char
+x_data=[0,1,0,2,3,3]
+
+one_hot_lookup=[
+  [1,0,0,0,0],
+  [0,1,0,0,0]
+  [0,0,1,0,0]
+  [0,0,0,1,0]
+  [0,0,0,0,1]]
+
+# c y_data: represents ihello
+y_data=[1,0,2,3,3,4]
+
+# c x_one_hot: convert x_data into one hot representation
+x_one_hot=[one_hot_lookup[x] for x in x_data]
+
+# ================================================================================
+inputs=Variable(torch.Tensor(x_one_hot))
+labels=Variable(torch.Tensor(y_data))
+
+# ================================================================================
+# @ Parameters
+
+num_classes=5
+input_size=5 # dimension of one hot representatio which encodes one character
+hidden_size=5
+batch_size=5
+sequence_length=1 # perform tasks one by one, not using series of cells
+num_layers=5 # one-layer RNN
+
+# ================================================================================
+# @ Model
+
+class Model(nn.Module):
+  def __init__(self):
+    super(Model,self).__init__()
+
+    self.rnn=nn.RNN(input_size=input_size, hidden_size=hidden_size,batch_first=True)
+
+  def forward(self,x,hidden):
+    # Reshape input to (batch_size,sequence_length,input_size)
+    x=x.view(batch_size,sequence_length,input_size)
+
+    # --------------------------------------------------------------------------------
+    # Propagate input through RNN
+
+    out,hidden=self.rnn(x,hidden)
+    out=out.view(-1,num_classes)
+    return hidden,out
+
+  def init_hidden(self):
+    # Initialize hidden and cell states
+    # (num_layers*num_directions,batch,hidden_size)
+    return Variable(torch.zeros(num_layers,batch_size,hidden_size)) -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">idx2char<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;h&#39;</span>,<span style="background-color: #fff0f0">&#39;i&#39;</span>,<span style="background-color: #fff0f0">&#39;e&#39;</span>,<span style="background-color: #fff0f0">&#39;l&#39;</span>,<span style="background-color: #fff0f0">&#39;o&#39;</span>]
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># @ Teach RNN to know the conext of &quot;hihell-&gt;ihello&quot;</span>
+
+<span style="color: #888888"># c x_data: represents hihell</span>
+<span style="color: #888888"># c x_data: indices of each character from character dictionary idx2char</span>
+x_data<span style="color: #333333">=</span>[<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">3</span>,<span style="color: #0000DD; font-weight: bold">3</span>]
+
+one_hot_lookup<span style="color: #333333">=</span>[
+  [<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>],
+  [<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>]
+  [<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>]
+  [<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>]
+  [<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1</span>]]
+
+<span style="color: #888888"># c y_data: represents ihello</span>
+y_data<span style="color: #333333">=</span>[<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">3</span>,<span style="color: #0000DD; font-weight: bold">3</span>,<span style="color: #0000DD; font-weight: bold">4</span>]
+
+<span style="color: #888888"># c x_one_hot: convert x_data into one hot representation</span>
+x_one_hot<span style="color: #333333">=</span>[one_hot_lookup[x] <span style="color: #008800; font-weight: bold">for</span> x <span style="color: #000000; font-weight: bold">in</span> x_data]
+
+<span style="color: #888888"># ================================================================================</span>
+inputs<span style="color: #333333">=</span>Variable(torch<span style="color: #333333">.</span>Tensor(x_one_hot))
+labels<span style="color: #333333">=</span>Variable(torch<span style="color: #333333">.</span>Tensor(y_data))
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># @ Parameters</span>
+
+num_classes<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span>
+input_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span> <span style="color: #888888"># dimension of one hot representatio which encodes one character</span>
+hidden_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span>
+batch_size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span>
+sequence_length<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #888888"># perform tasks one by one, not using series of cells</span>
+num_layers<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span> <span style="color: #888888"># one-layer RNN</span>
+
+<span style="color: #888888"># ================================================================================</span>
+<span style="color: #888888"># @ Model</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Model</span>(nn<span style="color: #333333">.</span>Module):
+  <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>):
+    <span style="color: #007020">super</span>(Model,<span style="color: #007020">self</span>)<span style="color: #333333">.</span>__init__()
+
+    <span style="color: #007020">self</span><span style="color: #333333">.</span>rnn<span style="color: #333333">=</span>nn<span style="color: #333333">.</span>RNN(input_size<span style="color: #333333">=</span>input_size, hidden_size<span style="color: #333333">=</span>hidden_size,batch_first<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+
+  <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">forward</span>(<span style="color: #007020">self</span>,x,hidden):
+    <span style="color: #888888"># Reshape input to (batch_size,sequence_length,input_size)</span>
+    x<span style="color: #333333">=</span>x<span style="color: #333333">.</span>view(batch_size,sequence_length,input_size)
+
+    <span style="color: #888888"># --------------------------------------------------------------------------------</span>
+    <span style="color: #888888"># Propagate input through RNN</span>
+
+    out,hidden<span style="color: #333333">=</span><span style="color: #007020">self</span><span style="color: #333333">.</span>rnn(x,hidden)
+    out<span style="color: #333333">=</span>out<span style="color: #333333">.</span>view(<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>,num_classes)
+    <span style="color: #008800; font-weight: bold">return</span> hidden,out
+
+  <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">init_hidden</span>(<span style="color: #007020">self</span>):
+    <span style="color: #888888"># Initialize hidden and cell states</span>
+    <span style="color: #888888"># (num_layers*num_directions,batch,hidden_size)</span>
+    <span style="color: #008800; font-weight: bold">return</span> Variable(torch<span style="color: #333333">.</span>zeros(num_layers,batch_size,hidden_size))
+</pre></div>
+<xmp>
+aa
+
+</xmp>
+   </BODY>
+</HTML>
+
